@@ -489,11 +489,6 @@ const [isLoad, setLoad] = useState(false)
                                 return researcher.sort(() => Math.random() - 0.5).slice(0, 40);
                               }, [researcher]);
                   
- const mesAtual = new Date().toLocaleString("pt-BR", { month: "long" });
- 
- const nomesAleatorios = Array.from({ length: 20 }, (_, i) => ({
-  name: `Pesquisador ${i + 1}`,
-}));
 
  return (
     <div className=" items-center  flex flex-col   ">

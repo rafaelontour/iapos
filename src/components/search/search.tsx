@@ -18,7 +18,7 @@ interface Message {
 }
 
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
-import { Filter, Play, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 const API_KEY = import.meta.env.VITE_API_KEY
 
 const systemMessage = {
@@ -124,9 +124,7 @@ export function Search() {
   }, [input, maria]);
 
   const handlePopUppesquisa = () => {
-    if (!maria) {
-      onOpen('search')
-    }
+    onOpen('search')
   }
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -373,9 +371,8 @@ export function Search() {
               <div className="flex items-center gap-2 w-full flex-1">
                 <div className="hidden md:flex gap-2 w-fit  items-center">
 
-                  {!maria && (
-                    <SelectTypeSearch />
-                  )}
+                  
+                <SelectTypeSearch />
 
                  {itemsSelecionados.length > 0 && (
                    <div className='flex gap-2 mx-2 items-center'>
@@ -393,8 +390,9 @@ export function Search() {
                            <button className="rounded-full cursor-pointer flex items-center justify-center whitespace-nowrap h-8 w-8 bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-900 dark:bg-neutral-800 transition-all text-xs outline-none" onClick={() => {
                              const connector = itemsSelecionados[index].term.endsWith('|') ? ';' : '|'; // Alterna entre "|" e ";" conforme necessário
                              handleConnectorChange(index, connector);
-
+                              
                            }} >
+                            
                              {itemsSelecionados[index].term.endsWith(';') ? "e" : "ou"}
                            </button>
                          )}

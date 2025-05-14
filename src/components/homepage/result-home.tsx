@@ -217,7 +217,7 @@ export function ResultHome() {
 
       {(itemsSelecionados.length > 0 || (researcher == 'false')) && (
         <div className="top-[68px] h-fit supports-[backdrop-filter]:dark:bg-neutral-900/60 supports-[backdrop-filter]:bg-neutral-50/60 backdrop-blur">
-          <div className={`w-full px-8 border-b  border-b-neutral-200 dark:border-b-neutral-800`}>
+          <div className={`w-full px-8 border-b border-b-neutral-200 dark:border-b-neutral-800`}>
             {isOn && (
               <div className="w-full pt-4  flex justify-between items-center">
                 <Search />
