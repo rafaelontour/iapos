@@ -609,8 +609,6 @@ const [isLoad, setLoad] = useState(false)
             ))}
           </div>
         </div>
-
-        
       </div>
     </div>
   );
