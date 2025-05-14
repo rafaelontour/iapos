@@ -205,9 +205,6 @@ useEffect(() => {
   fetchHistorico()
 }, [user, loggedIn])
 
-
-
-
 const storedIsCollapsed = localStorage.getItem("isCollapsed");
 const [isCollapsed, setIsCollapsed] = useState(
   storedIsCollapsed ? JSON.parse(storedIsCollapsed) : true

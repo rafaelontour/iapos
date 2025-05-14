@@ -933,9 +933,6 @@ export function ResearchersHome() {
       <div className="w-full flex gap-4 justify-center">
         <div className="flex-1 gap-4 flex flex-col">
          
-          <div className="w-full">
-            <HeaderResult />
-          </div>
 <div className={`flex flex-col gap-4 w-full ${selectedAreas.length > 0 || selectedCities.length > 0 || selectedDepartaments.length > 0 || selectedGraduatePrograms.length > 0 || selectedGraduations.length > 0 || selectedSubsidies.length > 0 || selectedUniversities.length > 0 ? ('flex'):('hidden')}`}>
   <Separator/>
           <div className="flex flex-wrap gap-3 items-center">
@@ -1174,10 +1171,6 @@ export function ResearchersHome() {
                           <div className="flex mb-2">
                             <HeaderResultTypeHome title="Gráficos dos pesquisadores" icon={<ChartBar size={24} className="text-gray-400" />}>
                             </HeaderResultTypeHome>
-          
-                            <AccordionTrigger>
-          
-                            </AccordionTrigger>
                           </div>
                           <AccordionContent className="p-0">
                             {loading ? (

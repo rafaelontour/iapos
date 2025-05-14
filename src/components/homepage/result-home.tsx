@@ -91,11 +91,6 @@ export function ResultHome() {
      
    }, []);
 
-
-
-
-
-  //csv
   const [jsonData, setJsonData] = useState<any[]>([]);
 
 
@@ -214,15 +209,15 @@ export function ResultHome() {
                 const connector = item.term.endsWith('|') ? 'ou' : 'e'; // Determina o conector
                 return index < itemsSelecionados.length - 1 ? `${term} ${connector}` : term; // Adiciona o conector apenas se não for o último
               })
-              .join(' ')} | {version ? ('Conectee') : ('Simcc')}
+              .join(' ')} | Iapos
         </title>
-        <meta name="description" content={`Pesquisa | ${version ? ('Conectee') : ('Simcc')}`} />
+        <meta name="description" content={`Pesquisa | Iapos`} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
       {(itemsSelecionados.length > 0 || (researcher == 'false')) && (
-        <div className="top-[68px] h-fit sticky z-[2] supports-[backdrop-filter]:dark:bg-neutral-900/60 supports-[backdrop-filter]:bg-neutral-50/60 backdrop-blur">
-          <div className={`w-full px-8 border-b border-b-neutral-200 dark:border-b-neutral-800`}>
+        <div className="top-[68px] h-fit supports-[backdrop-filter]:dark:bg-neutral-900/60 supports-[backdrop-filter]:bg-neutral-50/60 backdrop-blur">
+          <div className={`w-full px-8 border-b  border-b-neutral-200 dark:border-b-neutral-800`}>
             {isOn && (
               <div className="w-full pt-4  flex justify-between items-center">
                 <Search />
@@ -231,7 +226,7 @@ export function ResultHome() {
             <div className={`flex w-full flex-wrap gap-4 pt-2 justify-between ${isOn ? '' : ''} `}>
              <div className="flex flex-1 w-full">
              <ScrollArea>
-                <div className="w-full flex  items-center gap-2">
+                <div className="w-full flex items-center gap-2">
                   {!((researcher == 'false' && itemsSelecionados.length == 0) && itemsSelecionados.length == 0) && (
                     <div className={`pb-2 border-b-2 transition-all ${typeResult == 'researchers-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
                       <Button variant={typeResult == 'researchers-home' ? ('ghost') : ('ghost')} className={`${typeResult}`} onClick={() => onOpen('researchers-home')}>
@@ -275,48 +270,15 @@ export function ResultHome() {
                   {!((simcc && researcher == 'false' && itemsSelecionados.length == 0) && itemsSelecionados.length == 0 ) && (
                    searchType != 'name' && (
                     <div className={`pb-2 border-b-2 transition-all ${typeResult == 'institutions-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
-                    <Button variant={typeResult == 'institutions-home' ? ('ghost') : ('ghost')} className={`${typeResult}`} onClick={() => onOpen('institutions-home')}>
-                      <Building2 className="h-4 w-4" />
-                      Instituições
-                    </Button>
+                   
                   </div>
+
                    )
                   )}
                 </div>
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>
              </div>
-
-              <div className="hidden xl:flex xl:flex-nowrap gap-2">
-                <div className="md:flex md:flex-nowrap gap-2">
-                  <Link to={`${urlGeral}dictionary.pdf`} target="_blank">
-                  <Button variant="ghost" className="">
-                    <File size={16} className="" />
-                    Dicionário de dados
-                  </Button>
-                  </Link>
-                  <Button onClick={() => handleDownloadJson()} variant="ghost" className="">
-                    <Download size={16} className="" />
-                    Baixar resultado
-                  </Button>
-                </div>
-
-                <div>
-                  {typeResult == 'researchers-home' && (
-                    <Button onClick={() => onOpenModal('filters')} variant="ghost" className="">
-                      <SlidersHorizontal size={16} className="" />
-                      Filtros
-                    </Button>
-                  )}
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsOn(!isOn)}>
-                  {isOn ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
 
               <div className="block xl:hidden">
                 <DropdownMenu>

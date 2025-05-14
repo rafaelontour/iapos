@@ -133,8 +133,6 @@ export function SignInContent() {
                                             setLoggedIn(true)
                                             setUser(data[0]);
 
-
-
                                             history('/');
                                         }
                                     } catch (err) {
@@ -142,10 +140,6 @@ export function SignInContent() {
                                     }
                                 };
                                 fetchDataLogin();
-
-
-
-
                             } else {
                                 const fetchDataLogin = async () => {
                                     try {
@@ -165,8 +159,6 @@ export function SignInContent() {
                                             data[0].roles = data[0].roles || [];
                                             setLoggedIn(true)
                                             setUser(data[0]);
-
-
 
                                             history('/');
                                         }
@@ -339,42 +331,8 @@ export function SignInContent() {
             })
     };
 
-    const quotesWithAuthors = [
-        {
-            quote: 'A gente continua apaixonado pela Escola de Engenharia e pelas pessoas que flutuam nela',
-            author: 'Newton Urias Pinto, técnico em metalurgia aposentado. Na escola desde os 11 anos de idade.'
-        },
-        {
-            quote: 'Às vezes eles me perguntaravam onde que eu tinha estudado, simplesmente o nome da Escola quase que já bastava, né? Aquilo ali já falava tudo por você.',
-            author: 'Maria da Fátima Solis Ribeiro. Engenheira Civil formada pela Escola em 1986.'
-        },
-        {
-            quote: 'É difícil definir o que eu vou levar. Acho que o que pode resumir é minha formação. Enquanto pessoa e enquanto profissional.',
-            author: 'Paloma de Assis Ribeiro Batista, Aluna do 4º periodo de Engenharia de Produção e mebro da PJ Consultoria & Assesoria, empresa junior do seu curso. Na escola desde 2010.'
-        },
-        {
-            quote: 'Aqui a gente procura participar dos eventos, das coisas mesmo, por causa desse encontro com os colegas',
-            author: 'Iracema Alves Torres. Funcionária Técnico-administrativo do Departamento de Engenharia de Estruturas. Na escola desde 1991.'
-        },
-        {
-            quote: 'Assim que eu cheguei na Escola foi tipo amor à primeira vista',
-            author: 'Fátima Aparecida de Carvalho. Funcionária Técnico-administrativo do Departamento de Engenharia de Estruturas. Na escola desde 1983.'
-        },
-    ];
-
     // Estado para a frase e autor atuais
     const [currentQuote, setCurrentQuote] = useState({ quote: '', author: '' });
-
-    // Função para selecionar uma frase aleatória
-    const getRandomQuote = () => {
-        const randomIndex = Math.floor(Math.random() * quotesWithAuthors.length);
-        return quotesWithAuthors[randomIndex];
-    };
-
-    // Efeito para definir uma nova frase quando o componente é montado
-    useEffect(() => {
-        setCurrentQuote(getRandomQuote());
-    }, []);
 
     const navigate = useNavigate();
 
@@ -387,60 +345,36 @@ export function SignInContent() {
 
             <div
                 className="
-                    w-1/2 md:hidden h-full p-16 lg:flex justify-between flex-col 
-                    hidden bg-cover bg-center bg-no-repeat bg-eng-blue"
-                style={{ backgroundImage: `url(${img1})` }}>
-                {version ? (
-                    <Link to={'/'} className="w-fit">
-                        <div className="h-[28px]"><LogoConecteeWhite /></div>
-                    </Link>
-                ) : (
-                    <Link to={'/'} className="w-fit">
-                        <div className="h-[28px]"><LogoIaposWhite /></div></Link>
-                )}
-                <div>
-                    {version && (
-                        <div>
-                            <p className="font-medium text-white max-w-[500px]">
-                                "{currentQuote.quote}"
-                            </p>
-                            <p className="text-white mt-2 text-sm">{currentQuote.author}</p>
-                        </div>
-                    )}
-                </div>
+                    w-1/2 md:hidden h-full p-16
+                    lg:flex flex-col justify-start bg-zinc-500
+                    
+                "
+                
+            >
+                <a href="/">
+                    <img
+                        src="/logo_cimatec.png"
+                        alt="Logo cimatec"
+                        className="
+                            mt-8 w-[500px]
+                        "
+                    />
+                </a>
             </div>
 
             <div className="px-8 md:w-full lg:w-1/2 w-full h-full flex md:px-16 items-center justify-center flex-col">
                 <div className="max-w-[400px] w-full">
-                    <div className="flex items-center mb-8 lg:hidden">
-                        {version ? (
-                            <Link to={'/'} className="w-fit" onClick={() => handleClick()}>
-                                <div className="h-[28px]">
-                                    {(theme == 'dark') ? (<LogoConecteeWhite />) : (<LogoConectee />)}
-                                </div>
-                            </Link>
-                        ) : (
-                            <Link to={'/'} className="w-fit" onClick={() => handleClick()}>
-                                <div className="h-[28px]">
-                                    {(theme == 'dark') ? (<LogoIaposWhite />) : (<LogoIapos />)}
-                                </div>
-                            </Link>
-                        )}
-                    </div>
-                    <CardHeader className="p-0 pb-6">
-                        <CardTitle>Fazer login</CardTitle>
-                        <CardDescription className="pt-2">
-                            Para docentes e técnicos, acessar com o Minha UFMG. Usuários externos, fazer login com o google ou email cadastrado.
-                        </CardDescription>
-                    </CardHeader>
-
                     <div className="flex gap-3 flex-col">
                         <div>
 
-                            <a href={'/ufmg/'}><Button className=" w-full" variant={'outline'} ><div className="h-[12px]"><MUfmg /></div>Login com Minha UFMG
-                                <div className="relative float-right top-0 right-0">
-                                    <div className="bg-[#719CB8] w-2 rounded-full h-2 animate-ping float-right flex right-0">
-                                    </div><div className="bg-[#719CB8] w-2 rounded-full h-2"></div></div></Button></a>
+                        <h3
+                            className="
+                                text-6xl font-bold mb-5
+                                dark:text-white text-center
+                            "
+                        >
+                            Fazer Login
+                        </h3>
 
                         </div>
                         <Button className=" w-full" variant={'outline'} onClick={handleGoogleSignIn} ><GoogleLogo size={16} className="" /> Login com Google</Button>

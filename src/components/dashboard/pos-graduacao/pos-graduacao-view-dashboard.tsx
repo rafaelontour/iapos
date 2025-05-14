@@ -123,8 +123,8 @@ export function PosGraducaoView() {
   return (
     <>
       <Helmet>
-        <title>Pós-graduações | Módulo administrativo | {version ? ('Conectee') : ('Simcc')} </title>
-        <meta name="description" content={`Pós-graduações | Módulo administrativo | ${version ? ('Conectee') : ('Simcc')}`} />
+        <title>Pós-graduações | Módulo administrativo | Iapos </title>
+        <meta name="description" content={`Pós-graduações | Módulo administrativo | Iapos`} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 

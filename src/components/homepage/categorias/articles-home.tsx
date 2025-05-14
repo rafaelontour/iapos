@@ -156,9 +156,6 @@ const percentage = total > 0 ? (validDoiCount / total) * 100 : 0;
   return (
 
     <div className="grid grid-cols-1 gap-4 pb-16">
-      <HeaderResult />
-     
-
      <div className="mt-6">
      <FilterArticle
         onFilterUpdate={handleResearcherUpdate} />

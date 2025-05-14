@@ -684,8 +684,8 @@ const { onOpen } = useModal();
     <>
 
 <Helmet>
-          <title>Pós-graduações | {version ? ('Conectee'):('Simcc')}</title>
-          <meta name="description" content={`Pós-graduações | ${version ? ('Conectee'):('Simcc')}`} />
+          <title>Pós-graduações | Iapós</title>
+          <meta name="description" content={`Pós-graduações | Iapos`} />
           <meta name="robots" content="index, follow" />
         </Helmet>
       
@@ -714,61 +714,7 @@ const { onOpen } = useModal();
              )}
 <div>
 <div className="top-[68px] sticky z-[9] supports-[backdrop-filter]:dark:bg-neutral-900/60 supports-[backdrop-filter]:bg-neutral-50/60 backdrop-blur">
-<div className={`w-full px-8  border-b border-b-neutral-200 dark:border-b-neutral-800`}>
 
-
-        {isOn && (
-           <div className="w-full   flex justify-between items-center">
- 
-                      <div className="w-full pt-4  flex justify-between items-center">
-                          <Alert className="h-14 mt-4 mb-2  p-2 flex items-center justify-between  w-full">
-          <div className="flex items-center gap-2 w-full flex-1">
-            <MagnifyingGlass size={16} className=" whitespace-nowrap w-10" />
-            <Input onChange={(e) => setSearch(e.target.value)} value={search} type="text" className="border-0 w-full " />
-          </div>
-        </Alert>
-                      </div>
-                         </div>
-                    )}
-
-              
-           
-
-              <div className={`flex w-full flex-wrap pt-2 pb-3 justify-between `}>
-                    <div>
-
-                    </div>
-
-                    <div className="hidden xl:flex xl:flex-nowrap gap-2">
-                <div className="md:flex md:flex-nowrap gap-2">
-                  <Link to={`${urlGeral}dictionary.pdf`} target="_blank">
-                  <Button variant="ghost" className="">
-                    <File size={16} className="" />
-                    Dicionário de dados
-                  </Button>
-                  </Link>
-                  <Button onClick={() => handleDownloadJson()} variant="ghost" className="">
-                    <Download size={16} className="" />
-                    Baixar resultado
-                  </Button>
-                </div>
-
-                <div>
-                <Button onClick={() => onOpen('filters-graduate')}  variant="ghost" className="">
-                      <SlidersHorizontal size={16} className="" />
-                      Filtros
-                    </Button>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsOn(!isOn)}>
-                  {isOn ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-                  </div>
-</div>
 </div>
  <div className="mt-8 px-4 md:px-8">
  <div className={`${selectedAreas.length > 0 || selectedCities.length > 0 || selectedModalities.length > 0 || selectedTypes.length > 0 || selectedUniversities.length > 0 ? ('flex'):('hidden')} flex flex-wrap gap-3 mb-6 items-center`}>
@@ -849,61 +795,9 @@ const { onOpen } = useModal();
 ))}
 
 
-
-
 <Badge variant={'secondary'} onClick={() => clearFilters()} className=" rounded-md cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-900 border-0  py-2 px-3 font-normal flex items-center justify-center gap-2"><Trash size={12}/>Limpar filtros</Badge>
          
           </div>
-
-          <Alert className={`p-0 mb-6 bg-cover bg-no-repeat bg-center `}  >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total de programas
-                  </CardTitle>
-                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{filteredTotal.filter(item => item.visible == true).length}</div>
-                  <p className="text-xs text-muted-foreground">
-                    encontrados na busca
-                  </p>
-                </CardContent>
-              </Alert>
-
-              <Accordion defaultValue="item-1" type="single" collapsible className="hidden md:flex ">
-                            <AccordionItem value="item-1" className="w-full ">
-                              <div className="flex mb-2">
-                                <HeaderResultTypeHome title="Gráficos das pós-graduações" icon={<ChartBar size={24} className="text-gray-400" />}>
-                                </HeaderResultTypeHome>
-              
-                                <AccordionTrigger>
-              
-                                </AccordionTrigger>
-                              </div>
-                              <AccordionContent className="p-0">
-                              {loading ? (
-                                 <div className="grid gap-8">
-  <Skeleton className="rounded-md w-full h-[300px] " />
-{simcc && (
-    <Skeleton className="rounded-md w-full h-[300px] " />
-)}
-                                 </div>
-                  
-                  ) : (
-                    <div className="grid gap-8">
-                        <GraficoAreaProgramas group={filteredTotal}/>
-                       {simcc && (
-                                           <div className="grid md:grid-cols-2 gap-8">
-                                                <GraficoInstituicaoProgramas group={filteredTotal}/>
-                                                <GraficoRatingProgramas group={filteredTotal}/>
-                                           </div>
-                                           )}
-                    </div>
-                  )}
-                              </AccordionContent>
-
-                              </AccordionItem>
-                            </Accordion>
 
  <Accordion defaultValue="item-1" type="single" collapsible>
                 <AccordionItem value="item-1">

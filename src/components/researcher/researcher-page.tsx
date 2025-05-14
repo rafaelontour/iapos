@@ -543,8 +543,8 @@ export function ResearcherPage() {
   return (
     <html className="w-full grid grid-cols-1">
       <Helmet>
-        <title>{researcher_name} | {version ? ('Conectee') : ('Simcc')}</title>
-        <meta name="description" content={`${researcher_name} | ${version ? ('Conectee') : ('Simcc')}`} />
+        <title>{researcher_name} | Iapos</title>
+        <meta name="description" content={`${researcher_name} | Iapos`} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 

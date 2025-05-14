@@ -403,10 +403,10 @@ const { isMobile } = useSidebar()
 >
 
         <Header />
-        <div className="flex-grow flex relative h-full w-full  md:h-[calc(100vh - 40px)] -xl overflow-y-auto">
+        <div className="flex-grow flex relative h-full w-full">
 
           <div
-            className="flex-grow relative h-full w-full border-0 md:border  bg-neutral-50 md:h-[calc(100vh - 40px)] dark:bg-neutral-900 dark:border-neutral-800 md:rounded-xl overflow-y-auto"
+            className="flex-grow relative h-full w-full border-0 md:border  dark:bg-neutral-900 dark:border-neutral-800 md:rounded-xl overflow-y-auto"
           >
             <div className={`w-full h-full relative grid grid-cols-1 flex-grow `} {...props} />
 

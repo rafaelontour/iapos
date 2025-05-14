@@ -312,9 +312,9 @@ className="grid grid-cols-4 w-full gap-3"
         <div className="h-[200px] w-full bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${bg_popup})` }}></div>
 
        <div className="mt-4">
-       <h1 className=" text-2xl mb-2 font-medium">Apresentamos a plataforma {version ? ('Conectee') : ('Simcc')}</h1>
+       <h1 className=" text-2xl mb-2 font-medium">Apresentamos a plataforma Iapos</h1>
         <p className="text-sm text-justify text-gray-500">
-  O {version ? ('Conectee') : ('Simcc')} é uma plataforma inovadora desenvolvida para facilitar a busca, filtragem e análise das produções técnicas e bibliográficas dos pesquisadores.  
+  O Iapos é uma plataforma inovadora desenvolvida para facilitar a busca, filtragem e análise das produções técnicas e bibliográficas dos pesquisadores.  
   Com uma interface intuitiva, você pode explorar publicações, projetos e indicadores de impacto de forma rápida e eficiente.  
   Conecte-se ao conhecimento e descubra insights valiosos para suas pesquisas e colaborações!
 </p>

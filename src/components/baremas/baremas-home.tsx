@@ -165,8 +165,8 @@ export function BaremasHome() {
          {baremaSelecionado.length == 0 ? (
             <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8 ">
                 <Helmet>
-                <title>Baremas | Módulo administrativo | {version ? ('Conectee') : ('Simcc')} </title>
-                <meta name="description" content={`Baremas | Módulo administrativo | ${version ? ('Conectee') : ('Simcc')}`} />
+                <title>Baremas | Módulo administrativo | Iapos </title>
+                <meta name="description" content={`Baremas | Módulo administrativo | Iapos`} />
                 <meta name="robots" content="index, follow" />
             </Helmet>
                         <div className="w-full  gap-4">

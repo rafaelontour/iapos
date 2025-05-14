@@ -251,54 +251,9 @@ export default function SearchLayout({
 
       <SidebarProvider className="    " defaultOpen={true} open={isCollapsed} onOpenChange={() => setIsCollapsed((prev) => !prev)} >
 
-        <AppSidebar />
 
         <SidebarInset className=" ">
-          <main className="h-full flex flex-col flex-1 ">
-
-
-            <div className="flex p-8 pt-8 pb-2 h-[68px] items-center justify-between top-0 sticky z-[3] supports-[backdrop-filter]:bg-neutral-50/60 supports-[backdrop-filter]:dark:bg-neutral-900/60 backdrop-blur ">
-              <div className="flex  pb-0 items-center gap-2">
-                <SidebarTrigger className="" />
-                <Separator orientation="vertical" className="mr-2 h-4" />
-
-
-                <Breadcrumb>
-                  <BreadcrumbList>
-                    {breadcrumbItems.map((segment, index) => {
-                      const isLastItem = index === breadcrumbItems.length - 1;
-
-                      // Construir o caminho parcial para cada segmento
-                      const href = index === 0
-                        ? '/' // O primeiro item sempre vai para a página inicial
-                        : `/${pathSegments.slice(0, index + 1).join('/')}`;
-
-                      return (
-                        <React.Fragment key={index}>
-                          <BreadcrumbItem className="hidden md:block capitalize">
-                            {/* Se for o último item, não criamos um link, é apenas texto */}
-                            {isLastItem ? (
-                              <span>{segment}</span>
-                            ) : (
-                              <BreadcrumbLink to={href} className="capitalize">
-                                {segment}
-                              </BreadcrumbLink>
-                            )}
-                          </BreadcrumbItem>
-                          {!isLastItem && <BreadcrumbSeparator className="hidden md:block" />}
-                        </React.Fragment>
-                      );
-                    })}
-                  </BreadcrumbList>
-                </Breadcrumb>
-              </div>
-
-              <div className="flex items-center gap-2">
-
-
-              </div>
-            </div>
-
+          <main className="h-full flex flex-col flex-1">
             <div className="h-full ">
               {children}
             </div>

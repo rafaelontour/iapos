@@ -301,8 +301,8 @@ export function GeralViewDashboard() {
   return (
     <div className="w-full relative">
       <Helmet>
-        <title>Módulo administrativo | {version ? ('Conectee') : ('Simcc')} </title>
-        <meta name="description" content={`Módulo administrativo | ${version ? ('Conectee') : ('Simcc')}`} />
+        <title>Módulo administrativo | Iapos </title>
+        <meta name="description" content={`Módulo administrativo | Iapos`} />
         <meta name="robots" content="index, follow" />
       </Helmet>
       <main className="flex flex-1 flex-col gap-4  md:gap-8 ">

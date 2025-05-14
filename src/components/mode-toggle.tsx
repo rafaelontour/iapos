@@ -12,25 +12,45 @@ import {
 } from "../components/ui/dropdown-menu"
 import { useContext, useState } from "react"
 import { UserContext } from "../context/context"
+import { Tooltip, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
+import { TooltipContent } from "@radix-ui/react-tooltip"
 
 export function ModeToggle() {
   const { setTheme, theme } = useTheme()
   const {navbar} = useContext(UserContext)
 
-  
-
   return (
-    <Button onClick={() => {
-      if(theme == 'light') {
-        setTheme('dark')
-      } else {
-        setTheme('light')
-      }
-    }} size='icon' variant="outline" className={` relative h-8 w-8`} >
-    <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-    <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-   
-  </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button onClick={() => {
+            if(theme == 'light') {
+              setTheme('dark')
+            } else {
+              setTheme('light')
+            }
+          }}
+            size='icon'
+            variant="outline"
+            className={`relative h-8 w-8`}
+          >
+          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          
+            </Button>
+        </TooltipTrigger>
+        <TooltipContent
+          className="
+            mt-3 mr-3 py-2 px-3
+            rounded-md border text-sm z-[999999]
+            bg-white text-slate-900 shadow-md
+            dark:bg-slate-950 dark:text-slate-50 dark:border-black
+          "
+        >
+          Mudar tema
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
    
   )
 }

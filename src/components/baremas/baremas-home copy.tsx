@@ -881,8 +881,8 @@ export function BaremasHome() {
     return (
         <>
             <Helmet>
-                <title>Baremas | Módulo administrativo | {version ? ('Conectee') : ('Simcc')} </title>
-                <meta name="description" content={`Baremas | Módulo administrativo | ${version ? ('Conectee') : ('Simcc')}`} />
+                <title>Baremas | Módulo administrativo | Iapos </title>
+                <meta name="description" content={`Baremas | Módulo administrativo | Iapos`} />
                 <meta name="robots" content="index, follow" />
             </Helmet>
             {isModalOpen && (
