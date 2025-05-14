@@ -404,7 +404,18 @@ export function Search() {
                  )}
 
                 </div>
-                <Input onClick={() => handlePopUppesquisa()} onChange={(e) => setInput(e.target.value)} value={input} type="text" className="border-0 w-full  flex flex-1" />
+                <div className="relative">
+                  <div
+                    className="
+                      absolute w-[300px] h-full dark:bg-[#0A0A0A] bg-white
+                      pointer-events-none flex items-center
+                      pl-4
+                    "
+                  >
+                    <span className="text-zinc-400 text-md">Clique aqui e pesquise</span>
+                  </div>
+                  <Input onClick={() => handlePopUppesquisa()} onChange={(e) => setInput(e.target.value)} value={input} type="text" className="border-0 w-full flex flex-1" />
+                  </div>
               </div>
 
               <div className="w-fit flex gap-2">
