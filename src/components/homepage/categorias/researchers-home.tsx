@@ -1146,7 +1146,6 @@ export function ResearchersHome() {
                   </HeaderResultTypeHome>
 
                   <AccordionTrigger>
-
                   </AccordionTrigger>
                 </div>
                 <AccordionContent className="p-0">
@@ -1166,9 +1165,9 @@ export function ResearchersHome() {
             </Accordion>
           )}
   { searchType !== 'name' && searchType !== 'area' && (
-             <Accordion defaultValue="item-1" type="single" collapsible className="hidden md:flex ">
+             <Accordion defaultValue="item-1" type="single" collapsible className="hidden mt-4 md:flex ">
                         <AccordionItem value="item-1" className="w-full ">
-                          <div className="flex mb-2">
+                          <div className="flex mb-4">
                             <HeaderResultTypeHome title="Gráficos dos pesquisadores" icon={<ChartBar size={24} className="text-gray-400" />}>
                             </HeaderResultTypeHome>
                           </div>

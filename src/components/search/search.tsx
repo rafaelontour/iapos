@@ -428,6 +428,7 @@ export function Search() {
                     } else (
                       history('/resultados')
                     )
+                    
 
                   }}><Trash size={16} /></Button>
                 )}
