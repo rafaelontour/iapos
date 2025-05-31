@@ -41,5 +41,16 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react-map-gl'], // Força o Vite a otimizar dependências de forma eficaz
+    exclude: [
+      "@tabler/icons-react",
+      "react-cookie",
+      "lodash",
+      "axios",
+      "next-themes",
+      "sonner",
+      "react-firebase-hooks/auth",
+      "react-qr-code",
+      // adicione aqui os outros nomes com erro
+    ],
   },
 });
