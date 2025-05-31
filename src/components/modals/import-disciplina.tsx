@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { UserContext } from "../../context/context";
-import * as XLSX from 'xlsx';
 import { useDropzone } from 'react-dropzone';
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -47,7 +46,7 @@ export function ImportDisciplina() {
         setDepId(dataModal.dep_id)
     }, [dataModal]);
 
-    const onDrop = useCallback((acceptedFiles: any) => {
+    {/*const onDrop = useCallback((acceptedFiles: any) => {
         handleFileUpload(acceptedFiles);
     }, []);
 
@@ -142,7 +141,7 @@ export function ImportDisciplina() {
             setData(jsonData);
         };
         reader.readAsArrayBuffer(file);
-    };
+    }; */}
 
     useEffect(() => {
 
@@ -231,6 +230,7 @@ export function ImportDisciplina() {
                     </DialogDescription>
                 </DialogHeader>
 
+                {/*
                 <div className="mb-4">
                     <div {...getRootProps()} className="border-dashed mb-6 flex-col border border-neutral-300 p-6 text-center rounded-md text-neutral-400 text-sm cursor-pointer transition-all gap-3 w-full flex items-center justify-center hover:bg-neutral-100 mt-4">
                         <input {...getInputProps()} />
@@ -242,7 +242,9 @@ export function ImportDisciplina() {
                         ) : (
                             <p>Arraste e solte o arquivo .xls aqui ou clique para selecionar o arquivo</p>
                         )}
-                    </div>
+                    </div> 
+
+                
 
                     {fileInfo.name && (
                         <aside>
@@ -254,7 +256,7 @@ export function ImportDisciplina() {
                             </ul>
                         </aside>
                     )}
-                </div>
+                </div>*/}
 
                 {uploadProgress > 0 && (
                     <Progress value={uploadProgress} className="w-full" />

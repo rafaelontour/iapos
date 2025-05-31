@@ -5,17 +5,20 @@ import packageJson from './package.json';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()], // Remova o 'removeConsole()' para teste
+  plugins: [
+    react(),
+  ],
   define: {
-    'process.env': process.env,
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(packageJson.version),
+    // Exponha apenas as variáveis necessárias
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL),
   },
   server: {
     host: true,
     port: 8080,
   },
   esbuild: {
-    pure: ["console.log"], // Remove console.log durante o build
+    pure: ['console.log'], // Remove console.log durante o build
   },
   build: {
     outDir: 'dist',
@@ -33,9 +36,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      'react-map-gl': path.resolve(__dirname, 'node_modules/react-map-gl/dist/mapbox.js'), // Forçando o caminho correto
     },
   },
   optimizeDeps: {
-    include: ["next-themes"],
+    include: ['react-map-gl'], // Força o Vite a otimizar dependências de forma eficaz
   },
 });

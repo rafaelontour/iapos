@@ -1,12 +1,11 @@
-import { ArrowUUpLeft,  FileXls, Upload } from "phosphor-react";
+import { ArrowUUpLeft, FileXls, Upload } from "phosphor-react";
 import { useModal } from "../hooks/use-modal-store";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useCallback, useContext, useState } from "react";
 import { toast } from "sonner"
 import { UserContext } from "../../context/context";
-import * as XLSX from 'xlsx';
-import {useDropzone} from 'react-dropzone'
+import { useDropzone } from 'react-dropzone'
 
 interface Patrimonio {
     id: string
@@ -33,8 +32,8 @@ interface Patrimonio {
 import {
     Sheet,
     SheetContent,
-  
-  } from "../../components/ui/sheet"
+
+} from "../../components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { ArrowRight, Info, LoaderCircle, X } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
@@ -44,14 +43,15 @@ import { Link } from "react-router-dom";
 
 export function ImportBolsistas() {
     const { onClose, isOpen, type: typeModal } = useModal();
-    
+
     const isModalOpen = (isOpen && typeModal === 'import-bolsistas')
 
-    const {urlGeralAdm} = useContext(UserContext)
+    const { urlGeralAdm } = useContext(UserContext)
     const [fileInfo, setFileInfo] = useState({ name: '', size: 0 });
 
     const [data, setData] = useState<Patrimonio[]>([]);
 
+    {/*
     const onDrop = useCallback((acceptedFiles: any) => {
         handleFileUpload(acceptedFiles);
     }, []);
@@ -60,7 +60,8 @@ export function ImportBolsistas() {
         onDrop,
     });
   
-    const handleFileUpload = (files: any) => {
+    
+        const handleFileUpload = (files: any) => {
         const uploadedFile = files[0];
         if (uploadedFile) {
             setFileInfo({
@@ -71,6 +72,7 @@ export function ImportBolsistas() {
         }
     };
   
+    
     const readExcelFile = (file: File) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -146,8 +148,8 @@ export function ImportBolsistas() {
             setData(jsonData);
         };
         reader.readAsArrayBuffer(file);
-    };
-  
+    }; */}
+
 
     console.log(data)
     const [uploadProgress, setUploadProgress] = useState(false);
@@ -165,11 +167,11 @@ export function ImportBolsistas() {
                 });
                 return;
             }
-    
+
             setUploadProgress(true);
-    
+
             let urlPatrimonioInsert = `${urlGeralAdm}ResearcherRest/InsertGrant`;
-    
+
             const response = await fetch(urlPatrimonioInsert, {
                 mode: 'cors',
                 method: 'POST',
@@ -183,7 +185,7 @@ export function ImportBolsistas() {
                 },
                 body: JSON.stringify(data),
             });
-    
+
             if (response.ok) {
                 toast("Dados enviados com sucesso", {
                     description: "Todos os dados foram enviados.",
@@ -192,7 +194,7 @@ export function ImportBolsistas() {
                         onClick: () => console.log("Fechar"),
                     },
                 });
-    
+
                 setData([]);
                 setFileInfo({
                     name: '',
@@ -201,7 +203,7 @@ export function ImportBolsistas() {
             } else {
                 throw new Error('Erro ao enviar os dados.');
             }
-    
+
         } catch (error) {
             console.error('Erro ao processar a requisição:', error);
             toast("Erro ao processar a requisição", {
@@ -215,48 +217,49 @@ export function ImportBolsistas() {
             setUploadProgress(false);
         }
     };
-    
+
 
     console.log(data)
 
     return (
         <Sheet open={isModalOpen} onOpenChange={onClose}>
-        <SheetContent className={`p-0 dark:bg-neutral-900 dark:border-gray-600 min-w-[50vw]`}>
-        <DialogHeader className="h-[50px] px-4 justify-center border-b dark:border-b-neutral-600">
- 
- <div className="flex items-center gap-3">
- <TooltipProvider>
- <Tooltip>
-  <TooltipTrigger asChild>
-  <Button className="h-8 w-8" variant={'outline'}  onClick={() => onClose()} size={'icon'}><X size={16}/></Button>
-  </TooltipTrigger>
-  <TooltipContent> Fechar</TooltipContent>
- </Tooltip>
- </TooltipProvider>
- 
- <div className="flex ml-auto items-center w-full justify-between">
- 
-   <div className="flex ml-auto items-center gap-3">
- 
-  
-      </div>
- </div>
- 
- </div>
-  
- </DialogHeader>
+            <SheetContent className={`p-0 dark:bg-neutral-900 dark:border-gray-600 min-w-[50vw]`}>
+                <DialogHeader className="h-[50px] px-4 justify-center border-b dark:border-b-neutral-600">
 
- <ScrollArea className="relative pb-4 whitespace-nowrap h-[calc(100vh-50px)] p-8 ">
-        <div className="mb-8">
-                      <p className="max-w-[750px] mb-2 text-lg font-light text-foreground">
-                      Pesquisadores
+                    <div className="flex items-center gap-3">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button className="h-8 w-8" variant={'outline'} onClick={() => onClose()} size={'icon'}><X size={16} /></Button>
+                                </TooltipTrigger>
+                                <TooltipContent> Fechar</TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+
+                        <div className="flex ml-auto items-center w-full justify-between">
+
+                            <div className="flex ml-auto items-center gap-3">
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </DialogHeader>
+
+                <ScrollArea className="relative pb-4 whitespace-nowrap h-[calc(100vh-50px)] p-8 ">
+                    <div className="mb-8">
+                        <p className="max-w-[750px] mb-2 text-lg font-light text-foreground">
+                            Pesquisadores
                         </p>
 
                         <h1 className="max-w-[500px] text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] md:block">
-                          Atualizar bolsistas CNPq
+                            Atualizar bolsistas CNPq
                         </h1>
-                        <Link to={'http://www.bi.cnpq.br/painel/mapa-fomento-cti/'} target="_blank"  className="inline-flex mt-2 items-center rounded-lg  bg-neutral-100 dark:bg-neutral-700  gap-2 mb-3 px-3 py-1 text-sm font-medium"><Info size={12}/><div className="h-full w-[1px] bg-neutral-200 dark:bg-neutral-800"></div>Saiba como extrair os bolsistas CNPq<ArrowRight size={12}/></Link>
-                      </div>
+                        <Link to={'http://www.bi.cnpq.br/painel/mapa-fomento-cti/'} target="_blank" className="inline-flex mt-2 items-center rounded-lg  bg-neutral-100 dark:bg-neutral-700  gap-2 mb-3 px-3 py-1 text-sm font-medium"><Info size={12} /><div className="h-full w-[1px] bg-neutral-200 dark:bg-neutral-800"></div>Saiba como extrair os bolsistas CNPq<ArrowRight size={12} /></Link>
+                    </div>
+                    {/*
                 <div className="">
                 
 
@@ -297,21 +300,23 @@ export function ImportBolsistas() {
                     </div>
                 )}
 
-<div className="flex items-center justify-between">
-    <div className="text-sm font-gray-500">
-    {uploadProgress ? ('Isso pode demorar bastante, não feche a página.'):('')}
-    </div>
-<Button onClick={() => handleSubmitPatrimonio()} className="ml-auto flex mt-3">
-                        {uploadProgress ? (<LoaderCircle size={16} className="an animate-spin" />):(<Upload size={16} className="" />)}  {uploadProgress ? ('Atualizando dados'):('Atualizar dados')} 
-                    </Button>
+                    */}
 
-</div>
-                
+                    <div className="flex items-center justify-between">
+                        <div className="text-sm font-gray-500">
+                            {uploadProgress ? ('Isso pode demorar bastante, não feche a página.') : ('')}
+                        </div>
+                        <Button onClick={() => handleSubmitPatrimonio()} className="ml-auto flex mt-3">
+                            {uploadProgress ? (<LoaderCircle size={16} className="an animate-spin" />) : (<Upload size={16} className="" />)}  {uploadProgress ? ('Atualizando dados') : ('Atualizar dados')}
+                        </Button>
+
+                    </div>
+
                 </ScrollArea>
-     
+
 
                 <div></div>
-                </SheetContent>
-                </Sheet>
+            </SheetContent>
+        </Sheet>
     )
 }

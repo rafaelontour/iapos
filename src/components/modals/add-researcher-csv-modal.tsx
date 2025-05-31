@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useCallback, useContext, useState } from "react";
 import { toast } from "sonner"
 import { UserContext } from "../../context/context";
-import * as XLSX from 'xlsx';
 import { useDropzone } from 'react-dropzone'
 import { Sheet, SheetContent } from "../ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -19,7 +18,7 @@ interface Bolsista {
     lattes_id: string
     researcher_id: string
     institution_id: string
-    cpf:string
+    cpf: string
 }
 
 export function AddResearcherCsvModal() {
@@ -32,6 +31,7 @@ export function AddResearcherCsvModal() {
 
     const [data, setData] = useState<Bolsista[]>([]);
 
+    {/*
     const onDrop = useCallback((acceptedFiles: any) => {
         handleFileUpload(acceptedFiles);
     }, []);
@@ -96,7 +96,7 @@ export function AddResearcherCsvModal() {
         };
         reader.readAsArrayBuffer(file);
     };
-
+    */}
     const [uploadProgress, setUploadProgress] = useState(false);
 
     const handleSubmitBolsista = async () => {
@@ -199,6 +199,8 @@ export function AddResearcherCsvModal() {
                         </h1>
 
                     </div>
+
+                    {/*
                     <div className="">
                         <div {...getRootProps()} className="border-dashed mb-6 flex-col border border-neutral-300 p-6 text-center rounded-md text-neutral-400 text-sm  cursor-pointer transition-all gap-3  w-full flex items-center justify-center hover:bg-neutral-100 mt-4">
                             <input {...getInputProps()} />
@@ -223,6 +225,7 @@ export function AddResearcherCsvModal() {
                             )}
                         </div>
                     </div>
+                    */}
 
                     {data.length > 0 && (
                         <div className="">
