@@ -12,7 +12,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
 import { Alert } from "../ui/alert";
 import { ChartBar, FadersHorizontal, MagnifyingGlass, Rows, SquaresFour } from "phosphor-react";
 import { Input } from "../ui/input";
-import { ArrowRight, ChevronDown, ChevronLeft, ChevronUp, Download, File, GraduationCap, Info, Plus, SlidersHorizontal, Trash, X } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronUp, Download, File, GraduationCap, Info, SlidersHorizontal, Trash, X } from "lucide-react";
 
 import bg_graduate from '../../assets/bg_graduate.png'
 import { Helmet } from "react-helmet";
@@ -39,8 +39,6 @@ import { CardContent, CardHeader, CardTitle } from "../ui/card";
 import { GraficoAreaProgramas } from "./graficos-tabelas/grafico-area-programa";
 import { GraficoInstituicaoProgramas } from "./graficos-tabelas/grafico-instituicoes-programas";
 import { GraficoRatingProgramas } from "./graficos-tabelas/grafico-rating-programas";
-import { Keepo } from "../dashboard/builder-page/builder-page";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
 
 export interface GraduateProgram {
   area: string;
@@ -80,7 +78,7 @@ type FiltersModalProps = {
 export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersModalProps) {
   const { onClose, isOpen, type: typeModal } = useModal();
   const isModalOpen = isOpen && typeModal === "filters-graduate";
-const {version} = useContext(UserContext)
+
   const queryUrl = useQuery();
   const navigate = useNavigate();
 
@@ -334,7 +332,7 @@ const {version} = useContext(UserContext)
           <ScrollArea className="relative whitespace-nowrap h-[calc(100vh-50px)] p-8 w-full ">
           <div>
               <p className="max-w-[750px] mb-2 text-lg font-light text-foreground">
-                Pós-graduações
+                Pesquisadores
               </p>
 
               <h1 className="max-w-[500px] text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] mb-8 md:block">
@@ -388,8 +386,7 @@ const {version} = useContext(UserContext)
     </AccordionContent>
   </AccordionItem>
 
-{!version && (
-    <AccordionItem value="item-3">
+  <AccordionItem value="item-3">
     <div className="flex items-center justify-between">
     <Label>Cidade</Label>
     <div className="flex gap-2 items-center">
@@ -432,42 +429,38 @@ const {version} = useContext(UserContext)
                   </ToggleGroup>
     </AccordionContent>
   </AccordionItem>
-)}
 
- {!version && (
-   <AccordionItem value="item-4">
-   <div className="flex items-center justify-between">
-   <Label>Universidade</Label>
-   <div className="flex gap-2 items-center">
+  <AccordionItem value="item-4">
+    <div className="flex items-center justify-between">
+    <Label>Universidade</Label>
+    <div className="flex gap-2 items-center">
 
 {selectedUniversities.length > 0 && (
- <Button
- onClick={() => setSelectedUniversities([])}
-  className="" variant={'destructive'} size={'icon'}><Trash size={16}/></Button>
+  <Button
+  onClick={() => setSelectedUniversities([])}
+   className="" variant={'destructive'} size={'icon'}><Trash size={16}/></Button>
 )}
 <AccordionTrigger>
 
 </AccordionTrigger>
 </div>
-   </div>
-   <AccordionContent>
-   <ToggleGroup
-                   type="multiple"
-                   variant={'outline'}
-                   value={selectedUniversities}
-                   onValueChange={handleUniversityToggle}
-                   className="aspect-auto flex flex-wrap items-start justify-start gap-2"
-                 >
-                   {uniqueUniversities.map((university) => (
-                     <ToggleGroupItem key={university} value={university} className="px-3 py-2">
-                       {university}
-                     </ToggleGroupItem>
-                   ))}
-                 </ToggleGroup>
-   </AccordionContent>
- </AccordionItem>
-
- )}
+    </div>
+    <AccordionContent>
+    <ToggleGroup
+                    type="multiple"
+                    variant={'outline'}
+                    value={selectedUniversities}
+                    onValueChange={handleUniversityToggle}
+                    className="aspect-auto flex flex-wrap items-start justify-start gap-2"
+                  >
+                    {uniqueUniversities.map((university) => (
+                      <ToggleGroupItem key={university} value={university} className="px-3 py-2">
+                        {university}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+    </AccordionContent>
+  </AccordionItem>
 
   <AccordionItem value="item-5">
     <div className="flex items-center justify-between">
@@ -575,7 +568,7 @@ const { onOpen } = useModal();
   const urlGraduateProgram = `${urlGeral}graduate_program_profnit?id=`;
 
   console.log(urlGraduateProgram)
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
 
   useEffect(() => {
@@ -656,7 +649,7 @@ const { onOpen } = useModal();
   };
 
   const items = Array.from({ length: 12 }, (_, index) => (
-    <Skeleton key={index} className="w-full rounded-md h-[250px]" />
+    <Skeleton key={index} className="w-full rounded-md h-[300px]" />
   ));
 
   const [typeVisu, setTypeVisu] = useState('block');
@@ -685,118 +678,20 @@ const { onOpen } = useModal();
   const getColorByArea = (area: string): string =>
     qualisColor.get(normalizeArea(area)) || 'bg-gray-500';
 
-  const location = useLocation();
-
-  const navigate = useNavigate();
-
-  const handleVoltar = () => {
-
-    const currentPath = location.pathname;
-    const hasQueryParams = location.search.length > 0;
-    
-    if (hasQueryParams) {
-      // Se tem query parameters, remove apenas eles
-      navigate(currentPath);
-    } else {
-      // Se não tem query parameters, remove o último segmento do path
-      const pathSegments = currentPath.split('/').filter(segment => segment !== '');
-      
-      if (pathSegments.length > 1) {
-        pathSegments.pop();
-        const previousPath = '/' + pathSegments.join('/');
-        navigate(previousPath);
-      } else {
-        // Se estiver na raiz ou com apenas um segmento, vai para raiz
-        navigate('/');
-      }
-    }
-  };
-
-  const [count, setCount] = useState(24)
-
-  
-const db = getFirestore();
-
-const fetchAvatars = async () => {
-  const snapshot = await getDocs(collection(db, "construtor-pagina"));
-  const avatarMap: Record<string, string> = {};
-
-  snapshot.forEach(doc => {
-    const data = doc.data() as Partial<Keepo>;
-    const avatar = data.profile_info?.avatar || "";
-    avatarMap[doc.id] = avatar;
-  });
-
-  return avatarMap;
-};
-
-const [avatarMap, setAvatarMap] = useState<Record<string, string>>({});
-
-useEffect(() => {
-  fetchAvatars().then(setAvatarMap);
-}, []);
 
 
   return (
     <>
 
 <Helmet>
-          <title>Pós-graduações | {version ? ('Conectee'):('Simcc')}</title>
-          <meta name="description" content={`Pós-graduações | ${version ? ('Conectee'):('Simcc')}`} />
+          <title>Pós-graduações | Iapós</title>
+          <meta name="description" content={`Pós-graduações | Iapos`} />
           <meta name="robots" content="index, follow" />
         </Helmet>
       
         <>
           {programSelecionado.length == 0 ? (
             <div>
-              <div className="w-full  gap-4 p-4 md:p-8 ">
-                          <div className="flex items-center gap-4">
-                        
-                          <Button onClick={handleVoltar } variant="outline" size="icon" className="h-7 w-7">
-                              <ChevronLeft className="h-4 w-4" />
-                              <span className="sr-only">Voltar</span>
-                            </Button>
-                        
-                            <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                            Pós-graduação
-                            </h1>
-                           
-              
-                              
-                          
-                            <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                            
-                             
-                        
-                           
-                            </div>
-                          </div>
-              
-                          </div>
-
-                          {!simcc && (
-                            <div className="justify-center px-4 md:px-8 w-full mx-auto flex max-w-[980px] flex-col items-center gap-2 pb-8  md:pb-8  " >
-                                    <Link to={'/informacoes'}  className="inline-flex z-[2] items-center rounded-lg  bg-neutral-100 dark:bg-neutral-700  gap-2 mb-3 px-3 py-1 text-sm font-medium"><Info size={12}/><div className="h-full w-[1px] bg-neutral-200 dark:bg-neutral-800"></div>Saiba o que é e como utilizar a plataforma<ArrowRight size={12}/></Link>
-                                    
-                                  
-                                          <h1 className="z-[2] text-center max-w-[800px] text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]  md:block mb-4 ">
-                                          Veja as {" "}
-                                          <strong className="bg-eng-blue  rounded-md px-3 pb-2 text-white font-medium">
-                                            {" "}
-                                           informações
-                                          </strong>{" "}
-                                         dos programas de pós-graduação
-                                        </h1>
-                               
-                                        <p className="max-w-[750px] text-center text-lg font-light text-foreground"></p>
-                            
-                            
-                            
-                                          
-                            
-                                         
-                                      </div>
-                          )}
               {simcc && (
                  <div className="w-full hidden xl:flex h-[calc(100vh-68px)] overflow-hidden items-center absolute   "><BahiaMap setSelectedCities={setSelectedCities}/></div>
               )}
@@ -804,7 +699,7 @@ useEffect(() => {
              {simcc && (
                <div className="bg-cover w-fit pl-8 bg-bottom bg-no-repeat" >
                <div className="justify-center h-[calc(100vh-124px)] z-[9] m w-full  flex max-w-[980px] flex-col items-center lg:items-start  gap-2 py-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20" >
-                 <Link to={'/informacoes'} className="inline-flex z-[2] lg:w-fit  w-fit items-center rounded-lg  bg-neutral-100 dark:bg-neutral-700  gap-2  px-3 py-1 text-sm font-medium"><Info size={12} /><div className="h-full w-[1px] bg-neutral-200 dark:bg-neutral-800"></div>Saiba o que é e como utilizar a plataforma<ArrowRight size={12} /></Link>
+                 <Link to={'/informacoes'} className="inline-flex z-[2] lg:w-fit  w-fit items-center rounded-lg  bg-neutral-100 dark:bg-neutral-700  gap-2  px-3 py-1 text-sm font-medium"><Info size={12} /><div className="h-full w-[1px] bg-neutral-200 dark:bg-neutral-800"></div>Saiba como utilizar a plataforma<ArrowRight size={12} /></Link>
 
                  <h1 className="lg:w-fit lg:text-left text-center max-w-[600px] text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1] md:block mb-4">
   Selecione uma cidade ou{" "}
@@ -819,63 +714,7 @@ useEffect(() => {
              )}
 <div>
 <div className="top-[68px] sticky z-[9] supports-[backdrop-filter]:dark:bg-neutral-900/60 supports-[backdrop-filter]:bg-neutral-50/60 backdrop-blur">
-<div className={`w-full px-8  border-b border-b-neutral-200 dark:border-b-neutral-800`}>
 
-
-        {isOn && (
-           <div className="w-full   flex justify-between items-center">
- 
-                      <div className="w-full pt-4  flex justify-between items-center">
-                          <Alert className="h-14 mt-4 mb-2  p-2 flex items-center justify-between  w-full">
-          <div className="flex items-center gap-2 w-full flex-1">
-            <MagnifyingGlass size={16} className=" whitespace-nowrap w-10" />
-            <Input onChange={(e) => setSearch(e.target.value)} value={search} type="text" className="border-0 w-full " />
-          </div>
-        </Alert>
-                      </div>
-                         </div>
-                    )}
-
-              
-           
-
-              <div className={`flex w-full flex-wrap pt-2 pb-3 justify-between `}>
-                    <div>
-
-                    </div>
-
-                    <div className="hidden xl:flex xl:flex-nowrap gap-2">
-                <div className="md:flex md:flex-nowrap gap-2">
-                  <Link to={`${urlGeral}dictionary.pdf`} target="_blank">
-                  <Button variant="ghost" className="">
-                    <File size={16} className="" />
-                    Dicionário de dados
-                  </Button>
-                  </Link>
-                  <Button onClick={() => handleDownloadJson()} variant="ghost" className="">
-                    <Download size={16} className="" />
-                    Baixar resultado
-                  </Button>
-                </div>
-
-                <div>
-                <Button onClick={() => onOpen('filters-graduate')}  variant="ghost" className="">
-                      <SlidersHorizontal size={16} className="" />
-                      Filtros
-                    </Button>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsOn(!isOn)}>
-                  {isOn ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-
-              
-                  </div>
-</div>
 </div>
  <div className="mt-8 px-4 md:px-8">
  <div className={`${selectedAreas.length > 0 || selectedCities.length > 0 || selectedModalities.length > 0 || selectedTypes.length > 0 || selectedUniversities.length > 0 ? ('flex'):('hidden')} flex flex-wrap gap-3 mb-6 items-center`}>
@@ -956,67 +795,13 @@ useEffect(() => {
 ))}
 
 
-
-
 <Badge variant={'secondary'} onClick={() => clearFilters()} className=" rounded-md cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-900 border-0  py-2 px-3 font-normal flex items-center justify-center gap-2"><Trash size={12}/>Limpar filtros</Badge>
          
           </div>
 
-          <Alert className={`p-0 mb-6 bg-cover bg-no-repeat bg-center `}  >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total de programas
-                  </CardTitle>
-                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{filteredTotal.filter(item => item.visible == true).length}</div>
-                  <p className="text-xs text-muted-foreground">
-                    encontrados na busca
-                  </p>
-                </CardContent>
-              </Alert>
-
-            {!version && (
-                <Accordion defaultValue="item-1" type="single" collapsible className="hidden md:flex ">
-                <AccordionItem value="item-1" className="w-full ">
-                  <div className="flex mb-2">
-                    <HeaderResultTypeHome title="Gráficos das pós-graduações" icon={<ChartBar size={24} className="text-gray-400" />}>
-                    </HeaderResultTypeHome>
-  
-                    <AccordionTrigger>
-  
-                    </AccordionTrigger>
-                  </div>
-                  <AccordionContent className="p-0">
-                  {loading ? (
-                     <div className="grid gap-8">
-<Skeleton className="rounded-md w-full h-[300px] " />
-{simcc && (
-<Skeleton className="rounded-md w-full h-[300px] " />
-)}
-                     </div>
-      
-      ) : (
-        <div className="grid gap-8">
-            <GraficoAreaProgramas group={filteredTotal}/>
-           {simcc && (
-                               <div className="grid md:grid-cols-2 gap-8">
-                                    <GraficoInstituicaoProgramas group={filteredTotal}/>
-                                    <GraficoRatingProgramas group={filteredTotal}/>
-                               </div>
-                               )}
-        </div>
-      )}
-                  </AccordionContent>
-
-                  </AccordionItem>
-                </Accordion>
-            )}
-
  <Accordion defaultValue="item-1" type="single" collapsible>
                 <AccordionItem value="item-1">
-                  <div className="flex mb-2 mt-4">
+                  <div className="flex mb-2">
                     <HeaderResultTypeHome title="Programas de pós-graduação" icon={<GraduationCap size={24} className="text-gray-400" />}>
                       <div className="hidden md:flex gap-3 mr-3">
                         <Button onClick={() => setTypeVisu('rows')} variant={typeVisu === 'block' ? 'ghost' : 'outline'} size={'icon'}>
@@ -1050,8 +835,7 @@ useEffect(() => {
                           </Masonry>
                         </ResponsiveMasonry>
                       ) : (
-                       <div>
-                         <ResponsiveMasonry
+                        <ResponsiveMasonry
                         columnsCountBreakPoints={{
                           350: 1,
                           750: 2,
@@ -1060,50 +844,37 @@ useEffect(() => {
                           1700: 4
                         }}
                       >
-                        <Masonry gutter="16px" className="pb-4 md:pb-8 z-[1]">
+                        <Masonry gutter="16px" className=" z-[1] w-full">
                           {filteredTotal
-                            .filter(item => item.visible == true) 
-                            .slice(0, count) // Filtra os itens onde `visible` é `true`
-                            .map((props, index) => {
-                              const id = props.graduate_program_id 
-                              const avatar = avatarMap[id] || "";
-
-                              return (
-                                <ProgramItem
-                                  key={index} // Adiciona uma chave para cada item
-                                  area={props.area}
-                                  institution={props.institution}
-                                  researchers={props.researchers}
-                                  code={props.code}
-                                  graduate_program_id={props.graduate_program_id}
-                                  modality={props.modality}
-                                  name={props.name}
-                                  rating={props.rating}
-                                  type={props.type}
-                                  city={props.city}
-                                  state={props.state}
-                                  instituicao={props.instituicao}
-                                  url_image={props.url_image}
-                                  region={props.region}
-                                  sigla={props.sigla}
-                                  acronym={props.acronym}
-                                  visible={props.visible}
-                                  qtd_discente={props.qtd_discente}
-                                  qtd_colaborador={props.qtd_colaborador}
-                                  qtd_permanente={props.qtd_permanente}
-                                  create_at={props.create_at}
-                                  avatar={avatar}
-                                  url={'/pos-graduacao'}
-                                />
-                              )
-                            })}
+                            .filter(item => item.visible == true) // Filtra os itens onde `visible` é `true`
+                            .map((props, index) => (
+                              <ProgramItem
+                                key={index} // Adiciona uma chave para cada item
+                                area={props.area}
+                                institution={props.institution}
+                                researchers={props.researchers}
+                                code={props.code}
+                                graduate_program_id={props.graduate_program_id}
+                                modality={props.modality}
+                                name={props.name}
+                                rating={props.rating}
+                                type={props.type}
+                                city={props.city}
+                                state={props.state}
+                                instituicao={props.instituicao}
+                                url_image={props.url_image}
+                                region={props.region}
+                                sigla={props.sigla}
+                                acronym={props.acronym}
+                                visible={props.visible}
+                                qtd_discente={props.qtd_discente}
+                                qtd_colaborador={props.qtd_colaborador}
+                                qtd_permanente={props.qtd_permanente}
+                                create_at={props.create_at}
+                              />
+                            ))}
                         </Masonry>
                       </ResponsiveMasonry>
-
-                      {filteredTotal.length >= count && (
-  <div className="w-full flex justify-center pb-8"><Button className="w-fit" onClick={() => setCount(count + 12)}><Plus size={16} />Mostrar mais</Button></div>
-)}
-                       </div>
                       )
                     ) : (
                       loading ? (
