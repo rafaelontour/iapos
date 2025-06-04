@@ -18,7 +18,7 @@ interface Message {
 }
 
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
-import { Filter, Play, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 const API_KEY = import.meta.env.VITE_API_KEY
 
 const systemMessage = {
@@ -124,9 +124,7 @@ export function Search() {
   }, [input, maria]);
 
   const handlePopUppesquisa = () => {
-    if (!maria) {
-      onOpen('search')
-    }
+    onOpen('search')
   }
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -371,20 +369,10 @@ export function Search() {
           <div className="flex gap-4 w-full">
             <Alert className="h-14 p-2 flex items-center justify-between">
               <div className="flex items-center gap-2 w-full flex-1">
-                <Play size={16} className="hidden md:flex md:whitespace-nowrap md:w-10" />
-
                 <div className="hidden md:flex gap-2 w-fit  items-center">
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={maria}
-                      onCheckedChange={(value) => setMaria(value)}
-                    />
-                    <Label className="flex gap-2 items-center">{version ? ('GaIA') : ('MarIA')}<Chats size={16} className="" /></Label>
-                  </div>
 
-                  {!maria && (
-                    <SelectTypeSearch />
-                  )}
+                  
+                <SelectTypeSearch />
 
                  {itemsSelecionados.length > 0 && (
                    <div className='flex gap-2 mx-2 items-center'>
@@ -402,8 +390,9 @@ export function Search() {
                            <button className="rounded-full cursor-pointer flex items-center justify-center whitespace-nowrap h-8 w-8 bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-900 dark:bg-neutral-800 transition-all text-xs outline-none" onClick={() => {
                              const connector = itemsSelecionados[index].term.endsWith('|') ? ';' : '|'; // Alterna entre "|" e ";" conforme necessário
                              handleConnectorChange(index, connector);
-
+                              
                            }} >
+                            
                              {itemsSelecionados[index].term.endsWith(';') ? "e" : "ou"}
                            </button>
                          )}
@@ -415,7 +404,18 @@ export function Search() {
                  )}
 
                 </div>
-                <Input onClick={() => handlePopUppesquisa()} onChange={(e) => setInput(e.target.value)} value={input} type="text" className="border-0 w-full  flex flex-1" />
+                <div className="relative">
+                  <div
+                    className="
+                      absolute w-[300px] h-full dark:bg-[#0A0A0A] bg-white
+                      pointer-events-none flex items-center
+                      pl-4
+                    "
+                  >
+                    <span className="text-zinc-400 text-md">Clique aqui e pesquise</span>
+                  </div>
+                  <Input onClick={() => handlePopUppesquisa()} onChange={(e) => setInput(e.target.value)} value={input} type="text" className="border-0 w-full flex flex-1" />
+                  </div>
               </div>
 
               <div className="w-fit flex gap-2">
@@ -428,6 +428,7 @@ export function Search() {
                     } else (
                       history('/resultados')
                     )
+                    
 
                   }}><Trash size={16} /></Button>
                 )}
