@@ -44,8 +44,6 @@
     "@react-email/components": "^0.0.22",
     "@react-email/render": "^0.0.17",
     "@react-email/tailwind": "^0.0.19",
-    "@react-pdf-viewer/core": "^3.12.0",
-    "@react-pdf-viewer/default-layout": "^3.12.0",
     "@react-spring/web": "^9.7.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@tabler/icons-react": "^3.29.0",
@@ -130,7 +128,6 @@
     "unorm": "^1.6.0",
     "uuidv4": "^6.2.13",
     "vaul": "^0.9.0",
-    "xlsx": "^0.18.5",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

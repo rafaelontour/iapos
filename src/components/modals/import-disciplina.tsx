@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { UserContext } from "../../context/context";
-import * as XLSX from 'xlsx';
 import { useDropzone } from 'react-dropzone';
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -46,103 +45,6 @@ export function ImportDisciplina() {
 
         setDepId(dataModal.dep_id)
     }, [dataModal]);
-
-    const onDrop = useCallback((acceptedFiles: any) => {
-        handleFileUpload(acceptedFiles);
-    }, []);
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-    const handleFileUpload = (files: any) => {
-        const uploadedFile = files[0];
-        if (uploadedFile) {
-            setFileInfo({
-                name: uploadedFile.name,
-                size: uploadedFile.size,
-            });
-            readExcelFile(uploadedFile);
-        }
-    };
-
-    const readExcelFile = (file: File) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const data = new Uint8Array(e.target?.result as ArrayBuffer);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-
-            const json = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
-
-            const headers: string[] = json[0] as string[];
-            const rows = json.slice(1);
-
-            const headerMap: { [key: string]: keyof Patrimonio } = {
-                'Semestre': 'semester',
-                'Departamento': 'department',
-                'Atividade acadêmica - Código': 'academic_activity_code',
-                'Atividade acadêmica - Nome': 'academic_activity_name',
-                'Atividade acadêmica - CH': 'academic_activity_ch',
-                'Cursos demandantes': 'demanding_courses',
-                'Oft.': 'oft',
-                'Id.': 'id',
-                'Vagas Disp.': 'available_slots',
-                'Vagas Ocup.': 'occupied_slots',
-                '% Vagas Ocup.': 'percent_occupied_slots',
-                'Horário': 'schedule',
-                'Língua': 'language',
-                'Professores (nome, nº de inscrição, encargo)': 'professor',
-                'Sit.': 'status'
-            };
-
-            const jsonData = rows.map((row: any) => {
-                const obj: Patrimonio = {
-                    semester: '',
-                    department: '',
-                    academic_activity_code: '',
-                    academic_activity_name: '',
-                    academic_activity_ch: '',
-                    demanding_courses: '',
-                    oft: '',
-                    id: '',
-                    available_slots: '',
-                    occupied_slots: '',
-                    percent_occupied_slots: '',
-                    schedule: '',
-                    language: '',
-                    professor: '',
-                    status: '',
-                    dep_id: depId || ''
-                };
-                headers.forEach((header, index) => {
-                    const key = headerMap[header];
-                    if (key) {
-                        let value = row[index] !== undefined ? String(row[index]) : '';
-                        // Fix the semester value if it's a number
-                        if (key === 'semester') {
-                            value = String(value).trim();
-                            const regex = /^(\d{4})\/(\d)$/;
-                            const match = value.match(regex);
-                            if (match) {
-                                const [_, year, sem] = match;
-                                value = `${year}/${sem}`;
-                            } else {
-                                // Default to current year and semester if not formatted correctly
-                                const currentYear = new Date().getFullYear();
-                                const currentSemester = new Date().getMonth() <= 6 ? '1' : '2';
-                                value = `${currentYear}/${currentSemester}`;
-                            }
-                        }
-                        obj[key] = String(value || "");
-                    }
-                });
-                return obj;
-            });
-
-            setData(jsonData);
-        };
-        reader.readAsArrayBuffer(file);
-    };
 
     useEffect(() => {
 
@@ -232,17 +134,6 @@ export function ImportDisciplina() {
                 </DialogHeader>
 
                 <div className="mb-4">
-                    <div {...getRootProps()} className="border-dashed mb-6 flex-col border border-neutral-300 p-6 text-center rounded-md text-neutral-400 text-sm cursor-pointer transition-all gap-3 w-full flex items-center justify-center hover:bg-neutral-100 mt-4">
-                        <input {...getInputProps()} />
-                        <div className="p-4 border rounded-md">
-                            <FileXls size={24} className="whitespace-nowrap" />
-                        </div>
-                        {isDragActive ? (
-                            <p>Solte os arquivos aqui ...</p>
-                        ) : (
-                            <p>Arraste e solte o arquivo .xls aqui ou clique para selecionar o arquivo</p>
-                        )}
-                    </div>
 
                     {fileInfo.name && (
                         <aside>

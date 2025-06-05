@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useCallback, useContext, useState } from "react";
 import { toast } from "sonner"
 import { UserContext } from "../../context/context";
-import * as XLSX from 'xlsx';
 import { useDropzone } from 'react-dropzone'
 import { Sheet, SheetContent } from "../ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -34,74 +33,6 @@ export function AddResearcherCsvModal() {
 
     const [data, setData] = useState<Bolsista[]>([]);
 
-    const onDrop = useCallback((acceptedFiles: any) => {
-        handleFileUpload(acceptedFiles);
-    }, []);
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-    });
-
-    const handleFileUpload = (files: any) => {
-        const uploadedFile = files[0];
-        if (uploadedFile) {
-            setFileInfo({
-                name: uploadedFile.name,
-                size: uploadedFile.size,
-            });
-            readExcelFile(uploadedFile);
-        }
-    };
-
-    const readExcelFile = (file: File) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const data = new Uint8Array(e.target?.result as ArrayBuffer);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-
-            // Convert the worksheet to JSON, starting from the third row
-            const json = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
-
-            // Extract headers from the first row
-            const headers: string[] = json[0] as string[];
-
-            // Remove the first row (headers themselves)
-            const rows = json.slice(1);
-
-            // Map headers to your interface keys
-            // Corrigir headerMap para bater com os nomes reais da planilha
-const headerMap: { [key: string]: keyof Bolsista } = {
-    'name': 'name',
-    'lattes_id': 'lattes_id',
-    'cpf': 'cpf'
-};
-
-
-            // Convert rows to an array of objects
-            const jsonData = rows.map((row: any) => {
-                const obj: Bolsista = {
-                    researcher_id: uuidv4(),
-                    name: '',
-                    lattes_id: '',
-                     cpf: '',
-                    institution_id: user?.institution_id || '',
-                   
-                };
-                headers.forEach((header, index) => {
-                    const key = headerMap[header];
-                    if (key) {
-                        obj[key] = String(row[index]) || "";
-                    }
-                });
-                return obj;
-            });
-
-            setData(jsonData);
-        };
-        reader.readAsArrayBuffer(file);
-    };
 
     const [uploadProgress, setUploadProgress] = useState(false);
 
@@ -260,17 +191,6 @@ const headerMap: { [key: string]: keyof Bolsista } = {
             </Link>
                     </div>
                     <div className="">
-                        <div {...getRootProps()} className="border-dashed mb-6 flex-col border border-neutral-300 p-6 text-center rounded-md text-neutral-400 text-sm  cursor-pointer transition-all gap-3  w-full flex items-center justify-center hover:bg-neutral-100 mt-4">
-                            <input {...getInputProps()} />
-                            <div className="p-4  border rounded-md">
-                                <FileXls size={24} className=" whitespace-nowrap" />
-                            </div>
-                            {isDragActive ? (
-                                <p>Solte os arquivos aqui ...</p>
-                            ) : (
-                                <p>Arraste e solte o arquivo .xls aqui ou clique para selecionar o arquivo</p>
-                            )}
-                        </div>
 
                         <div>
                             {fileInfo.name && (

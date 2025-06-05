@@ -5,7 +5,6 @@ import { DialogHeader } from "../ui/dialog";
 import { useCallback, useContext, useState } from "react";
 import { toast } from "sonner";
 import { UserContext } from "../../context/context";
-import * as XLSX from "xlsx";
 import { useDropzone } from "react-dropzone";
 
 import { Sheet, SheetContent } from "../ui/sheet";
@@ -35,110 +34,6 @@ export function ImportDocentes() {
   const [dataDocentes, setDataDocentes] = useState<any[]>([]);
   const [dataTecnicos, setDataTecnicos] = useState<any[]>([]);
   const [uploadProgress, setUploadProgress] = useState(false);
-
-  const handleFileUpload = (files: File[]) => {
-    const uploadedFile = files[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-      setFileInfo({
-        name: uploadedFile.name,
-        size: uploadedFile.size,
-      });
-      readExcelFile(uploadedFile); // Lê imediatamente o arquivo
-    }
-  };
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    handleFileUpload(acceptedFiles);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-  
-    multiple: false,
-  });
-
-  const readExcelFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target?.result as ArrayBuffer);
-      const workbook = XLSX.read(data, { type: "array" });
-
-      const sheetNames = workbook.SheetNames;
-
-      const parseSheet = (sheetName: string) => {
-        const worksheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(worksheet, {
-          header: 1,
-          defval: "",
-        });
-        const headers: string[] = json[0] as string[];
-        const rows = json.slice(1);
-
-        const headerMap: { [key: string]: keyof any } = {
-          NOME: "nome",
-          RT: "rt",
-          SEXO: "genero",
-          SIT: "situacao",
-          DenoSit: "situacaoDescricao",
-          CLAS: "clas",
-          DenoCarg: "cargo",
-          DenoClasse: "classe",
-          REF: "ref",
-          DenoTit: "titulacao",
-          DenoSetor: "setor",
-          DtIngOrg: "entradaNaUFMG",
-          Cat: "categoria",
-          DataProg: "progressao",
-          Unid: "unidade",
-          GREXC: "grexc",
-          Fun: "funcao",
-          FUNNIV: "funcaoNivelSuperior",
-          DtChefInic: "inicioChefia",
-          DtChefFim: "fimChefia",
-          NomeFunc: "nomeFuncao",
-          ExercFunc: "exercicioFuncao",
-        };
-
-        return rows.map((row: any) => {
-          const obj: any = {};
-          headers.forEach((header, index) => {
-            const key = headerMap[header];
-            if (key) {
-              if (
-                ["DtIngOrg", "DataProg", "DtChefInic", "DtChefFim"].includes(
-                  header
-                ) &&
-                typeof row[index] === "number"
-              ) {
-                const date = XLSX.SSF.format(
-                  "dd/mm/yyyy",
-                  new Date(Math.round((row[index] - 25569) * 86400 * 1000))
-                );
-                obj[key] = date;
-              } else {
-                obj[key] = String(row[index] || "");
-              }
-            }
-          });
-          return obj;
-        });
-      };
-
-      if (sheetNames.length >= 2) {
-        const docentes = parseSheet(sheetNames[0]);
-        const tecnicos = parseSheet(sheetNames[1]);
-        setDataDocentes(docentes);
-        setDataTecnicos(tecnicos);
-      } else {
-        toast("Erro", {
-          description:
-            "O arquivo deve conter duas planilhas: docentes e técnicos.",
-        });
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  };
 
   const handleSubmitPatrimonio = async () => {
     try {
@@ -244,23 +139,6 @@ export function ImportDocentes() {
               Veja o modelo do documento .xls
               <ArrowRight size={12} />
             </Link>
-          </div>
-
-          <div
-            {...getRootProps()}
-            className="border-dashed border mb-3 border-neutral-300 p-6 text-center rounded-md text-neutral-400 text-sm cursor-pointer transition-all gap-3 w-full flex flex-col items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 mt-4"
-          >
-            <input {...getInputProps()} />
-            <div className="p-4 border rounded-md">
-              <FileXls size={24} />
-            </div>
-            {isDragActive ? (
-              <p>Solte os arquivos aqui...</p>
-            ) : (
-              <p>
-                Arraste e solte o arquivo .xls aqui ou clique para selecionar
-              </p>
-            )}
           </div>
 
           {fileInfo.name && (

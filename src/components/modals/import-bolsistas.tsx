@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useCallback, useContext, useState } from "react";
 import { toast } from "sonner"
 import { UserContext } from "../../context/context";
-import * as XLSX from 'xlsx';
 import {useDropzone} from 'react-dropzone'
 
 interface Patrimonio {
@@ -51,103 +50,6 @@ export function ImportBolsistas() {
     const [fileInfo, setFileInfo] = useState({ name: '', size: 0 });
 
     const [data, setData] = useState<Patrimonio[]>([]);
-
-    const onDrop = useCallback((acceptedFiles: any) => {
-        handleFileUpload(acceptedFiles);
-    }, []);
-  
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-    });
-  
-    const handleFileUpload = (files: any) => {
-        const uploadedFile = files[0];
-        if (uploadedFile) {
-            setFileInfo({
-                name: uploadedFile.name,
-                size: uploadedFile.size,
-            });
-            readExcelFile(uploadedFile);
-        }
-    };
-  
-    const readExcelFile = (file: File) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const data = new Uint8Array(e.target?.result as ArrayBuffer);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-  
-            // Convert the worksheet to JSON, starting from the third row
-            const json = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
-  
-            // Extract headers from the first row
-            const headers: string[] = json[0] as string[];
-  
-            // Remove the first row (headers themselves)
-            const rows = json.slice(1);
-  
-            // Map headers to your interface keys
-            const headerMap: { [key: string]: keyof Patrimonio } = {
-                '#': 'id',
-                '# Id Lattes': 'id_lattes',
-                '# Nome Beneficiário': 'nome_beneficiario',
-                '# CPF Beneficiário': 'cpf_beneficiario',
-                '# Nome País': 'nome_pais',
-                '# Nome Região': 'nome_regiao',
-                '# Nome UF': 'nome_uf',
-                '# Nome Cidade': 'nome_cidade',
-                '# Nome Grande Área': 'nome_grande_area',
-                '# Nome Área': 'nome_area',
-                '# Nome Sub-área': 'nome_sub_area',
-                '# Cod Modalidade': 'cod_modalidade',
-                '# Nome Modalidade': 'nome_modalidade',
-                '# Título Chamada': 'titulo_chamada',
-                '# Cod Categoria Nível': 'cod_categoria_nivel',
-                '# Nome Programa Fomento': 'nome_programa_fomento',
-                '# Nome Instituto': 'nome_instituto',
-                'QUANTAUXILIO': 'quant_auxilio',
-                'QUANTBOLSA': 'quant_bolsa'
-            };
-  
-            // Convert rows to an array of objects
-            const jsonData = rows.map((row: any) => {
-                const obj: Patrimonio = {
-                    id: '',
-                    id_lattes: '',
-                    nome_beneficiario: '',
-                    cpf_beneficiario: '',
-                    nome_pais: '',
-                    nome_regiao: '',
-                    nome_uf: '',
-                    nome_cidade: '',
-                    nome_grande_area: '',
-                    nome_area: '',
-                    nome_sub_area: '',
-                    cod_modalidade: '',
-                    nome_modalidade: '',
-                    titulo_chamada: '',
-                    cod_categoria_nivel: '',
-                    nome_programa_fomento: '',
-                    nome_instituto: '',
-                    quant_auxilio: '',
-                    quant_bolsa: ""
-                };
-                headers.forEach((header, index) => {
-                    const key = headerMap[header];
-                    if (key) {
-                        obj[key] = String(row[index] || "");
-                    }
-                });
-                return obj;
-            });
-  
-            setData(jsonData);
-        };
-        reader.readAsArrayBuffer(file);
-    };
-  
 
     console.log(data)
     const [uploadProgress, setUploadProgress] = useState(false);
@@ -258,20 +160,6 @@ export function ImportBolsistas() {
                         <Link to={'http://www.bi.cnpq.br/painel/mapa-fomento-cti/'} target="_blank"  className="inline-flex mt-2 items-center rounded-lg  bg-neutral-100 dark:bg-neutral-700  gap-2 mb-3 px-3 py-1 text-sm font-medium"><Info size={12}/><div className="h-full w-[1px] bg-neutral-200 dark:bg-neutral-800"></div>Saiba como extrair os bolsistas CNPq<ArrowRight size={12}/></Link>
                       </div>
                 <div className="">
-                
-
-
-                    <div {...getRootProps()} className="border-dashed mb-3 flex-col border border-neutral-300 p-6 text-center rounded-md text-neutral-400 text-sm  cursor-pointer transition-all gap-3  w-full flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 mt-4">
-                        <input {...getInputProps()} />
-                        <div className="p-4  border rounded-md">
-                            <FileXls size={24} className=" whitespace-nowrap" />
-                        </div>
-                        {isDragActive ? (
-                            <p>Solte os arquivos aqui ...</p>
-                        ) : (
-                            <p>Arraste e solte o arquivo .xls aqui ou clique para selecionar o arquivo</p>
-                        )}
-                    </div>
 
                     <div>
                         {fileInfo.name && (
