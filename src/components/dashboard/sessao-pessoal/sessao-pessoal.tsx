@@ -11,8 +11,6 @@ import { Alert } from "../../ui/alert";
 import { UserContext } from "../../../context/context";
 import { Helmet } from "react-helmet";
 
-import { Worker, Viewer } from "@react-pdf-viewer/core";
-import "@react-pdf-viewer/core/lib/styles/index.css";
 import { HeaderResult } from "../../homepage/header-results";
 import { HeaderResultTypeHome } from "../../homepage/categorias/header-result-type-home";
 import { FilePdf } from "phosphor-react";
