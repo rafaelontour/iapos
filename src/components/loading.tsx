@@ -4,10 +4,6 @@ import { auth } from '../lib/firebase';
 import { onAuthStateChanged, getIdToken } from 'firebase/auth';
 import { UserContext } from '../context/context';
 
-import { LogoConectee } from './svg/LogoConectee';
-import { LogoConecteeWhite } from './svg/LogoConecteeWhite';
-import { LogoIapos } from './svg/LogoIapos';
-import { LogoIaposWhite } from './svg/LogoIaposWhite';
 
 interface LoadingWrapperProps {
   children: React.ReactNode;
@@ -29,8 +25,8 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
       try {
         const urlUser = `${urlGeralAdm}s/user?uid=${firebaseUser.uid}`;
         console.log(urlUser);
-        
-        
+
+
         const fetchData = async () => {
           try {
             const response = await fetch(urlUser, {
@@ -55,13 +51,13 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
               if (storedUser) {
                 // Se as informações do usuário forem encontradas no armazenamento local, defina o usuário e marque como autenticado
                 setPermission(JSON.parse(storedUser));
-          
+
               }
 
               if (storedRole) {
                 // Se as informações do usuário forem encontradas no armazenamento local, defina o usuário e marque como autenticado
                 setRole(JSON.parse(storedRole));
-          
+
               }
 
             }
@@ -72,10 +68,10 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
 
         fetchData()
 
-    
+
       } catch (err) {
         console.error("Erro no login:", err);
-    
+
         setLoggedIn(false);
       } finally {
         setLoading(false);
@@ -91,12 +87,8 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
 
   return loading ? (
     <main className="h-screen w-full flex items-center justify-center">
-      <div className="h-16 animate-pulse">
-        {version ? (
-          theme === 'dark' ? <LogoConecteeWhite /> : <LogoConectee />
-        ) : (
-          theme === 'dark' ? <LogoIaposWhite /> : <LogoIapos />
-        )}
+      <div className="h-20 animate-pulse">
+        <img src="../assets/iapos.png" />
       </div>
     </main>
   ) : (
