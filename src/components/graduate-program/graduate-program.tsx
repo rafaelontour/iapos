@@ -50,7 +50,7 @@ export interface GraduateProgram {
   type: string;
   city: string
   state: string
-  acronym:string
+  acronym: string
   instituicao: string
   url_image: string
   region: string
@@ -63,7 +63,7 @@ export interface GraduateProgram {
   qtd_permanente: string
   create_at: string
   institution: string;
-  researchers:string[]
+  researchers: string[]
 }
 
 const useQuery = () => {
@@ -84,7 +84,7 @@ export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersM
 
   // Função para pegar os valores da URL, com fallback para array vazio
   const getArrayFromUrl = (key: string) => queryUrl.get(key)?.split(";") || [];
-  
+
   const normalizeString = (str: string): string => {
     return str
       .normalize("NFD") // Decompõe caracteres acentuados
@@ -92,7 +92,7 @@ export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersM
       .replace(/[^a-zA-Z0-9\s]/g, "") // Remove caracteres especiais
       .toUpperCase(); // Converte para maiúsculas
   };
-  
+
 
   // Estados para os filtros
   const [selectedCities, setSelectedCities] = useState<string[]>(getArrayFromUrl("cities"));
@@ -133,7 +133,7 @@ export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersM
 
   // Função para aplicar filtros
   const applyFilters = () => {
-  
+
     setGraduatePrograms(filteredPrograms);
     onClose();
   };
@@ -211,24 +211,24 @@ export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersM
     if (selectedModalities.length > 0) {
       filtered = filtered.filter((r) => selectedModalities.includes(r.modality));
     }
- 
+
     setFilteredCount(filtered.length);
     setGraduatePrograms(filteredPrograms)
-     
+
   }, [graduatePrograms, selectedAreas, selectedCities, selectedUniversities, selectedModalities, selectedTypes]);
 
-  
+
   const filteredPrograms = graduatePrograms.filter((res) => {
-   
+
     const hasSelectedArea = selectedAreas.length === 0 || selectedAreas.includes(res.area);
-   
+
     const hasSelectedCity = selectedCities.length === 0 || selectedCities.includes(normalizeString(res.city));
     const hasSelectedUniversity = selectedUniversities.length === 0 || selectedUniversities.includes(res.institution);
     const hasSelectedType = selectedTypes.length === 0 || selectedTypes.includes(res.type);
     const hasSelectedModality = selectedModalities.length === 0 || selectedModalities.includes(res.modality);
-   
 
-   
+
+
     return graduatePrograms && hasSelectedArea && hasSelectedCity && hasSelectedUniversity && hasSelectedType && hasSelectedModality;
   });
 
@@ -264,8 +264,8 @@ export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersM
 
 
   useEffect(() => {
-    if (!(selectedAreas.length > 0 ||  selectedCities.length > 0 || selectedUniversities.length > 0 || selectedTypes.length > 0 || selectedModalities.length > 0)) {
-     setGraduatePrograms(graduatePrograms)
+    if (!(selectedAreas.length > 0 || selectedCities.length > 0 || selectedUniversities.length > 0 || selectedTypes.length > 0 || selectedModalities.length > 0)) {
+      setGraduatePrograms(graduatePrograms)
     }
   }, [graduatePrograms, selectedAreas, selectedCities, selectedUniversities, selectedTypes, selectedModalities]);
 
@@ -277,12 +277,12 @@ export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersM
       .replace(/[^A-Z0-9 ]/g, "") // Remove caracteres especiais
       .replace(/\s+/g, " ") // Substitui múltiplos espaços por um único espaço
       .trim();
-  
-  
-  
+
+
+
   // Criamos o Map normalizando as chaves antes
   const qualisColor = new Map(areasComCores.map(([area, color]) => [normalizeArea(area), color]));
-  
+
   const getColorByArea = (area: string): string =>
     qualisColor.get(normalizeArea(area)) || 'bg-gray-500';
 
@@ -302,247 +302,247 @@ export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersM
 
     component: (
       <Sheet open={isModalOpen} onOpenChange={onClose}>
-      <SheetContent className={`p-0 dark:bg-neutral-900 dark:border-gray-600 min-w-[60vw]`}>
-      <DialogHeader className="h-[50px] px-4 justify-center border-b dark:border-gray-600">
+        <SheetContent className={`p-0 dark:bg-neutral-900 dark:border-gray-600 min-w-[60vw]`}>
+          <DialogHeader className="h-[50px] px-4 justify-center border-b dark:border-gray-600">
 
-<div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
 
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button className="h-8 w-8" variant={'outline'} onClick={() => {
-          onClose()
-        }} size={'icon'}><X size={16} /></Button>
-      </TooltipTrigger>
-      <TooltipContent> Fechar</TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-</div>
-
-</DialogHeader>
-
-<div className="relative flex">
-<div>
-            <div className="hidden lg:block p-8 pr-0 h-full">
-              <div style={{ backgroundImage: `url(${bg_user})` }} className=" h-full w-[270px]  bg-cover bg-no-repeat bg-left rounded-md bg-eng-blue p-8"></div>
-
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="h-8 w-8" variant={'outline'} onClick={() => {
+                      onClose()
+                    }} size={'icon'}><X size={16} /></Button>
+                  </TooltipTrigger>
+                  <TooltipContent> Fechar</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
+          </DialogHeader>
+
+          <div className="relative flex">
+            <div>
+              <div className="hidden lg:block p-8 pr-0 h-full">
+                <div style={{ backgroundImage: `url(${bg_user})` }} className=" h-full w-[270px]  bg-cover bg-no-repeat bg-left rounded-md bg-eng-blue p-8"></div>
+
+              </div>
+
+            </div>
+            <ScrollArea className="relative whitespace-nowrap h-[calc(100vh-50px)] p-8 w-full ">
+              <div>
+                <p className="max-w-[750px] mb-2 text-lg font-light text-foreground">
+                  Pesquisadores
+                </p>
+
+                <h1 className="max-w-[500px] text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] mb-8 md:block">
+                  Filtros de pesquisa
+                </h1>
+              </div>
+
+              <div className="w-full">
+                <Accordion defaultValue="item-1" type="single" collapsible className="w-full">
+                  <AccordionItem value="item-1" className="w-full">
+                    <div className="flex items-center justify-between">
+                      <Label>Área </Label>
+                      <div className="flex gap-2 items-center">
+
+                        {selectedAreas.length > 0 && (
+                          <Button
+                            onClick={() => setSelectedAreas([])}
+                            className="" variant={'destructive'} size={'icon'}><Trash size={16} /></Button>
+                        )}
+                        <AccordionTrigger>
+
+                        </AccordionTrigger>
+                      </div>
+                    </div>
+                    <AccordionContent>
+                      <Alert className="h-12 p-2 mb-4 flex items-center justify-between  w-full ">
+                        <div className="flex items-center gap-2 w-full flex-1">
+                          <MagnifyingGlass size={16} className=" whitespace-nowrap w-10" />
+                          <Input onChange={(e) => setSearch2(e.target.value)} value={search2} type="text" className="border-0 w-full " />
+                        </div>
+
+                        <div className="w-fit">
+
+
+                        </div>
+                      </Alert>
+
+                      <ToggleGroup
+                        type="multiple"
+                        variant={'outline'}
+                        value={selectedAreas}
+                        onValueChange={handleAreaToggle}
+                        className="aspect-auto flex flex-wrap items-start justify-start gap-2"
+                      >
+                        {filteredTotal.map((area) => (
+                          <ToggleGroupItem key={area} value={area} className="px-3 gap-2 flex py-2">
+                            <Alert className={` w-4 rounded-md border-0 h-4 p-0 ${getColorByArea(area)}`} /> {area}
+                          </ToggleGroupItem>
+                        ))}
+                      </ToggleGroup>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Cidade</Label>
+                      <div className="flex gap-2 items-center">
+
+                        {selectedCities.length > 0 && (
+                          <Button
+                            onClick={() => setSelectedCities([])}
+                            className="" variant={'destructive'} size={'icon'}><Trash size={16} /></Button>
+                        )}
+                        <AccordionTrigger>
+
+                        </AccordionTrigger>
+                      </div>
+                    </div>
+                    <AccordionContent>
+                      <Alert className="h-12 p-2 mb-4 flex items-center justify-between  w-full ">
+                        <div className="flex items-center gap-2 w-full flex-1">
+                          <MagnifyingGlass size={16} className=" whitespace-nowrap w-10" />
+                          <Input onChange={(e) => setSearch(e.target.value)} value={search} type="text" className="border-0 w-full " />
+                        </div>
+
+                        <div className="w-fit">
+
+
+                        </div>
+                      </Alert>
+
+                      <ToggleGroup
+                        type="multiple"
+                        variant={'outline'}
+                        value={selectedCities}
+                        onValueChange={handleCityToggle}
+                        className="aspect-auto flex flex-wrap items-start justify-start gap-2"
+                      >
+                        {filteredTotal2.map((city) => (
+                          <ToggleGroupItem key={city} value={normalizeString(city)} className="px-3 py-2">
+                            {city}
+                          </ToggleGroupItem>
+                        ))}
+                      </ToggleGroup>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Universidade</Label>
+                      <div className="flex gap-2 items-center">
+
+                        {selectedUniversities.length > 0 && (
+                          <Button
+                            onClick={() => setSelectedUniversities([])}
+                            className="" variant={'destructive'} size={'icon'}><Trash size={16} /></Button>
+                        )}
+                        <AccordionTrigger>
+
+                        </AccordionTrigger>
+                      </div>
+                    </div>
+                    <AccordionContent>
+                      <ToggleGroup
+                        type="multiple"
+                        variant={'outline'}
+                        value={selectedUniversities}
+                        onValueChange={handleUniversityToggle}
+                        className="aspect-auto flex flex-wrap items-start justify-start gap-2"
+                      >
+                        {uniqueUniversities.map((university) => (
+                          <ToggleGroupItem key={university} value={university} className="px-3 py-2">
+                            {university}
+                          </ToggleGroupItem>
+                        ))}
+                      </ToggleGroup>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-5">
+                    <div className="flex items-center justify-between">
+                      <Label>Tipo</Label>
+                      <div className="flex gap-2 items-center">
+
+                        {selectedTypes.length > 0 && (
+                          <Button
+                            onClick={() => setSelectedTypes([])}
+                            className="" variant={'destructive'} size={'icon'}><Trash size={16} /></Button>
+                        )}
+                        <AccordionTrigger>
+
+                        </AccordionTrigger>
+                      </div>
+                    </div>
+                    <AccordionContent>
+                      <ToggleGroup
+                        type="multiple"
+                        variant={'outline'}
+                        value={selectedTypes}
+                        onValueChange={handleTypeToggle}
+                        className="aspect-auto flex flex-wrap items-start justify-start gap-2"
+                      >
+                        {uniqueTypes.map((university) => (
+                          <ToggleGroupItem key={university} value={university} className="px-3 py-2">
+                            {university}
+                          </ToggleGroupItem>
+                        ))}
+                      </ToggleGroup>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-6">
+                    <div className="flex items-center justify-between">
+                      <Label>Modalidade</Label>
+                      <div className="flex gap-2 items-center">
+
+                        {selectedModalities.length > 0 && (
+                          <Button
+                            onClick={() => setSelectedModalities([])}
+                            className="" variant={'destructive'} size={'icon'}><Trash size={16} /></Button>
+                        )}
+                        <AccordionTrigger>
+
+                        </AccordionTrigger>
+                      </div>
+                    </div>
+                    <AccordionContent>
+                      <ToggleGroup
+                        type="multiple"
+                        variant={'outline'}
+                        value={selectedModalities}
+                        onValueChange={handleModalityToggle}
+                        className="aspect-auto flex flex-wrap items-start justify-start gap-2"
+                      >
+                        {uniqueModalities.map((university) => (
+                          <ToggleGroupItem key={university} value={university} className="px-3 py-2">
+                            {university}
+                          </ToggleGroupItem>
+                        ))}
+                      </ToggleGroup>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+
+              <DialogFooter className="py-4">
+                <Button variant="ghost" onClick={clearFilters} className="gap-2">
+                  <Trash size={16} />
+                  Limpar Filtros
+                </Button>
+
+                <Button onClick={applyFilters} className="gap-2">
+                  <FadersHorizontal size={16} />
+                  Mostrar {filteredCount} resultados
+                </Button>
+              </DialogFooter>
+            </ScrollArea>
           </div>
-          <ScrollArea className="relative whitespace-nowrap h-[calc(100vh-50px)] p-8 w-full ">
-          <div>
-              <p className="max-w-[750px] mb-2 text-lg font-light text-foreground">
-                Pesquisadores
-              </p>
-
-              <h1 className="max-w-[500px] text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] mb-8 md:block">
-                Filtros de pesquisa
-              </h1>
-            </div>
-
-            <div className="w-full">
-            <Accordion defaultValue="item-1" type="single" collapsible className="w-full">
-  <AccordionItem value="item-1" className="w-full">
-    <div className="flex items-center justify-between">
-    <Label>Área </Label>
-    <div className="flex gap-2 items-center">
-
-      {selectedAreas.length > 0 && (
-        <Button
-        onClick={() => setSelectedAreas([])}
-         className="" variant={'destructive'} size={'icon'}><Trash size={16}/></Button>
-      )}
-    <AccordionTrigger>
-      
-      </AccordionTrigger>
-    </div>
-    </div>
-    <AccordionContent>
-    <Alert className="h-12 p-2 mb-4 flex items-center justify-between  w-full ">
-                <div className="flex items-center gap-2 w-full flex-1">
-                  <MagnifyingGlass size={16} className=" whitespace-nowrap w-10" />
-                  <Input onChange={(e) => setSearch2(e.target.value)} value={search2} type="text" className="border-0 w-full " />
-                </div>
-
-                <div className="w-fit">
-
-
-                </div>
-              </Alert>
-
-    <ToggleGroup
-                  type="multiple"
-                  variant={'outline'}
-                  value={selectedAreas}
-                  onValueChange={handleAreaToggle}
-                  className="aspect-auto flex flex-wrap items-start justify-start gap-2"
-                >
-                  {filteredTotal.map((area) => (
-                    <ToggleGroupItem key={area} value={area} className="px-3 gap-2 flex py-2">
-                     <Alert className={` w-4 rounded-md border-0 h-4 p-0 ${getColorByArea(area)}`} /> {area}
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
-    </AccordionContent>
-  </AccordionItem>
-
-  <AccordionItem value="item-3">
-    <div className="flex items-center justify-between">
-    <Label>Cidade</Label>
-    <div className="flex gap-2 items-center">
-
-      {selectedCities.length > 0 && (
-        <Button
-        onClick={() => setSelectedCities([])}
-         className="" variant={'destructive'} size={'icon'}><Trash size={16}/></Button>
-      )}
-    <AccordionTrigger>
-      
-      </AccordionTrigger>
-    </div>
-    </div>
-    <AccordionContent>
-    <Alert className="h-12 p-2 mb-4 flex items-center justify-between  w-full ">
-                <div className="flex items-center gap-2 w-full flex-1">
-                  <MagnifyingGlass size={16} className=" whitespace-nowrap w-10" />
-                  <Input onChange={(e) => setSearch(e.target.value)} value={search} type="text" className="border-0 w-full " />
-                </div>
-
-                <div className="w-fit">
-
-
-                </div>
-              </Alert>
-
-    <ToggleGroup
-                    type="multiple"
-                    variant={'outline'}
-                    value={selectedCities}
-                    onValueChange={handleCityToggle}
-                    className="aspect-auto flex flex-wrap items-start justify-start gap-2"
-                  >
-                    {filteredTotal2.map((city) => (
-                      <ToggleGroupItem key={city} value={normalizeString(city)} className="px-3 py-2">
-                        {city}
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
-    </AccordionContent>
-  </AccordionItem>
-
-  <AccordionItem value="item-4">
-    <div className="flex items-center justify-between">
-    <Label>Universidade</Label>
-    <div className="flex gap-2 items-center">
-
-{selectedUniversities.length > 0 && (
-  <Button
-  onClick={() => setSelectedUniversities([])}
-   className="" variant={'destructive'} size={'icon'}><Trash size={16}/></Button>
-)}
-<AccordionTrigger>
-
-</AccordionTrigger>
-</div>
-    </div>
-    <AccordionContent>
-    <ToggleGroup
-                    type="multiple"
-                    variant={'outline'}
-                    value={selectedUniversities}
-                    onValueChange={handleUniversityToggle}
-                    className="aspect-auto flex flex-wrap items-start justify-start gap-2"
-                  >
-                    {uniqueUniversities.map((university) => (
-                      <ToggleGroupItem key={university} value={university} className="px-3 py-2">
-                        {university}
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
-    </AccordionContent>
-  </AccordionItem>
-
-  <AccordionItem value="item-5">
-    <div className="flex items-center justify-between">
-    <Label>Tipo</Label>
-    <div className="flex gap-2 items-center">
-
-      {selectedTypes.length > 0 && (
-        <Button
-        onClick={() => setSelectedTypes([])}
-         className="" variant={'destructive'} size={'icon'}><Trash size={16}/></Button>
-      )}
-    <AccordionTrigger>
-      
-      </AccordionTrigger>
-    </div>
-    </div>
-    <AccordionContent>
-    <ToggleGroup
-                    type="multiple"
-                    variant={'outline'}
-                    value={selectedTypes}
-                    onValueChange={handleTypeToggle}
-                    className="aspect-auto flex flex-wrap items-start justify-start gap-2"
-                  >
-                    {uniqueTypes.map((university) => (
-                      <ToggleGroupItem key={university} value={university} className="px-3 py-2">
-                        {university}
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
-    </AccordionContent>
-  </AccordionItem>
-
-  <AccordionItem value="item-6">
-    <div className="flex items-center justify-between">
-    <Label>Modalidade</Label>
-    <div className="flex gap-2 items-center">
-
-      {selectedModalities.length > 0 && (
-        <Button
-        onClick={() => setSelectedModalities([])}
-         className="" variant={'destructive'} size={'icon'}><Trash size={16}/></Button>
-      )}
-    <AccordionTrigger>
-      
-      </AccordionTrigger>
-    </div>
-    </div>
-    <AccordionContent>
-    <ToggleGroup
-                    type="multiple"
-                    variant={'outline'}
-                    value={selectedModalities}
-                    onValueChange={handleModalityToggle}
-                    className="aspect-auto flex flex-wrap items-start justify-start gap-2"
-                  >
-                    {uniqueModalities.map((university) => (
-                      <ToggleGroupItem key={university} value={university} className="px-3 py-2">
-                        {university}
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
-    </AccordionContent>
-  </AccordionItem>
-  </Accordion>
-            </div>
-
-            <DialogFooter className="py-4">
-              <Button variant="ghost" onClick={clearFilters} className="gap-2">
-                <Trash size={16} />
-                Limpar Filtros
-              </Button>
-
-              <Button onClick={applyFilters} className="gap-2">
-                <FadersHorizontal size={16} />
-                Mostrar {filteredCount} resultados
-              </Button>
-            </DialogFooter>
-          </ScrollArea>
-</div>
         </SheetContent>
-        </Sheet>
+      </Sheet>
     )
   }
 
@@ -552,7 +552,7 @@ export function FiltersModal({ graduatePrograms, setGraduatePrograms }: FiltersM
 export function GraduateProgram() {
   const { urlGeral } = useContext(UserContext);
   const { isOpen, type } = useModalHomepage();
-const { onOpen } = useModal();
+  const { onOpen } = useModal();
   const queryUrl = useQuery();
 
   const type_search = queryUrl.get('graduate_program_id');
@@ -613,8 +613,8 @@ const { onOpen } = useModal();
     return searchString.includes(normalizedSearch);
   }) : [];
 
-  const {version, simcc} = useContext(UserContext)
-  
+  const { version, simcc } = useContext(UserContext)
+
   const [isOn, setIsOn] = useState(true);
 
   const [jsonData, setJsonData] = useState<any[]>([]);
@@ -654,27 +654,27 @@ const { onOpen } = useModal();
 
   const [typeVisu, setTypeVisu] = useState('block');
 
-   const { setSelectedAreas,
+  const { setSelectedAreas,
     setSelectedModalities,
     setSelectedTypes,
     setSelectedCities,
-    setSelectedUniversities, clearFilters, selectedAreas,  component, selectedCities,  selectedUniversities, selectedModalities, selectedTypes } = FiltersModal({
+    setSelectedUniversities, clearFilters, selectedAreas, component, selectedCities, selectedUniversities, selectedModalities, selectedTypes } = FiltersModal({
       graduatePrograms: originalGraduatePrograms,
       setGraduatePrograms,
     });
 
-    const normalizeArea = (area: string): string =>
-      area
-        .toUpperCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") // Remove acentos
-        .replace(/[^A-Z0-9 ]/g, "") // Remove caracteres especiais
-        .replace(/\s+/g, " ") // Substitui múltiplos espaços por um único espaço
-        .trim();
+  const normalizeArea = (area: string): string =>
+    area
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+      .replace(/[^A-Z0-9 ]/g, "") // Remove caracteres especiais
+      .replace(/\s+/g, " ") // Substitui múltiplos espaços por um único espaço
+      .trim();
 
-     // Criamos o Map normalizando as chaves antes
+  // Criamos o Map normalizando as chaves antes
   const qualisColor = new Map(areasComCores.map(([area, color]) => [normalizeArea(area), color]));
-  
+
   const getColorByArea = (area: string): string =>
     qualisColor.get(normalizeArea(area)) || 'bg-gray-500';
 
@@ -683,222 +683,221 @@ const { onOpen } = useModal();
   return (
     <>
 
-<Helmet>
-          <title>Pós-graduações | Iapós</title>
-          <meta name="description" content={`Pós-graduações | Iapos`} />
-          <meta name="robots" content="index, follow" />
-        </Helmet>
-      
-        <>
-          {programSelecionado.length == 0 ? (
-            <div>
+      <Helmet>
+        <title>Pós-graduações | Iapós</title>
+        <meta name="description" content={`Pós-graduações | Iapos`} />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
+
+      <>
+        {programSelecionado.length == 0 ? (
+          <div>
+            {simcc && (
+              <div className="w-full hidden xl:flex h-[calc(100vh-68px)] overflow-hidden items-center absolute   "><BahiaMap setSelectedCities={setSelectedCities} /></div>
+            )}
+            <main className="z-[2]  gap-4 md:gap-8 flex flex-col  pt-0 md:pt-0 w-full">
               {simcc && (
-                 <div className="w-full hidden xl:flex h-[calc(100vh-68px)] overflow-hidden items-center absolute   "><BahiaMap setSelectedCities={setSelectedCities}/></div>
-              )}
-              <main className="z-[2]  gap-4 md:gap-8 flex flex-col  pt-0 md:pt-0 w-full">
-             {simcc && (
-               <div className="bg-cover w-fit pl-8 bg-bottom bg-no-repeat" >
-               <div className="justify-center h-[calc(100vh-124px)] z-[9] m w-full  flex max-w-[980px] flex-col items-center lg:items-start  gap-2 py-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20" >
-                 <Link to={'/informacoes'} className="inline-flex z-[2] lg:w-fit  w-fit items-center rounded-lg  bg-neutral-100 dark:bg-neutral-700  gap-2  px-3 py-1 text-sm font-medium"><Info size={12} /><div className="h-full w-[1px] bg-neutral-200 dark:bg-neutral-800"></div>Saiba como utilizar a plataforma<ArrowRight size={12} /></Link>
+                <div className="bg-cover w-fit pl-8 bg-bottom bg-no-repeat" >
+                  <div className="justify-center h-[calc(100vh-124px)] z-[9] m w-full  flex max-w-[980px] flex-col items-center lg:items-start  gap-2 py-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20" >
 
-                 <h1 className="lg:w-fit lg:text-left text-center max-w-[600px] text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1] md:block mb-4">
-  Selecione uma cidade ou{" "}
-  <strong className="bg-eng-blue rounded-md px-3 pb-2 text-white font-medium">
-    pesquise um programa
-  </strong>
-</h1>
+                    <h1 className="lg:w-fit lg:text-left text-center max-w-[600px] text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1] md:block mb-4">
+                      Selecione uma cidade ou{" "}
+                      <strong className="bg-eng-blue rounded-md px-3 pb-2 text-white font-medium">
+                        pesquise um programa
+                      </strong>
+                    </h1>
 
-<p>Arraste para baixo para explorar os programas disponíveis.</p>
-               </div>
-             </div>
-             )}
-<div>
-<div className="top-[68px] sticky z-[9] supports-[backdrop-filter]:dark:bg-neutral-900/60 supports-[backdrop-filter]:bg-neutral-50/60 backdrop-blur">
-
-</div>
- <div className="mt-8 px-4 md:px-8">
- <div className={`${selectedAreas.length > 0 || selectedCities.length > 0 || selectedModalities.length > 0 || selectedTypes.length > 0 || selectedUniversities.length > 0 ? ('flex'):('hidden')} flex flex-wrap gap-3 mb-6 items-center`}>
-            <p className="text-sm font-medium">Filtros aplicados:</p>
-            {selectedAreas.map((item) => (
-  <Badge
-    key={item}
-    className={`bg-eng-blue font-normal rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 gap-2 items-center flex ${getColorByArea(item)}`}
-  >
-    {item}
-    <div
-      className="cursor-pointer"
-      onClick={() => setSelectedAreas(selectedAreas.filter(i => i !== item))}
-    >
-      <X size={16} />
-    </div>
-  </Badge>
-))}
-
-{selectedCities.map((item) => (
-  <Badge
-    key={item}
-    className="bg-eng-blue  rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 font-normal gap-2 items-center flex"
-  >
-    {item}
-    <div
-      className="cursor-pointer"
-      onClick={() => setSelectedCities(selectedCities.filter(i => i !== item))}
-    >
-      <X size={16} />
-    </div>
-  </Badge>
-))}
-
-{selectedUniversities.map((item) => (
-  <Badge
-    key={item}
-    className="bg-eng-blue  rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 font-normal gap-2 items-center flex"
-  >
-    {item}
-    <div
-      className="cursor-pointer"
-      onClick={() => setSelectedUniversities(selectedUniversities.filter(i => i !== item))}
-    >
-      <X size={16} />
-    </div>
-  </Badge>
-))}
-
-{selectedTypes.map((item) => (
-  <Badge
-    key={item}
-    className="bg-eng-blue  rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 font-normal gap-2 items-center flex"
-  >
-    {item}
-    <div
-      className="cursor-pointer"
-      onClick={() => setSelectedTypes(selectedTypes.filter(i => i !== item))}
-    >
-      <X size={16} />
-    </div>
-  </Badge>
-))}
-
-{selectedModalities.map((item) => (
-  <Badge
-    key={item}
-    className="bg-eng-blue rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 font-normal gap-2 items-center flex"
-  >
-    {item}
-    <div
-      className="cursor-pointer"
-      onClick={() => setSelectedModalities(selectedModalities.filter(i => i !== item))}
-    >
-      <X size={16} />
-    </div>
-  </Badge>
-))}
-
-
-<Badge variant={'secondary'} onClick={() => clearFilters()} className=" rounded-md cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-900 border-0  py-2 px-3 font-normal flex items-center justify-center gap-2"><Trash size={12}/>Limpar filtros</Badge>
-         
-          </div>
-
- <Accordion defaultValue="item-1" type="single" collapsible>
-                <AccordionItem value="item-1">
-                  <div className="flex mb-2">
-                    <HeaderResultTypeHome title="Programas de pós-graduação" icon={<GraduationCap size={24} className="text-gray-400" />}>
-                      <div className="hidden md:flex gap-3 mr-3">
-                        <Button onClick={() => setTypeVisu('rows')} variant={typeVisu === 'block' ? 'ghost' : 'outline'} size={'icon'}>
-                          <Rows size={16} className="whitespace-nowrap" />
-                        </Button>
-                        <Button onClick={() => setTypeVisu('block')} variant={typeVisu === 'block' ? 'outline' : 'ghost'} size={'icon'}>
-                          <SquaresFour size={16} className="whitespace-nowrap" />
-                        </Button>
-                      </div>
-                    </HeaderResultTypeHome>
-                    <AccordionTrigger>
-
-                    </AccordionTrigger>
+                    <p>Arraste para baixo para explorar os programas disponíveis.</p>
                   </div>
-                  <AccordionContent>
-                    {typeVisu === 'block' ? (
-                      loading ? (
-                        <ResponsiveMasonry
-                          columnsCountBreakPoints={{
-                            350: 1,
-                            750: 2,
-                            900: 2,
-                            1200: 3,
-                            1700: 4
-                          }}
-                        >
-                          <Masonry gutter="16px">
-                            {items.map((item, index) => (
-                              <div className="w-full" key={index}>{item}</div>
-                            ))}
-                          </Masonry>
-                        </ResponsiveMasonry>
-                      ) : (
-                        <ResponsiveMasonry
-                        columnsCountBreakPoints={{
-                          350: 1,
-                          750: 2,
-                          900: 2,
-                          1200: 3,
-                          1700: 4
-                        }}
-                      >
-                        <Masonry gutter="16px" className=" z-[1] w-full">
-                          {filteredTotal
-                            .filter(item => item.visible == true) // Filtra os itens onde `visible` é `true`
-                            .map((props, index) => (
-                              <ProgramItem
-                                key={index} // Adiciona uma chave para cada item
-                                area={props.area}
-                                institution={props.institution}
-                                researchers={props.researchers}
-                                code={props.code}
-                                graduate_program_id={props.graduate_program_id}
-                                modality={props.modality}
-                                name={props.name}
-                                rating={props.rating}
-                                type={props.type}
-                                city={props.city}
-                                state={props.state}
-                                instituicao={props.instituicao}
-                                url_image={props.url_image}
-                                region={props.region}
-                                sigla={props.sigla}
-                                acronym={props.acronym}
-                                visible={props.visible}
-                                qtd_discente={props.qtd_discente}
-                                qtd_colaborador={props.qtd_colaborador}
-                                qtd_permanente={props.qtd_permanente}
-                                create_at={props.create_at}
-                              />
-                            ))}
-                        </Masonry>
-                      </ResponsiveMasonry>
-                      )
-                    ) : (
-                      loading ? (
-                        <Skeleton className="w-full rounded-md h-[400px]" />
-                      ) : (
-                        <DataTable columns={columnsGraduate} data={filteredTotal.filter(item => item.visible == true)} />
-                      )
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-   
+                </div>
+              )}
+              <div>
+                <div className="top-[68px] sticky z-[9] supports-[backdrop-filter]:dark:bg-neutral-900/60 supports-[backdrop-filter]:bg-neutral-50/60 backdrop-blur">
 
- </div>
-</div>
+                </div>
+                <div className="mt-8 px-4 md:px-8">
+                  <div className={`${selectedAreas.length > 0 || selectedCities.length > 0 || selectedModalities.length > 0 || selectedTypes.length > 0 || selectedUniversities.length > 0 ? ('flex') : ('hidden')} flex flex-wrap gap-3 mb-6 items-center`}>
+                    <p className="text-sm font-medium">Filtros aplicados:</p>
+                    {selectedAreas.map((item) => (
+                      <Badge
+                        key={item}
+                        className={`bg-eng-blue font-normal rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 gap-2 items-center flex ${getColorByArea(item)}`}
+                      >
+                        {item}
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => setSelectedAreas(selectedAreas.filter(i => i !== item))}
+                        >
+                          <X size={16} />
+                        </div>
+                      </Badge>
+                    ))}
+
+                    {selectedCities.map((item) => (
+                      <Badge
+                        key={item}
+                        className="bg-eng-blue  rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 font-normal gap-2 items-center flex"
+                      >
+                        {item}
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => setSelectedCities(selectedCities.filter(i => i !== item))}
+                        >
+                          <X size={16} />
+                        </div>
+                      </Badge>
+                    ))}
+
+                    {selectedUniversities.map((item) => (
+                      <Badge
+                        key={item}
+                        className="bg-eng-blue  rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 font-normal gap-2 items-center flex"
+                      >
+                        {item}
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => setSelectedUniversities(selectedUniversities.filter(i => i !== item))}
+                        >
+                          <X size={16} />
+                        </div>
+                      </Badge>
+                    ))}
+
+                    {selectedTypes.map((item) => (
+                      <Badge
+                        key={item}
+                        className="bg-eng-blue  rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 font-normal gap-2 items-center flex"
+                      >
+                        {item}
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => setSelectedTypes(selectedTypes.filter(i => i !== item))}
+                        >
+                          <X size={16} />
+                        </div>
+                      </Badge>
+                    ))}
+
+                    {selectedModalities.map((item) => (
+                      <Badge
+                        key={item}
+                        className="bg-eng-blue rounded-md dark:bg-eng-blue  dark:text-white py-2 px-3 font-normal gap-2 items-center flex"
+                      >
+                        {item}
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => setSelectedModalities(selectedModalities.filter(i => i !== item))}
+                        >
+                          <X size={16} />
+                        </div>
+                      </Badge>
+                    ))}
+
+
+                    <Badge variant={'secondary'} onClick={() => clearFilters()} className=" rounded-md cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-900 border-0  py-2 px-3 font-normal flex items-center justify-center gap-2"><Trash size={12} />Limpar filtros</Badge>
+
+                  </div>
+
+                  <Accordion defaultValue="item-1" type="single" collapsible>
+                    <AccordionItem value="item-1">
+                      <div className="flex mb-2">
+                        <HeaderResultTypeHome title="Programas de pós-graduação" icon={<GraduationCap size={24} className="text-gray-400" />}>
+                          <div className="hidden md:flex gap-3 mr-3">
+                            <Button onClick={() => setTypeVisu('rows')} variant={typeVisu === 'block' ? 'ghost' : 'outline'} size={'icon'}>
+                              <Rows size={16} className="whitespace-nowrap" />
+                            </Button>
+                            <Button onClick={() => setTypeVisu('block')} variant={typeVisu === 'block' ? 'outline' : 'ghost'} size={'icon'}>
+                              <SquaresFour size={16} className="whitespace-nowrap" />
+                            </Button>
+                          </div>
+                        </HeaderResultTypeHome>
+                        <AccordionTrigger>
+
+                        </AccordionTrigger>
+                      </div>
+                      <AccordionContent>
+                        {typeVisu === 'block' ? (
+                          loading ? (
+                            <ResponsiveMasonry
+                              columnsCountBreakPoints={{
+                                350: 1,
+                                750: 2,
+                                900: 2,
+                                1200: 3,
+                                1700: 4
+                              }}
+                            >
+                              <Masonry gutter="16px">
+                                {items.map((item, index) => (
+                                  <div className="w-full" key={index}>{item}</div>
+                                ))}
+                              </Masonry>
+                            </ResponsiveMasonry>
+                          ) : (
+                            <ResponsiveMasonry
+                              columnsCountBreakPoints={{
+                                350: 1,
+                                750: 2,
+                                900: 2,
+                                1200: 3,
+                                1700: 4
+                              }}
+                            >
+                              <Masonry gutter="16px" className=" z-[1] w-full">
+                                {filteredTotal
+                                  .filter(item => item.visible == true) // Filtra os itens onde `visible` é `true`
+                                  .map((props, index) => (
+                                    <ProgramItem
+                                      key={index} // Adiciona uma chave para cada item
+                                      area={props.area}
+                                      institution={props.institution}
+                                      researchers={props.researchers}
+                                      code={props.code}
+                                      graduate_program_id={props.graduate_program_id}
+                                      modality={props.modality}
+                                      name={props.name}
+                                      rating={props.rating}
+                                      type={props.type}
+                                      city={props.city}
+                                      state={props.state}
+                                      instituicao={props.instituicao}
+                                      url_image={props.url_image}
+                                      region={props.region}
+                                      sigla={props.sigla}
+                                      acronym={props.acronym}
+                                      visible={props.visible}
+                                      qtd_discente={props.qtd_discente}
+                                      qtd_colaborador={props.qtd_colaborador}
+                                      qtd_permanente={props.qtd_permanente}
+                                      create_at={props.create_at}
+                                    />
+                                  ))}
+                              </Masonry>
+                            </ResponsiveMasonry>
+                          )
+                        ) : (
+                          loading ? (
+                            <Skeleton className="w-full rounded-md h-[400px]" />
+                          ) : (
+                            <DataTable columns={columnsGraduate} data={filteredTotal.filter(item => item.visible == true)} />
+                          )
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+
+                </div>
+              </div>
 
             </main>
             {component}
-            </div>
-          ) : (
-            <VisualizacaoPrograma />
-          )}
-        </>
-     
+          </div>
+        ) : (
+          <VisualizacaoPrograma />
+        )}
+      </>
+
     </>
   )
 }

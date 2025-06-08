@@ -453,50 +453,50 @@ export function InitialHome() {
 
   const { onOpen } = useModal()
 
-    const [researcher, setResearcher] = useState<Research[]>([]);
-      let urlTermPesquisadores = `${urlGeral}outstanding_researchers`
-console.log(urlTermPesquisadores)
-const [isLoad, setLoad] = useState(false)
-       useMemo(() => {
-                  const fetchData = async () => {
-                      try {
-                        setLoad(true)
-                        const response = await fetch(  urlTermPesquisadores, {
-                          mode: "cors",
-                          headers: {
-                            "Access-Control-Allow-Origin": "*",
-                            "Access-Control-Allow-Methods": "GET",
-                            "Access-Control-Allow-Headers": "Content-Type",
-                            "Access-Control-Max-Age": "3600",
-                            "Content-Type": "text/plain",
-                          },
-                        });
-                        const data = await response.json();
-                        if (data) {
-                          setLoad(false)
-                          setResearcher(data);
-                          
-                        }
-                      } catch (err) {
-                        console.log(err);
-                        setLoad(false)
-                      }
-                    };
-                    fetchData();
-                  }, [urlTermPesquisadores]);
+  const [researcher, setResearcher] = useState<Research[]>([]);
+  let urlTermPesquisadores = `${urlGeral}outstanding_researchers`
+  console.log(urlTermPesquisadores)
+  const [isLoad, setLoad] = useState(false)
+  useMemo(() => {
+    const fetchData = async () => {
+      try {
+        setLoad(true)
+        const response = await fetch(urlTermPesquisadores, {
+          mode: "cors",
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Max-Age": "3600",
+            "Content-Type": "text/plain",
+          },
+        });
+        const data = await response.json();
+        if (data) {
+          setLoad(false)
+          setResearcher(data);
 
-                   const randomResearchers = useMemo(() => {
-                                return researcher.sort(() => Math.random() - 0.5).slice(0, 40);
-                              }, [researcher]);
-                  
+        }
+      } catch (err) {
+        console.log(err);
+        setLoad(false)
+      }
+    };
+    fetchData();
+  }, [urlTermPesquisadores]);
 
- return (
+  const randomResearchers = useMemo(() => {
+    return researcher.sort(() => Math.random() - 0.5).slice(0, 40);
+  }, [researcher]);
+
+
+  return (
     <div className=" items-center  flex flex-col   ">
-  <Helmet>
-  <title>{`Página Inicial | Iapós`}    </title>
-  <meta name="description" content={`Página Inicial | ${version ? 'Conectee' : 'Simcc'}`} />
-  <meta name="robots" content="index, follow" />
-</Helmet>
+      <Helmet>
+        <title>{`Página Inicial | Iapós`}    </title>
+        <meta name="description" content={`Página Inicial | ${version ? 'Conectee' : 'Simcc'}`} />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <div className="bg-cover  bg-no-repeat bg-center w-full" >
         <div className="h-[0vh] z-[-1] opacity-45">
           <ChartContainer config={chartConfig} className="h-[55vh] w-full">
@@ -563,14 +563,12 @@ const [isLoad, setLoad] = useState(false)
         </div>
 
         <div className="justify-center px-4 md:px-8 w-full mx-auto flex max-w-[1200px] flex-col items-center gap-2 py-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20" >
-          <Link to={'/informacoes'} className="inline-flex z-[2] items-center rounded-lg  bg-neutral-100 dark:bg-neutral-700  gap-2 mb-3 px-3 py-1 text-sm font-medium"><Info size={12} /><div className="h-full w-[1px] bg-neutral-200 dark:bg-neutral-800"></div>Saiba como utilizar a plataforma<ArrowRight size={12} /></Link>
-
           <h1 className="z-[2] text-center max-w-[980px] text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]  md:block mb-4 ">
             Busque por temas que são mais publicados no
             <strong className="bg-eng-blue ml-4 rounded-md px-3 pb-2 text-white font-medium">
               Cimatec!
             </strong>
-            
+
           </h1>
           <p className="max-w-[750px] text-center text-lg font-light text-foreground"></p>
 
