@@ -14,7 +14,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { Link, useNavigate } from "react-router-dom";
-import img1 from '../../assets/bg_home.png';
+
 
 import { toast } from "sonner"
 
@@ -23,13 +23,7 @@ import { UserContext } from "../../context/context";
 
 
 import { GoogleLogo, SignIn } from "phosphor-react";
-
-import { LogoConecteeWhite } from "../svg/LogoConecteeWhite";
-import { MUfmg } from "../svg/MUfmg";
 import { useTheme } from "next-themes";
-import { LogoIaposWhite } from "../svg/LogoIaposWhite";
-import { LogoConectee } from "../svg/LogoConectee";
-import { LogoIapos } from "../svg/LogoIapos";
 
 export function SignInContent() {
 
@@ -349,7 +343,7 @@ export function SignInContent() {
                     lg:flex flex-col justify-start bg-zinc-500
                     
                 "
-                
+
             >
                 <a href="/">
                     <img
@@ -367,14 +361,14 @@ export function SignInContent() {
                     <div className="flex gap-3 flex-col">
                         <div>
 
-                        <h3
-                            className="
+                            <h3
+                                className="
                                 text-6xl font-bold mb-5
                                 dark:text-white text-center
                             "
-                        >
-                            Fazer Login
-                        </h3>
+                            >
+                                Fazer Login
+                            </h3>
 
                         </div>
                         <Button className=" w-full" variant={'outline'} onClick={handleGoogleSignIn} ><GoogleLogo size={16} className="" /> Login com Google</Button>
