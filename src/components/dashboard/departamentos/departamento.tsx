@@ -197,7 +197,7 @@ export function DepartamentDashboard() {
     : `${version ? "Conectee" : "Simcc"} | ${version ? "Escola de Engenharia UFMG" : "SECTI-BA"}`;
 
   const siteDescription = graduatePrograms?.dep_nom
-    ? `${graduatePrograms.dep_nom} | Conectee`
+    ? `${graduatePrograms.dep_nom} | IAPós`
     : `${version ? "Conectee" : "Simcc"} | ${version ? "Escola de Engenharia UFMG" : "SECTI-BA"}`;
 
 
