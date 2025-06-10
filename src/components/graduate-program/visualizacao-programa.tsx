@@ -479,7 +479,6 @@ export function VisualizacaoPrograma() {
                     >
                       <h1 className="flex-1 shrink-0 text-white whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
                         Pós-graduação
-
                       </h1>
 
                       {graduatePrograms.researchers.length > 0 && (
@@ -708,8 +707,6 @@ export function VisualizacaoPrograma() {
             <TabsContent value="indicadores" className="m-0">
               <IndicatorsGraduate />
             </TabsContent>
-
-
           </div>
         </Tabs>
       </main>
