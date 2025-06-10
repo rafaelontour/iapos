@@ -67,6 +67,9 @@ type Props = {
 
 export function ArticlesResearcherPopUp(props: Props) {
     const { urlGeral, setItensSelecionadosPopUp, itemsSelecionadosPopUp, searchType, itemsSelecionados } = useContext(UserContext)
+    if (location.pathname.includes("pos-graduacao")) {
+        setItensSelecionadosPopUp([])
+    }
     const { isOpen, type: typeModal, data: modalData } = useModalSecundary();
 
     const [loading, isLoading] = useState(true)
@@ -75,10 +78,10 @@ export function ArticlesResearcherPopUp(props: Props) {
     const [typeVisu, setTypeVisu] = useState('block')
 
     const [filters, setFilters] = useState<Filter[]>([]);
-const qualisString = filters.length > 0 ? filters[0].qualis.join(';') : '';
-      
-  
-      const yearString = filters.length > 0 ? filters[0].year.join(';') : '';
+    const qualisString = filters.length > 0 ? filters[0].qualis.join(';') : '';
+
+
+    const yearString = filters.length > 0 ? filters[0].year.join(';') : '';
 
     const resultadoFormatado = useMemo(() =>
         formatTerms(itemsSelecionadosPopUp),
@@ -163,15 +166,15 @@ const qualisString = filters.length > 0 ? filters[0].qualis.join(';') : '';
     const total = publicacoes.length;
     const validDoiCount = publicacoes.filter(pub => pub.doi && pub.doi.trim() !== "").length;
     const percentage = total > 0 ? (validDoiCount / total) * 100 : 0;
-    
+
 
     return (
         <>
             <div className="">
-              <div className="mb-6">
-              <FilterArticlePopUp
-                    onFilterUpdate={handleResearcherUpdate} />
-              </div>
+                <div className="mb-6">
+                    <FilterArticlePopUp
+                        onFilterUpdate={handleResearcherUpdate} />
+                </div>
 
                 <Accordion type="single" collapsible defaultValue="item-1">
                     <AccordionItem value="item-1" >
@@ -284,10 +287,10 @@ const qualisString = filters.length > 0 ? filters[0].qualis.join(';') : '';
                                     <ResponsiveMasonry
                                         columnsCountBreakPoints={{
                                             350: 1,
-          750: 1,
-          900: 2,
-          1200: 3,
-          1700: 4
+                                            750: 1,
+                                            900: 2,
+                                            1200: 3,
+                                            1700: 4
                                         }}
                                     >
                                         <Masonry gutter="16px">
@@ -298,15 +301,15 @@ const qualisString = filters.length > 0 ? filters[0].qualis.join(';') : '';
                                     </ResponsiveMasonry>
                                 ) : (
                                     publicacoes.length == 0 ? (
-                                        <div className="items-center justify-center w-full flex text-center pt-6">Nenhum resultado encontrado a partir de {year-5}</div>
-                                    ):(
+                                        <div className="items-center justify-center w-full flex text-center pt-6">Nenhum resultado encontrado a partir de {year - 5}</div>
+                                    ) : (
                                         <ArticleBlockPopUp
-                                        articles={publicacoes}
-                                        distinct={distinct}
-                                        onRefresh={handleRefresh}
-                                    />
+                                            articles={publicacoes}
+                                            distinct={distinct}
+                                            onRefresh={handleRefresh}
+                                        />
                                     )
-                                  
+
                                 )
                             ) : (
 
