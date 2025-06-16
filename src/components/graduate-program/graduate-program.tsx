@@ -848,6 +848,8 @@ export function GraduateProgram() {
                                   .filter(item => item.visible == true) // Filtra os itens onde `visible` é `true`
                                   .map((props, index) => (
                                     <ProgramItem
+                                      url="/"
+                                      avatar=""
                                       key={index} // Adiciona uma chave para cada item
                                       area={props.area}
                                       institution={props.institution}
