@@ -39,12 +39,6 @@ type Dados = {
   SQ: number
 }
 
-
-
-
-
-
-
 export function TimeLineResearcher(props: Research) {
   const [, isLoading] = useState(false)
 
@@ -325,7 +319,7 @@ export function TimeLineResearcher(props: Research) {
                         </Alert>
                       </div>
                     )}
-                   
+
                     {props.subsidy.length > 0 && props.subsidy.some((sub) =>
                       sub.call_title.includes(item.year.toString())
                     ) && (
