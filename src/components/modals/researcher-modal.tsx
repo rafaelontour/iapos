@@ -21,10 +21,16 @@ import { UserContext } from "../../context/context";
 export type Research = {
   among: number,
   articles: number,
-  institution_id:string
+  institution_id: string
   book: number,
   book_chapters: number,
   id: string,
+  cargo: string,
+  clas: string,
+  classe: string,
+  rt: string,
+  situacao: string,
+  data_atualizacao_lattes: string,
 
   name: string,
   university: string,
@@ -54,14 +60,8 @@ export type Research = {
   departments: Departments[]
   research_groups: ResearchGroups[]
   status: boolean
- ufmg: Ufmg 
- user:User
- abstract_ai:string
-}
 
-interface User {
-  linkedin: string
-  email: string
+  abstract_ai: string
 }
 
 interface Bolsistas {
@@ -184,34 +184,34 @@ export function ResearcherModal() {
 
   const [loadingMessage, setLoadingMessage] = useState("Estamos procurando todas as informações do(a) pesquisador(a) no nosso banco de dados, aguarde.");
 
-useEffect(() => {
-  let timeouts: NodeJS.Timeout[] = [];
+  useEffect(() => {
+    let timeouts: NodeJS.Timeout[] = [];
 
-  if (isOpen) {
-    setLoadingMessage("Estamos procurando todas as informações do(a) pesquisador(a) no nosso banco de dados, aguarde.");
+    if (isOpen) {
+      setLoadingMessage("Estamos procurando todas as informações do(a) pesquisador(a) no nosso banco de dados, aguarde.");
 
-    timeouts.push(setTimeout(() => {
-      setLoadingMessage("Estamos quase lá, continue aguardando...");
-    }, 5000));
+      timeouts.push(setTimeout(() => {
+        setLoadingMessage("Estamos quase lá, continue aguardando...");
+      }, 5000));
 
-    timeouts.push(setTimeout(() => {
-      setLoadingMessage("Só mais um pouco...");
-    }, 10000));
+      timeouts.push(setTimeout(() => {
+        setLoadingMessage("Só mais um pouco...");
+      }, 10000));
 
-    timeouts.push(setTimeout(() => {
-      setLoadingMessage("Está demorando mais que o normal... estamos tentando encontrar tudo.");
-    }, 15000));
+      timeouts.push(setTimeout(() => {
+        setLoadingMessage("Está demorando mais que o normal... estamos tentando encontrar tudo.");
+      }, 15000));
 
-    timeouts.push(setTimeout(() => {
-      setLoadingMessage("Estamos empenhados em achar todos os dados, aguarde só mais um pouco");
-    }, 15000));
-  }
+      timeouts.push(setTimeout(() => {
+        setLoadingMessage("Estamos empenhados em achar todos os dados, aguarde só mais um pouco");
+      }, 15000));
+    }
 
-  return () => {
-    // Limpa os timeouts ao desmontar ou quando isOpen mudar
-    timeouts.forEach(clearTimeout);
-  };
-}, [isOpen]);
+    return () => {
+      // Limpa os timeouts ao desmontar ou quando isOpen mudar
+      timeouts.forEach(clearTimeout);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -351,7 +351,7 @@ useEffect(() => {
     const initialsWithDots = initials.replace(/ /g, '.');
     const firstAndMiddleNames = parts.slice(0, -1).join(' ');
     const penultimatePart = parts.length >= 2 ? parts[parts.length - 2] : '';
-  
+
     const variations = [
       `${lastName}, ${initials}`,
       `${capitalize(lastName)}, ${initials}`,
@@ -369,14 +369,14 @@ useEffect(() => {
       `${initialsWithDots} ${capitalize(lastName)}`,
       `${initialsWithDots} ${lastName}`
     ];
-  
+
     return variations;
   }
-  
+
   function capitalize(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
-  
+
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -395,18 +395,18 @@ useEffect(() => {
       <Drawer open={isModalOpen} onClose={onClose}   >
 
         <DrawerContent onInteractOutside={onClose} className={`max-h-[88%] pt-6 border border-b-0`} >
-        {researcher.length === 0 && (
-  <div className="flex justify-center items-center h-[80vh]">
-    <div className="w-full flex flex-col items-center justify-center h-full">
-      <div className="text-eng-blue mb-4 animate-pulse">
-        <LoaderCircle size={108} className="animate-spin" />
-      </div>
-      <p className="font-medium text-lg max-w-[500px] text-center">
-        {loadingMessage}
-      </p>
-    </div>
-  </div>
-)}
+          {researcher.length === 0 && (
+            <div className="flex justify-center items-center h-[80vh]">
+              <div className="w-full flex flex-col items-center justify-center h-full">
+                <div className="text-eng-blue mb-4 animate-pulse">
+                  <LoaderCircle size={108} className="animate-spin" />
+                </div>
+                <p className="font-medium text-lg max-w-[500px] text-center">
+                  {loadingMessage}
+                </p>
+              </div>
+            </div>
+          )}
 
           {researcher.slice(0, 1).map((user) => {
             return (
@@ -434,7 +434,7 @@ useEffect(() => {
             const isOutdated = monthDifference > 3;
             const isOutdated6 = monthDifference > 6;
 
-            
+
 
             return (
               <div
@@ -483,74 +483,74 @@ useEffect(() => {
                           </div>
                         )
                       }
-                     
+
                     })}
                   </div>
 
                   <div className="hidden lg:flex gap-3">
-                   
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant={'default'}
-                              onClick={() => {
-                                // Verifica se o pesquisador já está selecionado pelo nome
-                                if (pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name)) {
-                                  // Remove o pesquisador selecionado com o nome correspondente
-                                  setPesquisadoresSelecionados(prev => prev.filter(pesquisador => pesquisador.name !== props.name));
 
-                                  toast("Pesquisador(a) removido dos selecionados", {
-                                    description: `${props.name}`,
-                                    action: {
-                                      label: "Fechar",
-                                      onClick: () => console.log("Fechar"),
-                                    },
-                                  });
-                                } else {
-                                  // Adiciona o novo pesquisador selecionado
-                                  setPesquisadoresSelecionados(prev => [
-                                    ...prev,
-                                    {
-                                      id: props.id,
-                                      name: props.name,
-                                      university: props.university,
-                                      lattes_id: props.lattes_id,
-                                      city: props.city,
-                                      area: props.area,
-                                      graduation: props.graduation,
-                                    }
-                                  ]);
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant={'default'}
+                            onClick={() => {
+                              // Verifica se o pesquisador já está selecionado pelo nome
+                              if (pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name)) {
+                                // Remove o pesquisador selecionado com o nome correspondente
+                                setPesquisadoresSelecionados(prev => prev.filter(pesquisador => pesquisador.name !== props.name));
 
-                                  toast("Pesquisador(a) adicionado aos selecionados", {
-                                    description: `${props.name}`,
-                                    action: {
-                                      label: "Fechar",
-                                      onClick: () => console.log("Fechar"),
-                                    },
-                                  });
-                                }
-                              }}
-                              className={`
+                                toast("Pesquisador(a) removido dos selecionados", {
+                                  description: `${props.name}`,
+                                  action: {
+                                    label: "Fechar",
+                                    onClick: () => console.log("Fechar"),
+                                  },
+                                });
+                              } else {
+                                // Adiciona o novo pesquisador selecionado
+                                setPesquisadoresSelecionados(prev => [
+                                  ...prev,
+                                  {
+                                    id: props.id,
+                                    name: props.name,
+                                    university: props.university,
+                                    lattes_id: props.lattes_id,
+                                    city: props.city,
+                                    area: props.area,
+                                    graduation: props.graduation,
+                                  }
+                                ]);
+
+                                toast("Pesquisador(a) adicionado aos selecionados", {
+                                  description: `${props.name}`,
+                                  action: {
+                                    label: "Fechar",
+                                    onClick: () => console.log("Fechar"),
+                                  },
+                                });
+                              }
+                            }}
+                            className={`
                                 h-8 w-8 p-0 text-white dark:text-white 
                                 ${pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) && 'bg-red-500 hover:bg-red-600 text-white'}
                               `}
-                            >
-                              {pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) ? (
-                                <X size={16} className="" />
-                              ) : (
-                                <Plus size={16} className="" />
-                              )}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent> {pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) ? (
-                            'Remover pesquisador(a) do barema'
-                          ) : (
-                            'Adicionar pesquisador(a) ao barema'
-                          )}</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-               
+                          >
+                            {pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) ? (
+                              <X size={16} className="" />
+                            ) : (
+                              <Plus size={16} className="" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent> {pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) ? (
+                          'Remover pesquisador(a) do barema'
+                        ) : (
+                          'Adicionar pesquisador(a) ao barema'
+                        )}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
 
 
                     <TooltipProvider>
@@ -604,8 +604,8 @@ useEffect(() => {
 
                         <DropdownMenuItem className="flex items-center gap-3" onClick={() => handleDownloadJson()}><FileCsv className="h-4 w-4" />CSV dos artigos</DropdownMenuItem>
 
-                       <Link to={`${urlGeral}dictionary.pdf`}>
-                       <DropdownMenuItem className="flex items-center gap-3" ><File className="h-4 w-4" />Dicionário de dados</DropdownMenuItem></Link>
+                        <Link to={`${urlGeral}dictionary.pdf`}>
+                          <DropdownMenuItem className="flex items-center gap-3" ><File className="h-4 w-4" />Dicionário de dados</DropdownMenuItem></Link>
 
                         <DropdownMenuItem className="flex items-center gap-3" onClick={() => setOpen(!open)} ><BracketsCurly className="h-4 w-4" />API da consulta</DropdownMenuItem>
 
@@ -672,7 +672,7 @@ useEffect(() => {
                         atualizacao_lattes={user.lattes_update.toString()}
                         {...user}
                         onResearcherUpdate={handleResearcherUpdate}
-                    
+
                         openAPI={open}
                       />
                     </div>
@@ -871,7 +871,7 @@ useEffect(() => {
 
                           return (
                             <InformacoesGeraisResearcher
-                             {...user}
+                              {...user}
                             />
                           )
 
