@@ -142,144 +142,93 @@ export function InformacoesGeraisResearcher(props: Research) {
   const isOutdated = monthDifference > 3;
   const isOutdated6 = monthDifference > 6;
 
-  const {version} = useContext(UserContext)
+  const { version } = useContext(UserContext)
 
   const hasAnyInfo = (
     (props.h_index != '') ||
     (props.cited_by_count != '') ||
-    (typeof props.ufmg === 'object' && props.ufmg.organization_entry_date?.length > 0 && version) ||
     (props.i10_index != '') ||
-    (typeof props.ufmg === 'object' && props.ufmg.work_regime?.length > 0) ||
-    (typeof props.ufmg === 'object' && props.ufmg.job_title?.length > 0) ||
-    (props.classification != '' && !version) || 
-    (props.user?.email?.length > 0)
-
+    (props.classification != '' && !version)
   );
-  
+
   return (
     <div className="h-fit text-left w-full">
 
-{hasAnyInfo && (
-  <>
-       <div className=" font-medium text-2xl mb-6 pr-12">Informações gerais</div>
+      {hasAnyInfo && (
+        <>
+          <div className=" font-medium text-2xl mb-6 pr-12">Informações gerais</div>
 
-<div className="flex gap-3 mb-6 items-center flex-wrap">
-  {props.h_index?.length != 0 && (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger className="outline-none"><div className=" py-2 px-4 border border-neutral-200 bg-white dark:bg-black dark:border-neutral-800  rounded-md text-xs flex gap-2 items-center"><ChartLine size={12} className="textwhite" /> índice H no OpenAlex: {props.h_index}</div></TooltipTrigger>
-        <TooltipContent>
-          <p>Dados do OpenAlex</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+          <div className="flex gap-3 mb-6 items-center flex-wrap">
+            {props.h_index?.length != 0 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="outline-none"><div className=" py-2 px-4 border border-neutral-200 bg-white dark:bg-black dark:border-neutral-800  rounded-md text-xs flex gap-2 items-center"><ChartLine size={12} className="textwhite" /> índice H no OpenAlex: {props.h_index}</div></TooltipTrigger>
+                  <TooltipContent>
+                    <p>Dados do OpenAlex</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-  )}
+            )}
 
-  {props.cited_by_count?.length != 0 && (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger className="outline-none"> <div className=" border-neutral-200 border dark:border-neutral-800 bg-white dark:bg-black py-2 px-4  rounded-md text-xs  flex gap-2 items-center"><Quotes size={12} className="textwhite" /> Citações: {props.cited_by_count}</div></TooltipTrigger>
-        <TooltipContent>
-          <p>Dados do OpenAlex</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+            {props.cited_by_count?.length != 0 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="outline-none"> <div className=" border-neutral-200 border dark:border-neutral-800 bg-white dark:bg-black py-2 px-4  rounded-md text-xs  flex gap-2 items-center"><Quotes size={12} className="textwhite" /> Citações: {props.cited_by_count}</div></TooltipTrigger>
+                  <TooltipContent>
+                    <p>Dados do OpenAlex</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-  )}
+            )}
 
-{(props.user?.email?.length != 0 && props.user?.email != null) && (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger className="outline-none"> <div className=" border-neutral-200 border dark:border-neutral-800 bg-white dark:bg-black py-2 px-4  rounded-md text-xs  flex gap-2 items-center"><Mail size={12} className="textwhite" />{props.user.email}</div></TooltipTrigger>
-        <TooltipContent>
-          <p>Fornecido com autorização do pesquisador</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+            {props.i10_index?.length != 0 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="outline-none"> <div className=" py-2 px-4 border  border-neutral-200 bg-white dark:bg-black dark:border-neutral-800 rounded-md text-xs  flex gap-2 items-center"><ChartLine size={12} className="textwhite" />índice i10: {props.i10_index}</div></TooltipTrigger>
+                  <TooltipContent>
+                    <p>Dados do OpenAlex</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-  )}
+            )}
 
-{(typeof props.ufmg === 'object' && props.ufmg.organization_entry_date?.length !== 0 && version) && (
-<TooltipProvider>
-<Tooltip>
-<TooltipTrigger className="outline-none">
-  <div className="py-2 px-4 border border-neutral-200 bg-white dark:bg-black dark:border-neutral-800 rounded-md text-xs flex gap-2 items-center">
-    <CalendarBlank size={12} className="" />
-    Entrada na UFMG: {new Date(props.ufmg.organization_entry_date).toLocaleDateString('pt-BR')}
-  </div>
-</TooltipTrigger>
-<TooltipContent>
-  <p>Fonte: Escola de Engenharia UFMG</p>
-</TooltipContent>
-</Tooltip>
-</TooltipProvider>
-)}
+            {!version && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="outline-none">
+                    <Link target="_blank" to={`/indice-pesquisador`} onClick={() => onClose()} className="flex gap-0">
+                      <div className=" py-2 px-4 border border-neutral-200 bg-eng-blue text-white dark:bg-eng-blue dark:border-neutral-800  rounded-l-md text-xs flex gap-2 items-center"><ChartLine size={12} className="textwhite" /> índice do pesquisador: </div>
+                      <div
+                        className={`py-2 px-4 border border-neutral-200 border-l-0 text-white dark:border-neutral-800 rounded-r-md text-xs flex gap-2 items-center ${classificationColors[props.classification] || "bg-neutral-200"
+                          }`}
+                      >
+                        {props.classification}</div>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Saiba mais</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>)}
 
-
-  {props.i10_index?.length != 0 && (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger className="outline-none"> <div className=" py-2 px-4 border  border-neutral-200 bg-white dark:bg-black dark:border-neutral-800 rounded-md text-xs  flex gap-2 items-center"><ChartLine size={12} className="textwhite" />índice i10: {props.i10_index}</div></TooltipTrigger>
-        <TooltipContent>
-          <p>Dados do OpenAlex</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-
-  )}
-
-  {typeof props.ufmg === 'object' && props.ufmg.work_regime?.length != 0 && (
-    <div className=" py-2 px-4 border  border-neutral-200 bg-white dark:bg-black dark:border-neutral-800 rounded-md text-xs  flex gap-2 items-center"><Clock size={12} className="textwhite" />Regime de trabalho: {props.ufmg.work_regime}</div>
-
-  )}
-
-
-
-{typeof props.ufmg === 'object' && props.ufmg?.job_title?.length > 0 && (
-<div className="py-2 px-4 border border-neutral-200 bg-white dark:bg-black dark:border-neutral-800 rounded-md text-xs flex gap-2 items-center">
-<ChalkboardSimple size={12} className="textwhite" />
-{props.ufmg.job_title}
-</div>
-)}
-
-{!version && (
-  <TooltipProvider>
-  <Tooltip>
-    <TooltipTrigger className="outline-none">
-      <Link target="_blank" to={`/indice-pesquisador`} onClick={() => onClose()} className="flex gap-0">
-        <div className=" py-2 px-4 border border-neutral-200 bg-eng-blue text-white dark:bg-eng-blue dark:border-neutral-800  rounded-l-md text-xs flex gap-2 items-center"><ChartLine size={12} className="textwhite" /> índice do pesquisador: </div>
-        <div
-          className={`py-2 px-4 border border-neutral-200 border-l-0 text-white dark:border-neutral-800 rounded-r-md text-xs flex gap-2 items-center ${classificationColors[props.classification] || "bg-neutral-200"
-            }`}
-        >
-          {props.classification}</div>
-      </Link>
-    </TooltipTrigger>
-    <TooltipContent>
-      <p>Saiba mais</p>
-    </TooltipContent>
-  </Tooltip>
-</TooltipProvider>)}
-
-  <div
-    className={`
+            <div
+              className={`
      py-2 px-4 border  border-neutral-200 bg-white dark:bg-black dark:border-neutral-800 rounded-md text-xs  flex gap-2 items-center
 
       lg:hidden
 
     ${isOutdated6 ? ('bg-red-500 text-white border-none') : isOutdated ? ('bg-yellow-600 text-white border-none') : ('')}
   `}
-  >
-    <CalendarBlank size={12} /> Atualização do Lattes: {String(props.lattes_update)}
-  </div>
+            >
+              <CalendarBlank size={12} /> Atualização do Lattes: {String(props.lattes_update)}
+            </div>
 
-</div>
-  </>
-)}
-
-   
-
+          </div>
+        </>
+      )}
 
       {props.departments && props.departments.length != 0 && (
 
@@ -313,35 +262,6 @@ export function InformacoesGeraisResearcher(props: Research) {
         ))
 
       )}
-
-{props.ufmg.current_function_name && (
-
-
-  <div>
-    <div className="font-medium text-left text-2xl mb-6 pr-12">
-      Função de Confiança
-    </div>
-    <div className="flex relative flex-1 mb-6">
-
-      <div className={`w-2 min-w-[8px]  flex flex-1 relative rounded-l-lg bg-[#D6850F] border border-r-0 border-neutral-200 dark:border-neutral-800 `}></div>
-
-      <Alert className="flex justify-center  rounded-l-none gap-8 ">
-        <div className="flex flex-col flex-1 justify-center h-full">
-          <p className="mb-2 font-medium">{props.ufmg.current_function_name}</p>
-
-          <div className="text-xs text-gray-500 flex items-center gap-2">
-            {props.ufmg.function_location}
-          </div>
-        </div>
-
-       
-          <img src={fc} className="w-8 relative -top-4 h-[52px]" alt="" />
-       
-      </Alert>
-    </div>
-  </div>
-
-)}
 
       {props.subsidy.length != 0 && (
 
