@@ -1,0 +1,17 @@
+export interface GraduationProgramGuidance {
+    id: string,
+    student_researcher_id: string,
+    supervisor_researcher_id: string,
+    co_supervisor_researcher_id: string,
+    graduate_program_id: string,
+    start_date: string,
+    planned_date_project: string,
+    done_date_project: string,
+    planned_date_qualification: string,
+    done_date_qualification: string,
+    planned_date_conclusion: string,
+    done_date_conclusion: string,
+    created_at: string,
+    updated_at: string,
+    deleted_at: string
+}
