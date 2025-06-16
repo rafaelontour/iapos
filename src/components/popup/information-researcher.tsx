@@ -45,13 +45,6 @@ interface Props {
   scopus: string,
   openalex: string,
   openAPI: boolean
-
-  user:User
-}
-
-interface User {
-  linkedin: string
-  email: string
 }
 
 type Research = {
@@ -88,7 +81,7 @@ export function InformationResearcher(props: Props) {
     return text.replace(/&(?:quot|lt|gt|amp|apos|QUOT|LT|GT|AMP);/g, entity => entities[entity.toLowerCase() as keyof typeof entities]);
   };
 
-  
+
   const { urlGeral } = useContext(UserContext)
 
   //data atualização
@@ -116,21 +109,21 @@ export function InformationResearcher(props: Props) {
       // Just strip HTML and decode entities for display
       return stripHtmlTags(decodeHtmlEntities(text));
     }
-  
+
     // First decode HTML entities and strip tags
     const cleanText = stripHtmlTags(decodeHtmlEntities(text));
-  
+
     // Normalize terms for comparison
     const normalizedTerms = terms.map(term => normalizeText(term.term));
-  
+
     // Split text into words while preserving spaces
     const words = cleanText.split(/(\s+)/);
     const result: React.ReactNode[] = [];
-  
+
     words.forEach((word, index) => {
       const normalizedWord = normalizeText(word);
       const shouldHighlight = normalizedTerms.some(term => normalizedWord.includes(term));
-  
+
       if (shouldHighlight) {
         result.push(
           <span key={index} className="text-blue-500 font-semibold">
@@ -141,7 +134,7 @@ export function InformationResearcher(props: Props) {
         result.push(word);
       }
     });
-  
+
     return result;
   };
 
@@ -219,10 +212,10 @@ export function InformationResearcher(props: Props) {
                 </Link>
               )}
 
-{(props.openalex != '') && (
+              {(props.openalex != '') && (
                 <Link to={`${props.openalex}`} target="_blank" className="bg-black dark:bg-white py-2 px-4 text-white dark:text-black rounded-md text-xs font-bold flex gap-2 items-center">
                   <IdentificationBadge size={12} className="" />
-                OpenAlex
+                  OpenAlex
                 </Link>
               )}
 
@@ -239,16 +232,6 @@ export function InformationResearcher(props: Props) {
                 </Link>
               )}
               <a href={`https://lattes.cnpq.br/${props.lattes_id}`} target="blank_" className="bg-blue-900 py-2 px-4 text-white rounded-md text-xs font-bold flex gap-2 items-center"><LinkSimple size={12} className="textwhite" />Lattes: {props.lattes_id}</a>
-             
-
-             {props.user.linkedin ? (
-                <Link to={props.user.linkedin} target="_blank" className="bg-blue-500 py-2 px-4 text-white rounded-md text-xs font-bold flex gap-2 items-center">
-                <LinkedinLogo size={12} className="" />
-                LinkedIn
-              </Link>
-             ):(
-               <a href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(props.name)}`} rel="noopener noreferrer" target="blank_" className="bg-blue-500 py-2 px-4 text-white rounded-md text-xs font-bold flex gap-2 items-center"><LinkedinLogo size={12} className="textwhite" />Pesquisar no LinkedIn</a>
-             )}
             </div>
 
             <ScrollBar orientation="horizontal" />
@@ -273,39 +256,39 @@ export function InformationResearcher(props: Props) {
           </div>
         )}
 
-<div>
-<Tabs defaultValue="account" className="flex items-center flex-col">
-        <TabsList>
-          <TabsTrigger value="account"><Text size={16}/>Resumo do lattes</TabsTrigger>
-          <TabsTrigger value="password"><Text size={16}/>Resumo gerado pela {version ? ('GaIA'):('MarIA')}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="account" className="m-0">
-          <div className="flex items-center flex-col">
-          <div className={isVisible || (props.abstract.length < 500) ? "h-auto transition-all mb-4" : "h-[60px] overflow-hidden transition-all mb-4"}>
-          <p className="text-gray-400 text-sm text-justify ">{highlightedAbstract}</p>
+        <div>
+          <Tabs defaultValue="account" className="flex items-center flex-col">
+            <TabsList>
+              <TabsTrigger value="account"><Text size={16} />Resumo do lattes</TabsTrigger>
+              <TabsTrigger value="password"><Text size={16} />Resumo gerado pela {version ? ('GaIA') : ('MarIA')}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="account" className="m-0">
+              <div className="flex items-center flex-col">
+                <div className={isVisible || (props.abstract.length < 500) ? "h-auto transition-all mb-4" : "h-[60px] overflow-hidden transition-all mb-4"}>
+                  <p className="text-gray-400 text-sm text-justify ">{highlightedAbstract}</p>
+                </div>
+
+                {props.abstract.length > charLimit && (
+                  <div className="flex gap-4 items-center ">
+                    <Button
+                      variant='ghost'
+                      size={'icon'}
+                      className={`mb-2 ${!isVisible && 'animate-bounce'} h-8 w-8`}
+                      onClick={() => setIsVisible(!isVisible)}
+                    >
+                      <CaretDown
+                        size={16}
+                        className={isVisible ? "rotate-180 transition-all text-gray-400" : "text-gray-400 transition-all"}
+                      />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+
+
         </div>
-
-        {props.abstract.length > charLimit && (
-          <div className="flex gap-4 items-center ">
-            <Button
-              variant='ghost'
-              size={'icon'}
-              className={`mb-2 ${!isVisible && 'animate-bounce'} h-8 w-8`}
-              onClick={() => setIsVisible(!isVisible)}
-            >
-              <CaretDown
-                size={16}
-                className={isVisible ? "rotate-180 transition-all text-gray-400" : "text-gray-400 transition-all"}
-              />
-            </Button>
-          </div>
-        )}
-          </div>
-      </TabsContent>
-    </Tabs>
-  
-
-</div>
 
       </div>
     </div>
