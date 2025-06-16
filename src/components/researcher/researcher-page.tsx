@@ -59,6 +59,7 @@ import { CargosFuncoes } from "../popup/cargos-funcoes";
 import { Coautores } from "../popup/coautores";
 import { getInstitutionImage } from "../homepage/categorias/institutions-home/institution-image";
 
+
 export interface Research {
   among: number,
   articles: number,
@@ -66,7 +67,7 @@ export interface Research {
   book_chapters: number,
   id: string,
   status: boolean
-  institution_id:string
+  institution_id: string
   name: string,
   university: string,
   lattes_id: string,
@@ -82,7 +83,7 @@ export interface Research {
   brand: string,
   lattes_update: Date,
   entradanaufmg: Date
-  genero:string
+  genero: string
   h_index: string,
   relevance_score: string,
   works_count: string,
@@ -102,6 +103,7 @@ export interface Research {
   classe: string
   rt: string
   situacao: string
+  year_filter: string
 }
 
 interface Bolsistas {
@@ -234,9 +236,6 @@ export function ResearcherPage() {
   };
 
   let urlTermPesquisadores = urlGeral + `researcherName?name=${researcher_name}`;
-
-
-  console.log(urlTermPesquisadores)
 
   useMemo(() => {
     setItensSelecionadosPopUp(itemsSelecionados)
@@ -444,6 +443,7 @@ export function ResearcherPage() {
         <div className="hidden" id={`timeline-researcher-${user.id}`}>
           <TimeLineResearcher
             among={user.among}
+            year_filter={user.yearString}
             articles={user.articles}
             book={user.book}
             book_chapters={user.book_chapters}
@@ -478,9 +478,7 @@ export function ResearcherPage() {
             classe={user.classe}
             rt={user.rt}
             situacao={user.situacao}
-            year_filter={user.year_filter}
-            entradanaufmg={user.entradanaufmg}
-          />
+            entradanaufmg={user.entradanaufmg} status={false} institution_id={""} genero={""} classification={""} relevance_itens={0} />
         </div>
       </>
     );
@@ -720,8 +718,7 @@ export function ResearcherPage() {
                                   situacao={user.situacao}
 
                                   year_filter={yearString}
-                                  entradanaufmg={user.entradanaufmg}
-                                />
+                                  entradanaufmg={user.entradanaufmg} status={false} institution_id={""} genero={""} classification={""} relevance_itens={0} />
                               </div>
                             )
                           })}
@@ -804,9 +801,9 @@ export function ResearcherPage() {
 
                           <DropdownMenuItem className="flex items-center gap-3" onClick={() => handleDownloadJson()}><FileCsv className="h-4 w-4" />CSV dos artigos</DropdownMenuItem>
 
-                          
-                       <Link to={`${urlGeral}dictionary.pdf`}>
-                       <DropdownMenuItem className="flex items-center gap-3" ><File className="h-4 w-4" />Dicionário de dados</DropdownMenuItem></Link>
+
+                          <Link to={`${urlGeral}dictionary.pdf`}>
+                            <DropdownMenuItem className="flex items-center gap-3" ><File className="h-4 w-4" />Dicionário de dados</DropdownMenuItem></Link>
 
                           <DropdownMenuItem className="flex items-center gap-3" onClick={() => setOpen(!open)} ><BracketsCurly className="h-4 w-4" />API da consulta</DropdownMenuItem>
 
@@ -924,8 +921,7 @@ export function ResearcherPage() {
                             openalex={user.openalex}
 
 
-                            openAPI={open}
-                          />
+                            openAPI={open} />
 
                         </div>
                       )
@@ -943,282 +939,302 @@ export function ResearcherPage() {
                         </div></div>
                     )}
 
-                    
+
+                    <div className="grid grid-cols-1">
+                      <div className="flex gap-6 xl:flex-row flex-col-reverse">
                         <div className="grid grid-cols-1">
-                    <div className="flex gap-6 xl:flex-row flex-col-reverse">
-                      <div className="grid grid-cols-1">
-                      <div className="w-full flex-1 flex">
-                        <Tabs defaultValue="articles" value={value} className="flex-1 flex flex-col w-full">
-                          {researcher.slice(0, 1).map(() => (
-                            <div className="grid grid-cols-1 w-full">
-                              <ScrollArea className="mb-4">
-                                <TabsList className="mb-4 flex h-auto w-full">
+                          <div className="w-full flex-1 flex">
+                            <Tabs defaultValue="articles" value={value} className="flex-1 flex flex-col w-full">
+                              {researcher.slice(0, 1).map(() => (
+                                <div className="grid grid-cols-1 w-full">
+                                  <ScrollArea className="mb-4">
+                                    <TabsList className="mb-4 flex h-auto w-full">
 
-                                  <TabsTrigger
-                                    value="article"
-                                    onClick={() => setValue('article')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <Quotes size={16} className="" />
-                                    Artigos
-                                  </TabsTrigger>
-                                  <TabsTrigger
-                                    value="book"
-                                    onClick={() => setValue('book')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <BookOpen size={16} className="" />
-                                    Livros e capítulos
-                                  </TabsTrigger>
-                                  <TabsTrigger
-                                    value="producao-tecnica"
-                                    onClick={() => setValue('producao-tecnica')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <Stamp size={16} className="" />
-                                    Produção técnica
-                                  </TabsTrigger>
-                                  <TabsTrigger
-                                    value="relatorio-tecnico"
-                                    onClick={() => setValue('relatorio-tecnico')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <Files size={16} className="" />
-                                    Relatório técnico
-                                  </TabsTrigger>
-                                  <TabsTrigger
-                                    value="orientacoes"
-                                    onClick={() => setValue('orientacoes')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <Student size={16} className="" />
-                                    Orientações
-                                  </TabsTrigger>
-                                  <TabsTrigger
-                                    value="speaker"
-                                    onClick={() => setValue('speaker')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <Ticket size={16} className="" />
-                                    Participação em eventos
-                                  </TabsTrigger>
-                                  <TabsTrigger
-                                    value="research-project"
-                                    onClick={() => setValue('research-project')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <FolderKanban size={16} className="" />
-                                    Projetos de pesquisa
-                                  </TabsTrigger>
+                                      <TabsTrigger
+                                        value="article"
+                                        onClick={() => setValue('article')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <Quotes size={16} className="" />
+                                        Artigos
+                                      </TabsTrigger>
+                                      <TabsTrigger
+                                        value="book"
+                                        onClick={() => setValue('book')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <BookOpen size={16} className="" />
+                                        Livros e capítulos
+                                      </TabsTrigger>
+                                      <TabsTrigger
+                                        value="producao-tecnica"
+                                        onClick={() => setValue('producao-tecnica')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <Stamp size={16} className="" />
+                                        Produção técnica
+                                      </TabsTrigger>
+                                      <TabsTrigger
+                                        value="relatorio-tecnico"
+                                        onClick={() => setValue('relatorio-tecnico')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <Files size={16} className="" />
+                                        Relatório técnico
+                                      </TabsTrigger>
+                                      <TabsTrigger
+                                        value="orientacoes"
+                                        onClick={() => setValue('orientacoes')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <Student size={16} className="" />
+                                        Orientações
+                                      </TabsTrigger>
+                                      <TabsTrigger
+                                        value="speaker"
+                                        onClick={() => setValue('speaker')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <Ticket size={16} className="" />
+                                        Participação em eventos
+                                      </TabsTrigger>
+                                      <TabsTrigger
+                                        value="research-project"
+                                        onClick={() => setValue('research-project')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <FolderKanban size={16} className="" />
+                                        Projetos de pesquisa
+                                      </TabsTrigger>
 
-                                  <TabsTrigger
-                                    value="texto-revista"
-                                    onClick={() => setValue('texto-revista')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <BookOpenText size={16} className="" />
-                                    Textos em revista
-                                  </TabsTrigger>
+                                      <TabsTrigger
+                                        value="texto-revista"
+                                        onClick={() => setValue('texto-revista')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <BookOpenText size={16} className="" />
+                                        Textos em revista
+                                      </TabsTrigger>
 
-                                  <TabsTrigger
-                                    value="trabalho-evento"
-                                    onClick={() => setValue('trabalho-evento')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <Briefcase size={16} className="" />
-                                    Trabalhos em evento
-                                  </TabsTrigger>
+                                      <TabsTrigger
+                                        value="trabalho-evento"
+                                        onClick={() => setValue('trabalho-evento')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <Briefcase size={16} className="" />
+                                        Trabalhos em evento
+                                      </TabsTrigger>
 
-                                  <TabsTrigger
-                                    value="cargos"
-                                    onClick={() => setValue('cargos')}
-                                    className="flex gap-2 items-center"
-                                  >
-                                    <Waypoints size={16} className="" />
+                                      <TabsTrigger
+                                        value="cargos"
+                                        onClick={() => setValue('cargos')}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <Waypoints size={16} className="" />
 
-                                    Cargos e funções
-                                  </TabsTrigger>
+                                        Cargos e funções
+                                      </TabsTrigger>
 
-                                </TabsList>
+                                    </TabsList>
 
-                                <ScrollBar orientation="horizontal" />
-                              </ScrollArea>
-                            </div>
-                          ))}
-                          <TabsContent value="article">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <ArticlesResearcherPopUp name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-                          <TabsContent value="book">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <BooksResearcherPopUp name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-
-                          <TabsContent value="producao-tecnica">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <ProducaoTecnicaResearcherPopUp name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-
-                          <TabsContent value="relatorio-tecnico">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <RelatorioTecnicoResearcherPopUp name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-
-                          <TabsContent value="orientacoes">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <OrientacoesResearcherPopUp name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-
-                          <TabsContent value="speaker">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <SpeakerResearcherPopUp name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-
-                          <TabsContent value="research-project">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <ResearchProject name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-
-
-                          <TabsContent value="texto-revista">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <TextoRevista name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-
-                          <TabsContent value="trabalho-evento">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <WorkEvent name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-
-
-                          <TabsContent value="cargos">
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <CargosFuncoes name={String(user.id)} />
-                              )
-                            })}
-                          </TabsContent>
-                        </Tabs>
-                      </div>
-
-                      </div>
-
-                      <div className="xl:w-[350px] min-w-[350px]  w-full grid grid-cols-1">
-                        <ResponsiveMasonry
-                          columnsCountBreakPoints={{
-                            350: 1,
-                            750: 1,
-                            900: 1,
-                            1200: 1
-                          }}
-                        >
-                          <Masonry gutter="24px">
-
-                            {researcher.slice(0, 1).map((user) => {
-
-                              return (
-                                <InformacoesGeraisResearcher
-                                  h_index={user.h_index}
-                                  entradanaufmg={String(user.entradanaufmg)}
-                                  relevance_score={user.relevance_score}
-                                  works_count={user.works_count}
-                                  cited_by_count={user.cited_by_count}
-                                  i10_index={user.i10_index}
-                                  scopus={user.scopus}
-                                  orcid={user.orcid}
-                                  openalex={user.openalex}
-                                  subsidy={user.subsidy}
-                                  graduate_programs={user.graduate_programs}
-                                  departments={user.departments}
-                                  classification={user.classification}
-                                  cargo={user.cargo}
-                                  clas={user.clas}
-                                  classe={user.classe}
-                                  rt={user.rt}
-                                  situacao={user.situacao}
-                                  data_atualizacao_lattes={String(user.lattes_update)}
-                                  research_groups={user.research_groups}
-
-                                />
-                              )
-
-                            })}
-
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <TotalViewResearcher
-                                  among={user.among}
-                                  articles={user.articles}
-                                  book={user.book}
-                                  book_chapters={user.book_chapters}
-                                  patent={user.patent}
-                                  software={user.software}
-                                  brand={user.brand}
-                                />
-                              )
-                            })}
-
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <NuvemPalavras
-                                  id={user.id}
-                                />
-                              )
-                            })}
-
-                            {researcher.slice(0, 1).map((user) => {
-                              return (
-                                <Coautores
-                                  id={user.id}
-                                  name={user.name}
-                                />
-                              )
-                            })}
-
-                            {researcher.slice(0, 1).map(() => {
-                              return (
-                                <div>
-                                  <div className="mb-6 font-medium text-2xl">Nomes de citação</div>
-                                  <div className="flex flex-wrap gap-1">
-                                    {variations.map((variation, index) => (
-                                      <p className="text-xs " key={index}>{variation} /</p>
-                                    ))}
-                                  </div>
+                                    <ScrollBar orientation="horizontal" />
+                                  </ScrollArea>
                                 </div>
-                              )
-                            })}
+                              ))}
+                              <TabsContent value="article">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <ArticlesResearcherPopUp name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+                              <TabsContent value="book">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <BooksResearcherPopUp name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
 
-                          </Masonry>
-                        </ResponsiveMasonry>
+                              <TabsContent value="producao-tecnica">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <ProducaoTecnicaResearcherPopUp name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+
+                              <TabsContent value="relatorio-tecnico">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <RelatorioTecnicoResearcherPopUp name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+
+                              <TabsContent value="orientacoes">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <OrientacoesResearcherPopUp name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+
+                              <TabsContent value="speaker">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <SpeakerResearcherPopUp name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+
+                              <TabsContent value="research-project">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <ResearchProject name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+
+
+                              <TabsContent value="texto-revista">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <TextoRevista name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+
+                              <TabsContent value="trabalho-evento">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <WorkEvent name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+
+
+                              <TabsContent value="cargos">
+                                {researcher.slice(0, 1).map((user) => {
+                                  return (
+                                    <CargosFuncoes name={String(user.id)} />
+                                  )
+                                })}
+                              </TabsContent>
+                            </Tabs>
+                          </div>
+
+                        </div>
+
+                        <div className="xl:w-[350px] min-w-[350px]  w-full grid grid-cols-1">
+                          <ResponsiveMasonry
+                            columnsCountBreakPoints={{
+                              350: 1,
+                              750: 1,
+                              900: 1,
+                              1200: 1
+                            }}
+                          >
+                            <Masonry gutter="24px">
+
+                              {researcher.slice(0, 1).map((user) => {
+
+                                return (
+                                  <InformacoesGeraisResearcher
+                                    h_index={user.h_index}
+                                    relevance_score={user.relevance_score}
+                                    works_count={user.works_count}
+                                    cited_by_count={user.cited_by_count}
+                                    i10_index={user.i10_index}
+                                    scopus={user.scopus}
+                                    orcid={user.orcid}
+                                    openalex={user.openalex}
+                                    subsidy={user.subsidy}
+                                    graduate_programs={user.graduate_programs}
+                                    departments={user.departments}
+                                    classification={user.classification}
+                                    cargo={user.cargo}
+                                    clas={user.clas}
+                                    classe={user.classe}
+                                    rt={user.rt}
+                                    situacao={user.situacao}
+                                    data_atualizacao_lattes={String(user.lattes_update)}
+                                    research_groups={user.research_groups}
+                                    among={0}
+                                    articles={0}
+                                    institution_id={""}
+                                    book={0}
+                                    book_chapters={0}
+                                    id={""}
+                                    name={""}
+                                    university={""}
+                                    lattes_id={""}
+                                    area={""}
+                                    lattes_10_id={""}
+                                    abstract={""}
+                                    city={""}
+                                    image={""}
+                                    graduation={""}
+                                    patent={""}
+                                    software={""}
+                                    brand={""}
+                                    ind_prod={""}
+                                    status={false}
+                                    lattes_update={user.lattes_update}
+                                    abstract_ai={""}
+                                  />
+                                )
+
+                              })}
+
+                              {researcher.slice(0, 1).map((user) => {
+                                return (
+                                  <TotalViewResearcher
+                                    among={user.among}
+                                    articles={user.articles}
+                                    book={user.book}
+                                    book_chapters={user.book_chapters}
+                                    patent={user.patent}
+                                    software={user.software}
+                                    brand={user.brand}
+                                  />
+                                )
+                              })}
+
+                              {researcher.slice(0, 1).map((user) => {
+                                return (
+                                  <NuvemPalavras
+                                    id={user.id}
+                                  />
+                                )
+                              })}
+
+                              {researcher.slice(0, 1).map((user) => {
+                                return (
+                                  <Coautores
+                                    id={user.id}
+                                    name={user.name}
+                                  />
+                                )
+                              })}
+
+                              {researcher.slice(0, 1).map(() => {
+                                return (
+                                  <div>
+                                    <div className="mb-6 font-medium text-2xl">Nomes de citação</div>
+                                    <div className="flex flex-wrap gap-1">
+                                      {variations.map((variation, index) => (
+                                        <p className="text-xs " key={index}>{variation} /</p>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )
+                              })}
+
+                            </Masonry>
+                          </ResponsiveMasonry>
+                        </div>
                       </div>
-                    </div>
                     </div>
                   </DrawerHeader>
                 </div>
@@ -1269,8 +1285,7 @@ export function ResearcherPage() {
                 situacao={user.situacao}
 
                 year_filter={yearString}
-                entradanaufmg={user.entradanaufmg}
-              />
+                entradanaufmg={user.entradanaufmg} status={false} institution_id={""} genero={""} classification={""} relevance_itens={0} />
             ))}
           </TabsContent>
         </Tabs>
