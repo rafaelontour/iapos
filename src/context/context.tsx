@@ -18,10 +18,10 @@ interface User {
   departaments: Departaments[]
   provider: string
 
-    gp_count:number
-  dp_count:number
+  gp_count: number
+  dp_count: number
 
-  verify:boolean
+  verify: boolean
 
   birth_date: string
   course_level: string
@@ -86,16 +86,16 @@ interface UserContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 
-  keepoData:Keepo,
-  setKeepoData:React.Dispatch<React.SetStateAction<Keepo>>;
+  keepoData: Keepo,
+  setKeepoData: React.Dispatch<React.SetStateAction<Keepo>>;
 
-  historico:HistoricoItem[],
-  setHistorico:React.Dispatch<React.SetStateAction<HistoricoItem[]>>;
+  historico: HistoricoItem[],
+  setHistorico: React.Dispatch<React.SetStateAction<HistoricoItem[]>>;
 
 
   valoresSelecionadosExport: string;
   setValoresSelecionadosExport: React.Dispatch<React.SetStateAction<string>>;
-  
+
   idDocumentBarema: string;
   setIdDocumentBarema: React.Dispatch<React.SetStateAction<string>>;
 
