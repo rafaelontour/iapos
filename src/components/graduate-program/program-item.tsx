@@ -17,9 +17,9 @@ import { getInstitutionImageName } from "../homepage/categorias/institutions-hom
 import { Button } from "../ui/button";
 
 interface GraduateProgram {
+  avatar: string | undefined;
   area: string;
   code: string;
-  avatar:string
   graduate_program_id: string;
   modality: string;
   name: string;
@@ -37,10 +37,10 @@ interface GraduateProgram {
   qtd_permanente: string
   create_at?: string
   institution?: string;
-  researchers:string[]
-  acronym:string
+  researchers: string[]
+  acronym: string
 
-  url:string
+  url: string
 
 }
 
@@ -132,11 +132,11 @@ export function ProgramItem(props: GraduateProgram) {
       .replace(/[^A-Z0-9 ]/g, "") // Remove caracteres especiais
       .replace(/\s+/g, " ") // Substitui múltiplos espaços por um único espaço
       .trim();
-  
-  
+
+
   // Criamos o Map normalizando as chaves antes
   const qualisColor = new Map(areasComCores.map(([area, color]) => [normalizeArea(area), color]));
-  
+
   const getColorByArea = (area: string): string =>
     qualisColor.get(normalizeArea(area)) || 'bg-gray-500';
 
@@ -153,138 +153,138 @@ export function ProgramItem(props: GraduateProgram) {
     });
   }
 
-  const {onOpen} = useModal()
-  const {urlGeral, simcc, version} = useContext(UserContext)
+  const { onOpen } = useModal()
+  const { urlGeral, simcc, version } = useContext(UserContext)
 
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-  
-      useEffect(() => {
-        const fetchImage = async () => {
-          const url = await getInstitutionImageName(props.institution || '');
-          setImageUrl(url);
-        };
-    
-        fetchImage();
-      }, []);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const url = await getInstitutionImageName(props.institution || '');
+      setImageUrl(url);
+    };
+
+    fetchImage();
+  }, []);
 
   return (
-    <div onClick={() => handlePesquisaFinal()}   className="flex w-full cursor-pointer" key={props.graduate_program_id}>
- 
-    <Alert className="">
-    <div className="flex justify-between items-center gap-8">
-    <div className="text-xs font-medium mb-2 flex items-center gap-2 flex-1 min-w-0">
-    <span className="truncate">{props.area}</span>
-  </div>
-                                     <div className="flex gap-2 items-center">
-                                   {!version && (
-                                      <div className="text-gray-500 text-sm flex gap-1 items-center">
-                                      {!imageUrl ? (
-                                           <Buildings size={16} className="" />
-                                         ) : (
-                                           <img src={imageUrl} alt="" className="h-4" />
-                                         )}
-                                   
-                                     </div>
-                                   )}
-                                     <p
-  className={`text-white mb-1 px-2 rounded-md p-1 h-fit text-xs flex items-center gap-1 
-    ${ Number(props.rating) <= 2 ? 'bg-gray-500' : 
-      Number(props.rating) <= 4 ? 'bg-yellow-500' : 
-      Number(props.rating) ? 'bg-green-500' : 
-      'bg-blue-500'}`}
->
-  <Star size={12} />{props.rating}
-</p>
-                                     </div>
+    <div onClick={() => handlePesquisaFinal()} className="flex w-full cursor-pointer" key={props.graduate_program_id}>
 
-                                    </div>
-                                    <div className="flex gap-3 mt-2">
-  <Avatar 
-    className="cursor-pointer rounded-md relative border dark:border-neutral-800 h-14 w-14 flex-shrink-0"
-  >
-    <AvatarImage 
-      className="rounded-md h-14 w-14" 
-      src={props.avatar} 
-    />
-    <AvatarFallback className="flex items-center justify-center">
-      <GraduationCapIcon size={16} />
-    </AvatarFallback>
-  </Avatar>
+      <Alert className="">
+        <div className="flex justify-between items-center gap-8">
+          <div className="text-xs font-medium mb-2 flex items-center gap-2 flex-1 min-w-0">
+            <span className="truncate">{props.area}</span>
+          </div>
+          <div className="flex gap-2 items-center">
+            {!version && (
+              <div className="text-gray-500 text-sm flex gap-1 items-center">
+                {!imageUrl ? (
+                  <Buildings size={16} className="" />
+                ) : (
+                  <img src={imageUrl} alt="" className="h-4" />
+                )}
 
-  <div className="flex-1 min-w-0">
-    <div className="font-semibold text-lg ">
-      <h3 className="truncate">{props.name}</h3>
-    </div>
+              </div>
+            )}
+            <p
+              className={`text-white mb-1 px-2 rounded-md p-1 h-fit text-xs flex items-center gap-1 
+    ${Number(props.rating) <= 2 ? 'bg-gray-500' :
+                  Number(props.rating) <= 4 ? 'bg-yellow-500' :
+                    Number(props.rating) ? 'bg-green-500' :
+                      'bg-blue-500'}`}
+            >
+              <Star size={12} />{props.rating}
+            </p>
+          </div>
 
-    <div className="flex gap-3 flex-wrap">
-      {!version && (
-        <div className="text-gray-500 text-sm flex gap-1 items-center">
-          <MapPin size={12} className="flex-shrink-0" />
-          <span className="truncate">{props.city}/{props.state}</span>
         </div>
-      )}
+        <div className="flex gap-3 mt-2">
+          <Avatar
+            className="cursor-pointer rounded-md relative border dark:border-neutral-800 h-14 w-14 flex-shrink-0"
+          >
+            <AvatarImage
+              className="rounded-md h-14 w-14"
+              src={props.avatar}
+            />
+            <AvatarFallback className="flex items-center justify-center">
+              <GraduationCapIcon size={16} />
+            </AvatarFallback>
+          </Avatar>
 
-      <div className="text-gray-500 text-sm flex gap-1 items-center">
-        <GraduationCapIcon size={12} className="flex-shrink-0" />
-        <span className="truncate">{props.type}</span>
-      </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-lg ">
+              <h3 className="truncate">{props.name}</h3>
+            </div>
 
-      <div className="text-gray-500 text-sm flex gap-1 items-center">
-        <Briefcase size={12} className="flex-shrink-0" />
-        <span className="truncate">{props.modality}</span>
-      </div>
-    </div>
-  </div>
-</div>
+            <div className="flex gap-3 flex-wrap">
+              {!version && (
+                <div className="text-gray-500 text-sm flex gap-1 items-center">
+                  <MapPin size={12} className="flex-shrink-0" />
+                  <span className="truncate">{props.city}/{props.state}</span>
+                </div>
+              )}
 
-        
+              <div className="text-gray-500 text-sm flex gap-1 items-center">
+                <GraduationCapIcon size={12} className="flex-shrink-0" />
+                <span className="truncate">{props.type}</span>
+              </div>
 
-      {props.researchers.length > 0 && (
+              <div className="text-gray-500 text-sm flex gap-1 items-center">
+                <Briefcase size={12} className="flex-shrink-0" />
+                <span className="truncate">{props.modality}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        {props.researchers.length > 0 && (
           <div className="flex justify-between items-center mt-8 ">
             <p className="text-sm text-gray-500">Pesquisadores:</p>
-          <div className="flex items-center gap-2">
-          
-                 {props.researchers.slice(0, 5).map((item, index) => (
-                   <Avatar 
-                     key={item}
-                     onClick={(event) => {
-                       event.stopPropagation(); 
-                       onOpen('researcher-modal', { name: item });
-                     }} 
-                     className="cursor-pointer rounded-full relative border dark:border-neutral-800 h-8 w-8 hover:z-10 transition-transform hover:scale-110"
-                     style={{
-                       marginLeft: index > 0 ? '-10px' : '0px',
-                     
-                     }}
-                   >
-                     <AvatarImage 
-                       className="rounded-md h-8 w-8" 
-                       src={`${urlGeral}ResearcherData/Image?name=${item}`} 
-                     />
-                     <AvatarFallback className="flex items-center justify-center">
-                       <User size={16} />
-                     </AvatarFallback>
-                   </Avatar>
-                 ))}
-               
-                 {props.researchers.length > 5 && (
-                   <div 
-                     className="h-8 w-8 flex items-center justify-center text-gray-500 bg-gray-100 dark:bg-neutral-800 rounded-full border dark:border-neutral-700 text-xs font-medium"
-                     style={{ marginLeft: '-10px' }}
-                   >
-                     +{props.researchers.length - 5}
-                   </div>
-                 )}
-               </div>
-  
-              
+            <div className="flex items-center gap-2">
+
+              {props.researchers.slice(0, 5).map((item, index) => (
+                <Avatar
+                  key={item}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onOpen('researcher-modal', { name: item });
+                  }}
+                  className="cursor-pointer rounded-full relative border dark:border-neutral-800 h-8 w-8 hover:z-10 transition-transform hover:scale-110"
+                  style={{
+                    marginLeft: index > 0 ? '-10px' : '0px',
+
+                  }}
+                >
+                  <AvatarImage
+                    className="rounded-md h-8 w-8"
+                    src={`${urlGeral}ResearcherData/Image?name=${item}`}
+                  />
+                  <AvatarFallback className="flex items-center justify-center">
+                    <User size={16} />
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+
+              {props.researchers.length > 5 && (
+                <div
+                  className="h-8 w-8 flex items-center justify-center text-gray-500 bg-gray-100 dark:bg-neutral-800 rounded-full border dark:border-neutral-700 text-xs font-medium"
+                  style={{ marginLeft: '-10px' }}
+                >
+                  +{props.researchers.length - 5}
+                </div>
+              )}
+            </div>
+
+
           </div>
-            
-      )}
+
+        )}
 
 
       </Alert>
-      </div>
+    </div>
 
   )
 }
