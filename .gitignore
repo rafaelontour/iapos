@@ -14,7 +14,7 @@ dist-ssr
 *.local
 
 .env
-
+cert.json
 
 # Editor directories and files
 .vscode/*

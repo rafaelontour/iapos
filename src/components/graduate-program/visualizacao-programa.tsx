@@ -307,10 +307,6 @@ export function VisualizacaoPrograma() {
     };
   }, []);
 
-
-
-
-  /////////////
   const [keepoData, setKeepoData] = useState<Keepo>({
     app: {
       background_color: "",
@@ -334,8 +330,6 @@ export function VisualizacaoPrograma() {
     },
     content: [],
   });
-
-
 
   ////firebase
   const graduate_program_id = queryUrl.get('graduate_program_id');

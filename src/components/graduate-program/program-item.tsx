@@ -187,11 +187,10 @@ export function ProgramItem(props: GraduateProgram) {
               </div>
             )}
             <p
-              className={`text-white mb-1 px-2 rounded-md p-1 h-fit text-xs flex items-center gap-1 
-    ${Number(props.rating) <= 2 ? 'bg-gray-500' :
-                  Number(props.rating) <= 4 ? 'bg-yellow-500' :
-                    Number(props.rating) ? 'bg-green-500' :
-                      'bg-blue-500'}`}
+              className={`text-white mb-1 px-2 rounded-md p-1 h-fit text-xs flex items-center gap-1 ${Number(props.rating) <= 2 ? 'bg-gray-500' :
+                Number(props.rating) <= 4 ? 'bg-yellow-500' :
+                  Number(props.rating) ? 'bg-green-500' :
+                    'bg-blue-500'}`}
             >
               <Star size={12} />{props.rating}
             </p>
