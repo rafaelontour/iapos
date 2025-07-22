@@ -26,6 +26,9 @@ import { data } from "@remix-run/router";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { set } from "date-fns";
 import { et } from "date-fns/locale";
+import { parse } from "path";
+import { getDiscentesPorPrograma } from "../../../service/discentes";
+import { getDoscentesPorPrograma } from "../../../service/doscentes";
 
 
 export interface PesquisadorProps {
@@ -149,8 +152,6 @@ export function DocentesGraduate(props: Props) {
   const handleSubmit = async () => {
     const currentYear = new Date().getFullYear();
 
-
-
     try {
       const data = [
         {
@@ -161,8 +162,6 @@ export function DocentesGraduate(props: Props) {
 
         }
       ]
-
-
 
       let urlProgram = urlGeralAdm + 'GraduateProgramResearcherRest/Insert'
 
@@ -567,6 +566,7 @@ export function DocentesGraduate(props: Props) {
   // Rafael
 
   const [tipoOrientacao, setTipoOrientacao] = useState<string>("0")
+  const [dataEntrada, setDataEntrada] = useState<string>("0")
   const [dataPrevisaoDefesa, setDataPrevisaoDefesa] = useState<string>("0")
   const [dataRealizadaDefesa, setDataRealizadaDefesa] = useState<string>("0")
 
@@ -576,76 +576,100 @@ export function DocentesGraduate(props: Props) {
   const [dataPrevisaoDefesaFinal, setDataPrevisaoDefesaFinal] = useState<string>("0")
   const [dataRealizadaDefesaFinal, setDataRealizadaDefesaFinal] = useState<string>("0")
 
+  const [discentesPosGraduacao, setDiscentesPosGraduacao] = useState<any[]>([])
+  const [doscentesPosGraduacao, setDoscentesPosGraduacao] = useState<any[]>([])
+
   useEffect(() => {
-    if (dataPrevisaoDefesa !== "0" && tipoOrientacao !== "0") {
-      gerarDataRealizada(dataPrevisaoDefesa, "ATUALIZAR")
-      console.log("CHAMOU")
+    if (dataEntrada !== "0" && tipoOrientacao !== "0") {
+      gerarDatas(dataEntrada, "DEFESA_DO_PROJETO");
+      gerarDatas(dataEntrada, "QUALIFICACAO");
+      gerarDatas(dataEntrada, "DEFESA_FINAL");
     }
-  }, [dataPrevisaoDefesa, tipoOrientacao])
+  }, [dataEntrada, tipoOrientacao])
 
-  function gerarDataRealizada(d: string, tipo?: string): void {
+  useEffect(() => {
+    const discentes = getDiscentesPorPrograma(props.graduate_program_id);
 
-    const [anoStr, mesStr] = d.split("-");
+    discentes.then((response) => {
+      setDiscentesPosGraduacao(response)
+    })
+
+    const doscentes = getDoscentesPorPrograma(props.graduate_program_id);
+
+    doscentes.then((response) => {
+      setDoscentesPosGraduacao(response)
+    })
+  }, [])
+
+  function gerarDatas(d: string, tipo?: string): void {
+
+    if (d && !tipo) {
+      setDataEntrada(d);
+      return
+    }
+
+    const [anoStr, mesStr, diaStr] = d.split("-");
     const ano = parseInt(anoStr);
     const mes = parseInt(mesStr) - 1;
+    const dia = parseInt(diaStr);
 
-    // ⚠️ Sempre crie com dia 1
-    const data = new Date(ano, mes, 1);
+    const data = new Date(ano, mes, dia);
     let mesesAdicionais: number;
 
     if (tipo) {
       if (tipo === "DEFESA_DO_PROJETO") {
-        setDataPrevisaoDefesa(d);
-        tipoOrientacao === "MESTRADO" ? mesesAdicionais = 2 : mesesAdicionais = 5;
+        console.log("ENTROU IF DEFESA");
+        tipoOrientacao === "MESTRADO" ? mesesAdicionais = 3 : mesesAdicionais = 5;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
-        data.setDate(1); // Força dia 1 novamente após setMonth para garantir precisão
+        data.setDate(dia);
 
         const novoAno = data.getFullYear();
-        const novoMes = String(data.getMonth() + 1).padStart(2, "0");
-        const dataFormada = `${novoAno}-${novoMes}`;
+        const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
+        const novoMesRealizada = String(data.getMonth() + 1).padStart(2, "0");
 
-        console.log("Data recebida:", dataPrevisaoDefesa);
-        console.log("Tipo de orientação:", tipoOrientacao);
-        console.log("Data calculada:", dataFormada);
+        const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
+        const dataFormadaRealizada = `${novoAno}-${novoMesRealizada}-${diaStr}`;
 
-        setDataRealizadaDefesa(dataFormada);
+        setDataPrevisaoDefesa(dataFormadaPrevisao);
+        setDataRealizadaDefesa(dataFormadaRealizada);
       }
 
       if (tipo === "QUALIFICACAO") {
-        setDataPrevisaoQualificacao(d);
+        console.log("ENTROU IF QUALIFICACAO");
         tipoOrientacao === "MESTRADO" ? mesesAdicionais = 12 : mesesAdicionais = 24;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
-        data.setDate(1); // Força dia 1 novamente após setMonth para garantir precisão
+        data.setDate(dia);
 
         const novoAno = data.getFullYear();
-        const novoMes = String(data.getMonth() + 1).padStart(2, "0");
-        const dataFormada = `${novoAno}-${novoMes}`;
+        const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
+        const novoMesRealizada = String(data.getMonth() + 1).padStart(2, "0");
 
-        console.log("Data recebida:", dataPrevisaoDefesa);
-        console.log("Tipo de orientação:", tipoOrientacao);
-        console.log("Data calculada:", dataFormada);
+        const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
+        const dataFormadaRealizada = `${novoAno}-${novoMesRealizada}-${diaStr}`;
 
-        setDataRealizadaQualificacao(dataFormada);
+        setDataPrevisaoQualificacao(dataFormadaPrevisao);
+        setDataRealizadaQualificacao(dataFormadaRealizada);
       }
 
       if (tipo === "DEFESA_FINAL") {
+        console.log("ENTROU IF DEFESA FINAL");
         setDataPrevisaoDefesaFinal(d);
         tipoOrientacao === "MESTRADO" ? mesesAdicionais = 24 : mesesAdicionais = 48;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
-        data.setDate(1); // Força dia 1 novamente após setMonth para garantir precisão
+        data.setDate(dia);
 
         const novoAno = data.getFullYear();
-        const novoMes = String(data.getMonth() + 1).padStart(2, "0");
-        const dataFormada = `${novoAno}-${novoMes}`;
+        const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
+        const novoMesRealizada = String(data.getMonth() + 1).padStart(2, "0");
 
-        console.log("Data recebida:", dataPrevisaoDefesa);
-        console.log("Tipo de orientação:", tipoOrientacao);
-        console.log("Data calculada:", dataFormada);
+        const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
+        const dataFormadaRealizada = `${novoAno}-${novoMesRealizada}-${diaStr}`;
 
-        setDataRealizadaDefesaFinal(dataFormada);
+        setDataPrevisaoDefesaFinal(dataFormadaPrevisao);
+        setDataRealizadaDefesaFinal(dataFormadaRealizada);
       }
 
     }
@@ -909,7 +933,7 @@ export function DocentesGraduate(props: Props) {
                     { /* Rafael - Modificações pro IAPÓS */}
 
                     <div className="flex mt-4">
-                      <Tabs className="w-full">
+                      <Tabs className="w-full ">
                         <div className="flex items-center justify-between mb-3">
                           <TabsList className="py-3">
                             <TabsTrigger value="entrada">Entrada</TabsTrigger> <Separator orientation="vertical" />
@@ -926,71 +950,91 @@ export function DocentesGraduate(props: Props) {
                             </DialogTrigger>
 
                             <DialogContent className="w-[60%]">
-                              <p className="text-2xl font-bold">Adicone um orientado para este docente</p>
+                              <p className="text-3xl font-bold">Adicione um orientando para este docente</p>
 
-                              <form className="flex flex-col gap-3" action="">
-                                <div className="flex items-center justify-between">
-                                  <label htmlFor="name">Orientado: </label>
-                                  <select className="w-full border-[3px] ml-3 py-2 px-4 rounded-md" name="" id="">
-                                    <option value="Eduardo Manuel de Freitas Jorge">Eduardo Manuel de Freitas Jorge</option>
-                                    <option value="Hugo Saba">Hugo Saba</option>
-                                    <option value="Joaquim Silva">Joaquim Silva</option>
-                                    <option value="Alana Carolina">Alana Carolina</option>
-                                  </select>
-                                </div>
+                              <form className="flex flex-col gap-3 text-sm" action="">
+                                <div className="flex gap-3">
+                                  <div className="flex flex-col gap-3 w-1/2 border border-gray-300 rounded-md p-3">
+                                    <div className="flex items-center justify-between">
+                                      <label className="text-lg font-bold" htmlFor="name">Orientando: </label>
+                                      <select className="w-full border-[3px] ml-3 py-2 px-4 rounded-md" name="" id="">
+                                        <option value="" disabled selected>Selecione um orientando</option>
+                                        {
+                                          discentesPosGraduacao && discentesPosGraduacao.map((discente) => (
+                                            <option key={discente.lattes_id} value={discente.name}>{discente.name}</option>
+                                          ))
+                                        }
+                                      </select>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-0">
+                                      <label className="text-lg font-bold" htmlFor="name">Coorientador: </label>
+                                      <select className="w-full border-[3px] ml-3 py-2 px-4 rounded-md" name="" id="">
+                                        <option value="" disabled selected>Selecione um coorientador</option>
+                                        {
+                                          doscentesPosGraduacao && doscentesPosGraduacao.map((doscente) => (
+                                            <option key={doscente.lattes_id} value={doscente.name}>{doscente.name}</option>
+                                          ))
+                                        }
+                                      </select>
+                                    </div>
+                                  </div>
 
-                                <div className="flex items-center justify-between">
-                                  <label htmlFor="name">Coorientador: </label>
-                                  <select className="w-full border-[3px] ml-3 py-2 px-4 rounded-md" name="" id="">
-                                    <option value="Eduardo Manuel de Freitas Jorge">Eduardo Manuel de Freitas Jorge</option>
-                                    <option value="Hugo Saba">Hugo Saba</option>
-                                    <option value="Joaquim Silva">Joaquim Silva</option>
-                                    <option value="Alana Carolina">Alana Carolina</option>
-                                  </select>
-                                </div>
-
-                                <div>
-                                  <p>Selecione um tipo de orientação: </p>
-
-                                  <div className="flex items-center gap-3 m-3">
-                                    <label className="flex items-center gap-2 hover:cursor-pointer" htmlFor="mestrado">
-                                      <input
-                                        className="hover:cursor-pointer"
-                                        type="radio"
-                                        name="orientacao"
-                                        id="mestrado"
-                                        value="Mestrado"
-                                        onChange={() => {
-                                          const t1 = "MESTRADO"
-                                          setTipoOrientacao(t1)
-                                          console.log("TIPO DE ORIENTACAO: ", tipoOrientacao)
-
-                                        }}
-                                      /> Mestrado
-                                    </label>
-
-                                    <label className="flex items-center gap-2 hover:cursor-pointer" htmlFor="doutorado">
-                                      <input
-                                        className="hover:cursor-pointer"
-                                        type="radio"
-                                        name="orientacao"
-                                        id="doutorado"
-                                        value="Doutorado"
-                                        onChange={() => {
-                                          const t2 = "DOUTORADO"
-                                          setTipoOrientacao(t2)
-                                          console.log("TIPO DE ORIENTACAO: ", tipoOrientacao)
-                                          console.log("CLICOU")
-                                          console.log("dataPrevisaoDefesa: ", dataPrevisaoDefesa, "tipoOrientacao: ", tipoOrientacao)
-
-                                        }}
-                                      /> Doutorado
-                                    </label>
+                                  <div className="w-1/2 border border-gray-300 rounded-md p-3">
+                                    <p className="text-lg font-bold">Selecione um tipo de orientação: </p>
+                                    <div className="flex flex-grow items-center gap-3 m-3">
+                                      <label className="flex items-center gap-2 hover:cursor-pointer" htmlFor="mestrado">
+                                        <input
+                                          className="hover:cursor-pointer w-full border-[3px] ml-3 py-2 px-4 rounded-md"
+                                          type="radio"
+                                          name="orientacao"
+                                          id="mestrado"
+                                          value="Mestrado"
+                                          onChange={(e) => {
+                                            setTipoOrientacao(e.target.value.toUpperCase())
+                                          }}
+                                        /> Mestrado
+                                      </label>
+                                      <label className="flex items-center gap-2 hover:cursor-pointer" htmlFor="doutorado">
+                                        <input
+                                          className="hover:cursor-pointer"
+                                          type="radio"
+                                          name="orientacao"
+                                          id="doutorado"
+                                          value="Doutorado"
+                                          onChange={(e) => {
+                                            setTipoOrientacao(e.target.value.toUpperCase())
+                                          }}
+                                        /> Doutorado
+                                      </label>
+                                    </div>
                                   </div>
                                 </div>
 
+                                <div className="flex items-center gap-1 flex-grow border border-gray-300 rounded-md p-3">
+                                  <p className="text-lg font-bold min-w-fit">Selecione uma data de entrada: </p>
+                                  <label className="flex w-full items-center gap-2 hover:cursor-pointer" htmlFor="dataEntrada">
+                                    <input
+                                      className="hover:cursor-pointer w-full border-[3px] ml-5 py-1 px-4 rounded-md"
+                                      type="date"
+                                      name="dataEntrada"
+                                      id="dataEntrada"
+                                      onClick={() => {
+                                        if (tipoOrientacao == "0") {
+                                          alert("Selecione um TIPO DE ORIENTAÇÃO antes de definir uma data de entrada do orientando.")
+                                          return
+                                        }
+                                      }}
+                                      onChange={(e) => {
+                                        gerarDatas(e.target.value)
+                                      }}
+                                    />
+
+                                  </label>
+                                </div>
+
+
                                 <div
-                                  className="flex flex-col gap-3 border rounded-md h-[400px] p-6"
+                                  className="flex flex-col gap-3 border rounded-md h-[400px] p-3"
                                   style={{ boxShadow: '3px 3px 3px rgba(0, 0, 0, 0.25)' }}
                                 >
                                   <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
@@ -1005,16 +1049,17 @@ export function DocentesGraduate(props: Props) {
                                         <input
                                           className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
                                           onClick={() => {
-                                            if (tipoOrientacao == "0") {
-                                              alert("Selecione um TIPO DE ORIENTAÇÃO antes de selecionar uma data!");
+                                            if (tipoOrientacao == "0" || dataEntrada == "0") {
+                                              alert("Selecione uma DATA DE ENTRADA e um TIPO DE ORIENTAÇÃO. As datas de PREVISÃO e REALIZAÇÃO de defesa do projeto serão geradas automaticamente!");
                                               return;
                                             }
                                           }}
                                           onChange={(e) => {
-                                            gerarDataRealizada(e.target.value, "DEFESA_DO_PROJETO");
+                                            gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
                                           }}
-                                          type="month"
+                                          type="date"
                                           id="dataPrevista"
+                                          value={dataPrevisaoDefesa == "0" ? "" : dataPrevisaoDefesa}
                                         />
                                       </div>
 
@@ -1028,7 +1073,7 @@ export function DocentesGraduate(props: Props) {
                                               return;
                                             }
                                           }}
-                                          type="month"
+                                          type="date"
                                           value={dataRealizadaDefesa == "0" ? "" : dataRealizadaDefesa}
                                         />
                                       </div>
@@ -1049,10 +1094,11 @@ export function DocentesGraduate(props: Props) {
                                             }
                                           }}
                                           onChange={(e) => {
-                                            gerarDataRealizada(e.target.value, "QUALIFICACAO");
+                                            gerarDatas(e.target.value, "QUALIFICACAO");
                                           }}
-                                          type="month"
+                                          type="date"
                                           id="dataPrevista"
+                                          value={dataPrevisaoQualificacao == "0" ? "" : dataPrevisaoQualificacao}
                                         />
                                       </div>
 
@@ -1060,7 +1106,7 @@ export function DocentesGraduate(props: Props) {
                                         <label htmlFor="dataRealizada">Realizada: </label>
                                         <input
                                           className="w-full border-[2px] px-2 py-1 rounded-md"
-                                          type="month"
+                                          type="date"
                                           onClick={() => {
                                             if (tipoOrientacao == "0" && dataPrevisaoQualificacao == "0") {
                                               alert("Para modificar a data de realização da qualificação, primeiro selecione um TIPO DE ORIENTAÇÃO e informe uma DATA PREVISTA de início!");
@@ -1087,10 +1133,11 @@ export function DocentesGraduate(props: Props) {
                                             }
                                           }}
                                           onChange={(e) => {
-                                            gerarDataRealizada(e.target.value, "DEFESA_FINAL");
+                                            gerarDatas(e.target.value, "DEFESA_FINAL");
                                           }}
-                                          type="month"
+                                          type="date"
                                           id="dataPrevista"
+                                          value={dataPrevisaoDefesaFinal == "0" ? "" : dataPrevisaoDefesaFinal}
                                         />
                                       </div>
 
@@ -1098,7 +1145,7 @@ export function DocentesGraduate(props: Props) {
                                         <label htmlFor="dataRealizada">Realizada: </label>
                                         <input
                                           className="w-full border-[2px] px-2 py-1 rounded-md"
-                                          type="month"
+                                          type="date"
                                           onClick={() => {
                                             if (tipoOrientacao == "0" && dataPrevisaoDefesaFinal == "0") {
                                               alert("Para modificar a data de realização da defesa do projeto, primeiro selecione um TIPO DE ORIENTAÇÃO e informe uma DATA PREVISTA de início!");
@@ -1118,6 +1165,7 @@ export function DocentesGraduate(props: Props) {
                                 title="Fechar"
                                 onClick={() => {
                                   setTipoOrientacao("0")
+                                  setDataEntrada("0")
                                   setDataPrevisaoDefesa("0")
                                   setDataRealizadaDefesa("0")
                                   setDataPrevisaoQualificacao("0")
@@ -1164,7 +1212,7 @@ export function DocentesGraduate(props: Props) {
           </Accordion>
         </div>
 
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
