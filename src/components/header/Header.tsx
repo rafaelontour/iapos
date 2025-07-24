@@ -26,17 +26,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 export function Header() {
   const { loggedIn, role, setItensSelecionados, version, searchType, maria, user, permission } = useContext(UserContext)
 
-  const { theme, setTheme } = useTheme()
-
   const navigate = useNavigate()
 
   const handleClick = () => {
     navigate('/')
     setItensSelecionados([])
   }
-
-  const location = useLocation();
-  const isVisible = location.pathname != '/' && location.pathname != '/resultados' && location.pathname != '/marIA' && location.pathname != '/pos-graduacao'
 
   return (
     <div className={'top-0 w-full'}>
@@ -45,15 +40,15 @@ export function Header() {
 
           <div className="flex w-full md:gap-3 gap-1 items-center md:h-full md:justify-center">
 
-              <Link to={"/"} className="w-[80px]">
-                <img src="../../assets/iapos.png" className="" alt="Logo Iapos" />
-              </Link>
+            <Link to={"/"} className="w-[80px]">
+              <img src="/assets/iapos.png" className="" alt="Logo Iapos" />
+            </Link>
 
             <Separator orientation="vertical" className="mx-2 md:mx-0 h-6 bg-slate-300" />
 
             <div className="min-w-max">
               <Link to={"https://www.senaicimatec.com.br"} target="_blank" className="whitespace-nowrap ">
-                <img src="../../assets/logo_cimatec.png" className="h-6" alt="Logo Cimatec" />
+                <img src="/assets/logo_cimatec.png" className="h-6" alt="Logo Cimatec" />
               </Link>
             </div>
 
@@ -63,62 +58,62 @@ export function Header() {
         </div>
 
         <div className="hidden md:flex gap-3 items-center">
-            {!loggedIn && (
-              <Link to={'/signIn'}>
-                <Button variant='ghost' size="sm" className="h-8 px-2" >
-                  <LogInIcon className="h-4 w-4" />
-                  Fazer login
-                </Button></Link>
-            )}
-            {!loggedIn && (
-              <Link to={'/signUp'}>
-                <Button size="sm" className="h-8 px-2">
-                  <UserPlus className="h-4 w-4" />
-                  Criar conta
-                </Button></Link>
-            )}
-          </div>
+          {!loggedIn && (
+            <Link to={'/signIn'}>
+              <Button variant='ghost' size="sm" className="h-8 px-2" >
+                <LogInIcon className="h-4 w-4" />
+                Fazer login
+              </Button></Link>
+          )}
+          {!loggedIn && (
+            <Link to={'/signUp'}>
+              <Button size="sm" className="h-8 px-2">
+                <UserPlus className="h-4 w-4" />
+                Criar conta
+              </Button></Link>
+          )}
+        </div>
 
-          {
-            !loggedIn && (
-              <div className="md:hidden">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant='outline' size="icon" className="h-8 w-8" >
-                      <UserCircleGear className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="mr-5">
-                    <DropdownMenuItem>
-                      <Link className="flex gap-2 items-center" to={'/signIn'}>
-                        <UserPlus className="h-4 w-4" />
-                        <p>Criar conta</p>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link className="flex gap-2 items-center" to={'/signUp'}>
-                        <LogInIcon className="h-4 w-4" />
-                        <p>Fazer login</p>
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-            )
-          }
-
-          <div className="hidden md:flex md:gap-2">
-            <div>
-              {(loggedIn && permission.length > 0) && (
-                <Link to={'/dashboard'}>
-                  <Button variant='outline' size="sm" className="h-8 px-2" >
-                    <LayoutDashboard className="h-4 w-4" />
-                    Console
-                  </Button></Link>
-              )}
+        {
+          !loggedIn && (
+            <div className="md:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='outline' size="icon" className="h-8 w-8" >
+                    <UserCircleGear className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="mr-5">
+                  <DropdownMenuItem>
+                    <Link className="flex gap-2 items-center" to={'/signIn'}>
+                      <UserPlus className="h-4 w-4" />
+                      <p>Criar conta</p>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link className="flex gap-2 items-center" to={'/signUp'}>
+                      <LogInIcon className="h-4 w-4" />
+                      <p>Fazer login</p>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
+
+          )
+        }
+
+        <div className="hidden md:flex md:gap-2">
+          <div>
+            {(loggedIn && permission.length > 0) && (
+              <Link to={'/dashboard'}>
+                <Button variant='outline' size="sm" className="h-8 px-2" >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Console
+                </Button></Link>
+            )}
           </div>
+        </div>
 
         <div className="w-full flex items-center justify-end md:justify-end gap-1">
           <div className="hidden md:flex md:gap-2">
@@ -148,8 +143,8 @@ export function Header() {
                 </Link>
               </MenubarMenu>
             </Menubar>
-      
-            <div className="flex items-center gap-2"> 
+
+            <div className="flex items-center gap-2">
               <ModeToggle />
             </div>
           </div>

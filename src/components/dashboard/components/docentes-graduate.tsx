@@ -1,8 +1,8 @@
-import { AreaChart, ChevronsUpDown, Globe, MapPinIcon, Maximize2, PencilLine, Plus, RefreshCcw, SquareArrowOutUpRight, Star, User, UserIcon, Users, X } from "lucide-react";
+import { ChevronsUpDown, Maximize2, Plus, RefreshCcw, User, UserIcon, X } from "lucide-react";
 import { Button } from "../../ui/button";
 
 import { CardContent, CardHeader, CardTitle } from "../../ui/card";
-import { Eye, EyeSlash, MagnifyingGlass, Trash } from "phosphor-react";
+import { MagnifyingGlass, Trash } from "phosphor-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { toast } from "sonner"
 import { useContext, useEffect, useState } from "react";
@@ -22,13 +22,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
 import CartaoOrientando from "./CartaoOrientando";
 import { Separator } from "../../ui/separator";
-import { data } from "@remix-run/router";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { set } from "date-fns";
-import { et } from "date-fns/locale";
-import { parse } from "path";
 import { getDiscentesPorPrograma } from "../../../service/discentes";
-import { getDoscentesPorPrograma } from "../../../service/doscentes";
+import { adicionarOrientacao, getDocentesPorPrograma } from "../../../service/docentes";
+
 
 
 export interface PesquisadorProps {
@@ -164,7 +161,6 @@ export function DocentesGraduate(props: Props) {
       ]
 
       let urlProgram = urlGeralAdm + 'GraduateProgramResearcherRest/Insert'
-
 
       const fetchData = async () => {
 
@@ -565,27 +561,31 @@ export function DocentesGraduate(props: Props) {
 
   // Rafael
 
-  const [tipoOrientacao, setTipoOrientacao] = useState<string>("0")
-  const [dataEntrada, setDataEntrada] = useState<string>("0")
-  const [dataPrevisaoDefesa, setDataPrevisaoDefesa] = useState<string>("0")
-  const [dataRealizadaDefesa, setDataRealizadaDefesa] = useState<string>("0")
+  const [idOrientador, setIdOrientador] = useState<string | null>(null)
+  const [idOrientando, setIdOrientando] = useState<string | null>(null)
+  const [idCoorientador, setIdCoorientador] = useState<string | null>(null)
 
-  const [dataPrevisaoQualificacao, setDataPrevisaoQualificacao] = useState<string>("0")
-  const [dataRealizadaQualificacao, setDataRealizadaQualificacao] = useState<string>("0")
+  const [tipoOrientacao, setTipoOrientacao] = useState<string | null>(null)
+  const [dataEntrada, setDataEntrada] = useState<string | null>(null)
+  const [dataPrevisaoDefesa, setDataPrevisaoDefesa] = useState<string | null>(null)
+  const [dataRealizadaDefesa, setDataRealizadaDefesa] = useState<string | null>(null)
 
-  const [dataPrevisaoDefesaFinal, setDataPrevisaoDefesaFinal] = useState<string>("0")
-  const [dataRealizadaDefesaFinal, setDataRealizadaDefesaFinal] = useState<string>("0")
+  const [dataPrevisaoQualificacao, setDataPrevisaoQualificacao] = useState<string | null>(null)
+  const [dataRealizadaQualificacao, setDataRealizadaQualificacao] = useState<string | null>(null)
+
+  const [dataPrevisaoDefesaFinal, setDataPrevisaoDefesaFinal] = useState<string | null>(null)
+  const [dataRealizadaDefesaFinal, setDataRealizadaDefesaFinal] = useState<string | null>(null)
 
   const [discentesPosGraduacao, setDiscentesPosGraduacao] = useState<any[]>([])
-  const [doscentesPosGraduacao, setDoscentesPosGraduacao] = useState<any[]>([])
+  const [docentesPosGraduacao, setDocentesPosGraduacao] = useState<any[]>([])
 
   useEffect(() => {
-    if (dataEntrada !== "0" && tipoOrientacao !== "0") {
+    if (dataEntrada !== null) {
       gerarDatas(dataEntrada, "DEFESA_DO_PROJETO");
       gerarDatas(dataEntrada, "QUALIFICACAO");
       gerarDatas(dataEntrada, "DEFESA_FINAL");
     }
-  }, [dataEntrada, tipoOrientacao])
+  }, [dataEntrada])
 
   useEffect(() => {
     const discentes = getDiscentesPorPrograma(props.graduate_program_id);
@@ -594,19 +594,14 @@ export function DocentesGraduate(props: Props) {
       setDiscentesPosGraduacao(response)
     })
 
-    const doscentes = getDoscentesPorPrograma(props.graduate_program_id);
+    const docentes = getDocentesPorPrograma(props.graduate_program_id);
 
-    doscentes.then((response) => {
-      setDoscentesPosGraduacao(response)
+    docentes.then((response) => {
+      setDocentesPosGraduacao(response)
     })
   }, [])
 
   function gerarDatas(d: string, tipo?: string): void {
-
-    if (d && !tipo) {
-      setDataEntrada(d);
-      return
-    }
 
     const [anoStr, mesStr, diaStr] = d.split("-");
     const ano = parseInt(anoStr);
@@ -618,7 +613,6 @@ export function DocentesGraduate(props: Props) {
 
     if (tipo) {
       if (tipo === "DEFESA_DO_PROJETO") {
-        console.log("ENTROU IF DEFESA");
         tipoOrientacao === "MESTRADO" ? mesesAdicionais = 3 : mesesAdicionais = 5;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
@@ -626,17 +620,13 @@ export function DocentesGraduate(props: Props) {
 
         const novoAno = data.getFullYear();
         const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
-        const novoMesRealizada = String(data.getMonth() + 1).padStart(2, "0");
 
         const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
-        const dataFormadaRealizada = `${novoAno}-${novoMesRealizada}-${diaStr}`;
 
         setDataPrevisaoDefesa(dataFormadaPrevisao);
-        setDataRealizadaDefesa(dataFormadaRealizada);
       }
 
       if (tipo === "QUALIFICACAO") {
-        console.log("ENTROU IF QUALIFICACAO");
         tipoOrientacao === "MESTRADO" ? mesesAdicionais = 12 : mesesAdicionais = 24;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
@@ -644,17 +634,13 @@ export function DocentesGraduate(props: Props) {
 
         const novoAno = data.getFullYear();
         const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
-        const novoMesRealizada = String(data.getMonth() + 1).padStart(2, "0");
 
         const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
-        const dataFormadaRealizada = `${novoAno}-${novoMesRealizada}-${diaStr}`;
 
         setDataPrevisaoQualificacao(dataFormadaPrevisao);
-        setDataRealizadaQualificacao(dataFormadaRealizada);
       }
 
       if (tipo === "DEFESA_FINAL") {
-        console.log("ENTROU IF DEFESA FINAL");
         setDataPrevisaoDefesaFinal(d);
         tipoOrientacao === "MESTRADO" ? mesesAdicionais = 24 : mesesAdicionais = 48;
 
@@ -663,22 +649,45 @@ export function DocentesGraduate(props: Props) {
 
         const novoAno = data.getFullYear();
         const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
-        const novoMesRealizada = String(data.getMonth() + 1).padStart(2, "0");
 
         const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
-        const dataFormadaRealizada = `${novoAno}-${novoMesRealizada}-${diaStr}`;
 
         setDataPrevisaoDefesaFinal(dataFormadaPrevisao);
-        setDataRealizadaDefesaFinal(dataFormadaRealizada);
       }
+    }
+  }
 
+  async function salvarOrientando(evento: any) {
+    evento.preventDefault();
+    if (dataEntrada == "" || idOrientador == "" || idOrientando == "" || idCoorientador == "" || dataPrevisaoDefesa == "" || dataPrevisaoQualificacao == "" || dataPrevisaoDefesaFinal == "") {
+      alert("Preencha todos os campos!\n\nDados OBRIGATÓRIOS:\n- Data de Entrada\n- Data da previsão da defesa\n- Data de previsão da qualificação\n- Data de previsão da defesa final");
+      return
     }
 
+    const orientacao = {
+      start_date: dataEntrada,
+      planned_date_project: dataPrevisaoDefesa,
+      done_date_project: dataRealizadaDefesa,
+      graduate_program_id: props.graduate_program_id,
+      planned_date_qualification: dataPrevisaoQualificacao,
+      done_date_qualification: dataRealizadaQualificacao,
+      planned_date_conclusion: dataPrevisaoDefesaFinal,
+      done_date_conclusion: dataRealizadaDefesaFinal,
+      supervisor_researcher_id: idOrientador,
+      student_researcher_id: idOrientando,
+      co_supervisor_researcher_id: idCoorientador
+    }
+
+    const response = await adicionarOrientacao(orientacao)
+
+    if (response.status == 201) {
+      alert("Orientação cadastrada com sucesso!");
+    }
   }
 
   return (
     <div>
-      <div className="  ">
+      <div className="">
         <CardContent className="flex flex-col justify-between p-8 pt-0 ">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 ">
             <Alert className="p-0 mb-4 md:mb-8">
@@ -730,13 +739,8 @@ export function DocentesGraduate(props: Props) {
               </CardHeader>
 
               <CardContent className="mt-6">
-
-
-
                 <TabsContent value="all">
                   <div className="gap-6 flex  items-end">
-
-
                     <div className="flex flex-col space-y-1.5 w-full flex-1">
                       <Label htmlFor="name">Pesquisador da instituição</Label>
 
@@ -783,7 +787,6 @@ export function DocentesGraduate(props: Props) {
                                     className="text-left justify-start"
                                     onClick={() => {
                                       setPesquisadorSelecionado(props);
-
                                       setOpenPopo2(false); // Fechar o popover após a seleção
                                     }}
                                   >
@@ -820,10 +823,6 @@ export function DocentesGraduate(props: Props) {
                     <Button onClick={() => handleSubmitPesquisador()} className="text-white dark:text-white"><Plus size={16} className="" /> Adicionar</Button>
                   </div>
                 </TabsContent>
-
-
-
-
               </CardContent>
             </Alert>
           </Tabs>
@@ -879,332 +878,336 @@ export function DocentesGraduate(props: Props) {
                   </div>
 
                   <AccordionContent className="p-0">
-                    <div className="flex w-full gap-4 items-end mt-4">
-                      <div className="grid gap-4 w-full">
-                        <Label htmlFor="name">Tipo</Label>
-                        <Select
-                          defaultValue={types[index]}
-                          value={types[index]}
-                          onValueChange={(value) => handleTypeChange(index, value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue className="w-full" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="COLABORADOR">Colaborador</SelectItem>
-                            <SelectItem value="PERMANENTE">Permanente</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="grid gap-4 w-full">
-                        <Label htmlFor="years">Anos de participação</Label>
-                        {selectedYears[index] ? (
-                          <ToggleGroup
-                            type="multiple"
-                            className="gap-3 justify-start w-fit"
-                            value={selectedYears[index].map(String)}
-                            onValueChange={(years) => handleYearsChange(index, years)}
+                    <div className="flex flex-col w-full gap-4 mt-4">
+                      <div className="flex gap-3">
+                        <div className="grid gap-4 w-full">
+                          <Label htmlFor="name">Tipo</Label>
+                          <Select
+                            defaultValue={types[index]}
+                            value={types[index]}
+                            onValueChange={(value) => handleTypeChange(index, value)}
                           >
-                            {years.map((year) => (
-                              <ToggleGroupItem
-                                key={year}
-                                variant={'outline'}
-                                value={year.toString()}
-                                aria-label={`Toggle ${year}`}
-                              >
-                                {year}
-                              </ToggleGroupItem>
-                            ))}
-                          </ToggleGroup>
-                        ) : (
-                          <p className="text-gray-500">Nenhum ano disponível</p>
-                        )}
-                      </div>
-                      <Button
-                        onClick={() => handleUpdateData(index, props.lattes_id)}
-                      >
-                        <RefreshCcw size={16} /> Atualizar dados
-                      </Button>
-
-
-                    </div>
-
-                    { /* Rafael - Modificações pro IAPÓS */}
-
-                    <div className="flex mt-4">
-                      <Tabs className="w-full ">
-                        <div className="flex items-center justify-between mb-3">
-                          <TabsList className="py-3">
-                            <TabsTrigger value="entrada">Entrada</TabsTrigger> <Separator orientation="vertical" />
-                            <TabsTrigger value="projetos_defendidos">Projetos Defendidos</TabsTrigger> <Separator orientation="vertical" />
-                            <TabsTrigger value="qualificados">Qualificados</TabsTrigger> <Separator orientation="vertical" />
-                            <TabsTrigger value="concluidos">Concluídos</TabsTrigger>
-                          </TabsList>
-
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button>
-                                Adicionar orientando
-                              </Button>
-                            </DialogTrigger>
-
-                            <DialogContent className="w-[60%]">
-                              <p className="text-3xl font-bold">Adicione um orientando para este docente</p>
-
-                              <form className="flex flex-col gap-3 text-sm" action="">
-                                <div className="flex gap-3">
-                                  <div className="flex flex-col gap-3 w-1/2 border border-gray-300 rounded-md p-3">
-                                    <div className="flex items-center justify-between">
-                                      <label className="text-lg font-bold" htmlFor="name">Orientando: </label>
-                                      <select className="w-full border-[3px] ml-3 py-2 px-4 rounded-md" name="" id="">
-                                        <option value="" disabled selected>Selecione um orientando</option>
-                                        {
-                                          discentesPosGraduacao && discentesPosGraduacao.map((discente) => (
-                                            <option key={discente.lattes_id} value={discente.name}>{discente.name}</option>
-                                          ))
-                                        }
-                                      </select>
-                                    </div>
-                                    <div className="flex items-center justify-between gap-0">
-                                      <label className="text-lg font-bold" htmlFor="name">Coorientador: </label>
-                                      <select className="w-full border-[3px] ml-3 py-2 px-4 rounded-md" name="" id="">
-                                        <option value="" disabled selected>Selecione um coorientador</option>
-                                        {
-                                          doscentesPosGraduacao && doscentesPosGraduacao.map((doscente) => (
-                                            <option key={doscente.lattes_id} value={doscente.name}>{doscente.name}</option>
-                                          ))
-                                        }
-                                      </select>
-                                    </div>
-                                  </div>
-
-                                  <div className="w-1/2 border border-gray-300 rounded-md p-3">
-                                    <p className="text-lg font-bold">Selecione um tipo de orientação: </p>
-                                    <div className="flex flex-grow items-center gap-3 m-3">
-                                      <label className="flex items-center gap-2 hover:cursor-pointer" htmlFor="mestrado">
-                                        <input
-                                          className="hover:cursor-pointer w-full border-[3px] ml-3 py-2 px-4 rounded-md"
-                                          type="radio"
-                                          name="orientacao"
-                                          id="mestrado"
-                                          value="Mestrado"
-                                          onChange={(e) => {
-                                            setTipoOrientacao(e.target.value.toUpperCase())
-                                          }}
-                                        /> Mestrado
-                                      </label>
-                                      <label className="flex items-center gap-2 hover:cursor-pointer" htmlFor="doutorado">
-                                        <input
-                                          className="hover:cursor-pointer"
-                                          type="radio"
-                                          name="orientacao"
-                                          id="doutorado"
-                                          value="Doutorado"
-                                          onChange={(e) => {
-                                            setTipoOrientacao(e.target.value.toUpperCase())
-                                          }}
-                                        /> Doutorado
-                                      </label>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-1 flex-grow border border-gray-300 rounded-md p-3">
-                                  <p className="text-lg font-bold min-w-fit">Selecione uma data de entrada: </p>
-                                  <label className="flex w-full items-center gap-2 hover:cursor-pointer" htmlFor="dataEntrada">
-                                    <input
-                                      className="hover:cursor-pointer w-full border-[3px] ml-5 py-1 px-4 rounded-md"
-                                      type="date"
-                                      name="dataEntrada"
-                                      id="dataEntrada"
-                                      onClick={() => {
-                                        if (tipoOrientacao == "0") {
-                                          alert("Selecione um TIPO DE ORIENTAÇÃO antes de definir uma data de entrada do orientando.")
-                                          return
-                                        }
-                                      }}
-                                      onChange={(e) => {
-                                        gerarDatas(e.target.value)
-                                      }}
-                                    />
-
-                                  </label>
-                                </div>
-
-
-                                <div
-                                  className="flex flex-col gap-3 border rounded-md h-[400px] p-3"
-                                  style={{ boxShadow: '3px 3px 3px rgba(0, 0, 0, 0.25)' }}
+                            <SelectTrigger>
+                              <SelectValue className="w-full" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="COLABORADOR">Colaborador</SelectItem>
+                              <SelectItem value="PERMANENTE">Permanente</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid gap-4 w-full">
+                          <Label htmlFor="years">Anos de participação</Label>
+                          {selectedYears[index] ? (
+                            <ToggleGroup
+                              type="multiple"
+                              className="gap-3 justify-start w-fit"
+                              value={selectedYears[index].map(String)}
+                              onValueChange={(years) => handleYearsChange(index, years)}
+                            >
+                              {years.map((year) => (
+                                <ToggleGroupItem
+                                  key={year}
+                                  variant={'outline'}
+                                  value={year.toString()}
+                                  aria-label={`Toggle ${year}`}
                                 >
-                                  <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
-                                    <p className="text-lg font-bold">Defesa do Projeto</p>
-                                    <div className="flex items-center gap-3">
+                                  {year}
+                                </ToggleGroupItem>
+                              ))}
+                            </ToggleGroup>
+                          ) : (
+                            <p className="text-gray-500">Nenhum ano disponível</p>
+                          )}
+                        </div>
+                        <Button
+                          onClick={() => handleUpdateData(index, props.lattes_id)}
+                        >
+                          <RefreshCcw size={16} /> Atualizar dados
+                        </Button>
+                      </div>
 
-                                      <div className="flex gap-2 items-center w-1/2">
-                                        <label
-                                          htmlFor="dataPrevista
+                      <hr />
+
+                      { /* Rafael - Modificações pro IAPÓS */}
+
+                      <div className="flex">
+                        <Tabs className="w-full ">
+                          <div className="flex items-center justify-between mb-3">
+                            <TabsList className="py-3">
+                              <TabsTrigger value="entrada">Entrada</TabsTrigger> <Separator orientation="vertical" />
+                              <TabsTrigger value="projetos_defendidos">Projetos Defendidos</TabsTrigger> <Separator orientation="vertical" />
+                              <TabsTrigger value="qualificados">Qualificados</TabsTrigger> <Separator orientation="vertical" />
+                              <TabsTrigger value="concluidos">Concluídos</TabsTrigger>
+                            </TabsList>
+
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  onClick={() => {
+                                    setIdOrientador(props.researcher_id) // Existe researcher_id sim
+                                    alert("ID ORIENTADOR: " + props.researcher_id)
+                                  }}
+                                >
+                                  Adicionar orientando
+                                </Button>
+                              </DialogTrigger>
+
+                              <DialogContent className="w-[60%]">
+                                <p className="text-3xl font-bold">Adicione um orientando para este docente</p>
+
+                                <form className="flex flex-col gap-3 text-sm" action="">
+                                  <div className="flex gap-3">
+                                    <div className="flex flex-col gap-3 w-full border border-gray-300 rounded-md p-3">
+                                      <div className="flex items-center justify-between">
+                                        <label className="text-lg font-bold" htmlFor="name">Orientando: </label>
+                                        <select
+                                          className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
+                                          onChange={(event) => {
+                                            setIdOrientando(event.target.value)
+                                          }}
+                                        >
+                                          <option value="" disabled selected>Selecione um orientando</option>
+                                          {
+                                            discentesPosGraduacao && discentesPosGraduacao.map((discente) => (
+                                              <option key={discente.researcher_id} value={discente.researcher_id}>{discente.name}</option>
+                                            ))
+                                          }
+                                        </select>
+                                      </div>
+                                      <div className="flex items-center justify-between gap-0">
+                                        <label className="text-lg font-bold" htmlFor="name">Coorientador: </label>
+                                        <select
+                                          className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
+                                          onChange={(event) => {
+                                            setIdCoorientador(event.target.value)
+                                            alert("ID COORIENTADOR: " + event.target.value)
+                                          }}
+                                        >
+                                          <option disabled selected>Selecione um coorientador</option>
+                                          {
+                                            docentesPosGraduacao && docentesPosGraduacao.map((docente) => (
+                                              <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
+                                            ))
+                                          }
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-1 flex-grow border border-gray-300 rounded-md p-3">
+                                    <p className="text-lg font-bold min-w-fit">Selecione uma data de entrada: </p>
+                                    <label className="flex w-full items-center gap-2 hover:cursor-pointer" htmlFor="dataEntrada">
+                                      <input
+                                        className="hover:cursor-pointer w-full border-[3px] ml-5 py-1 px-4 rounded-md"
+                                        type="date"
+                                        name="dataEntrada"
+                                        id="dataEntrada"
+                                        onChange={(e) => {
+                                          setDataEntrada(e.target.value);
+                                        }}
+                                      />
+
+                                    </label>
+                                  </div>
+
+
+                                  <div
+                                    className="flex flex-col gap-3 border rounded-md h-[400px] p-3"
+                                    style={{ boxShadow: '3px 3px 3px rgba(0, 0, 0, 0.25)' }}
+                                  >
+                                    <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
+                                      <p className="text-lg font-bold">Defesa do Projeto</p>
+                                      <div className="flex items-center gap-3">
+
+                                        <div className="flex gap-2 items-center w-1/2">
+                                          <label
+                                            htmlFor="dataPrevista
                                           on
                                         ">Prevista: </label>
-                                        <input
-                                          className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
-                                          onClick={() => {
-                                            if (tipoOrientacao == "0" || dataEntrada == "0") {
-                                              alert("Selecione uma DATA DE ENTRADA e um TIPO DE ORIENTAÇÃO. As datas de PREVISÃO e REALIZAÇÃO de defesa do projeto serão geradas automaticamente!");
-                                              return;
-                                            }
-                                          }}
-                                          onChange={(e) => {
-                                            gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
-                                          }}
-                                          type="date"
-                                          id="dataPrevista"
-                                          value={dataPrevisaoDefesa == "0" ? "" : dataPrevisaoDefesa}
-                                        />
-                                      </div>
+                                          <input
+                                            className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
+                                            onClick={() => {
+                                              if (dataEntrada == "") {
+                                                alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa do projeto serão geradas automaticamente!");
+                                                return;
+                                              }
+                                            }}
+                                            onChange={(e) => {
+                                              gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
+                                            }}
+                                            type="date"
+                                            id="dataPrevista"
+                                            value={dataPrevisaoDefesa == "" ? "" : dataPrevisaoDefesa}
+                                          />
+                                        </div>
 
-                                      <div className="flex gap-2 items-center w-1/2">
-                                        <label htmlFor="dataRealizada">Realizada: </label>
-                                        <input
-                                          className="w-full border-[2px] px-2 py-1 rounded-md"
-                                          onClick={() => {
-                                            if (tipoOrientacao == "0" && dataPrevisaoDefesa == "0") {
-                                              alert("Para modificar a data de realização de defesa, primeiro selecione um TIPO DE ORIENTAÇÃO e informe uma DATA PREVISTA de início!");
-                                              return;
-                                            }
-                                          }}
-                                          type="date"
-                                          value={dataRealizadaDefesa == "0" ? "" : dataRealizadaDefesa}
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md">
-                                    <p className="text-lg font-bold">Qualificação </p>
-                                    <div className="flex items-center gap-3">
-                                      <div className="flex gap-2 items-center w-1/2">
-                                        <label htmlFor="dataPrevista">Prevista: </label>
-                                        <input
-                                          className="w-full border-[2px] px-2 py-1 rounded-md"
-                                          onClick={() => {
-                                            if (tipoOrientacao == "0" && dataPrevisaoQualificacao == "0") {
-                                              alert("Selecione um TIPO DE ORIENTAÇÃO antes de selecionar uma data!");
-                                              return;
-                                            }
-                                          }}
-                                          onChange={(e) => {
-                                            gerarDatas(e.target.value, "QUALIFICACAO");
-                                          }}
-                                          type="date"
-                                          id="dataPrevista"
-                                          value={dataPrevisaoQualificacao == "0" ? "" : dataPrevisaoQualificacao}
-                                        />
-                                      </div>
-
-                                      <div className="flex gap-2 items-center w-1/2">
-                                        <label htmlFor="dataRealizada">Realizada: </label>
-                                        <input
-                                          className="w-full border-[2px] px-2 py-1 rounded-md"
-                                          type="date"
-                                          onClick={() => {
-                                            if (tipoOrientacao == "0" && dataPrevisaoQualificacao == "0") {
-                                              alert("Para modificar a data de realização da qualificação, primeiro selecione um TIPO DE ORIENTAÇÃO e informe uma DATA PREVISTA de início!");
-                                              return;
-                                            }
-                                          }}
-                                          value={dataRealizadaQualificacao == "" ? "" : dataRealizadaQualificacao}
-                                        />
+                                        <div className="flex gap-2 items-center w-1/2">
+                                          <label htmlFor="dataRealizada">Realizada: </label>
+                                          <input
+                                            className="w-full border-[2px] px-2 py-1 rounded-md"
+                                            onClick={() => {
+                                              if (dataPrevisaoDefesa == "") {
+                                                alert("Para modificar a data de realização da defesa, primeiro selecione uma DATA DE ENTRADA!");
+                                                return;
+                                              }
+                                            }}
+                                            onChange={(e) => {
+                                              setDataRealizadaDefesa(e.target.value);
+                                            }}
+                                            type="date"
+                                            value={dataRealizadaDefesa == "" ? "" : dataRealizadaDefesa}
+                                          />
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
 
-                                  <div className="flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md">
-                                    <p className="text-lg font-bold">Defesa final</p>
-                                    <div className="flex items-center gap-3">
-                                      <div className="flex gap-2 items-center w-1/2">
-                                        <label htmlFor="dataPrevista">Prevista: </label>
-                                        <input
-                                          className="w-full border-[2px] px-2 py-1 rounded-md"
-                                          onClick={() => {
-                                            if (tipoOrientacao == "0" && dataPrevisaoDefesaFinal == "0") {
-                                              alert("Selecione um TIPO DE ORIENTAÇÃO antes de selecionar uma data!");
-                                              return;
-                                            }
-                                          }}
-                                          onChange={(e) => {
-                                            gerarDatas(e.target.value, "DEFESA_FINAL");
-                                          }}
-                                          type="date"
-                                          id="dataPrevista"
-                                          value={dataPrevisaoDefesaFinal == "0" ? "" : dataPrevisaoDefesaFinal}
-                                        />
-                                      </div>
+                                    <div className="flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md">
+                                      <p className="text-lg font-bold">Qualificação </p>
+                                      <div className="flex items-center gap-3">
+                                        <div className="flex gap-2 items-center w-1/2">
+                                          <label htmlFor="dataPrevista">Prevista: </label>
+                                          <input
+                                            className="w-full border-[2px] px-2 py-1 rounded-md"
+                                            onClick={() => {
+                                              if (dataPrevisaoQualificacao == "") {
+                                                alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da qualificação do projeto serão geradas automaticamente!");
+                                                return;
+                                              }
+                                            }}
+                                            onChange={(e) => {
+                                              gerarDatas(e.target.value, "QUALIFICACAO");
+                                            }}
+                                            type="date"
+                                            id="dataPrevista"
+                                            value={dataPrevisaoQualificacao == "" ? "" : dataPrevisaoQualificacao}
+                                          />
+                                        </div>
 
-                                      <div className="flex gap-2 items-center w-1/2">
-                                        <label htmlFor="dataRealizada">Realizada: </label>
-                                        <input
-                                          className="w-full border-[2px] px-2 py-1 rounded-md"
-                                          type="date"
-                                          onClick={() => {
-                                            if (tipoOrientacao == "0" && dataPrevisaoDefesaFinal == "0") {
-                                              alert("Para modificar a data de realização da defesa do projeto, primeiro selecione um TIPO DE ORIENTAÇÃO e informe uma DATA PREVISTA de início!");
-                                              return;
-                                            }
-                                          }}
-                                          value={dataRealizadaDefesaFinal == "" ? "" : dataRealizadaDefesaFinal}
-                                        />
+                                        <div className="flex gap-2 items-center w-1/2">
+                                          <label htmlFor="dataRealizada">Realizada: </label>
+                                          <input
+                                            className="w-full border-[2px] px-2 py-1 rounded-md"
+                                            type="date"
+                                            onClick={() => {
+                                              if (dataPrevisaoQualificacao == "") {
+                                                alert("Para modificar a data de realização da qualificação, primeiro selecione uma DATA DE ENTRADA!");
+                                                return;
+                                              }
+                                            }}
+                                            onChange={(e) => {
+                                              setDataRealizadaQualificacao(e.target.value);
+                                            }}
+                                            value={dataRealizadaQualificacao == "" ? "" : dataRealizadaQualificacao}
+                                          />
+                                        </div>
                                       </div>
                                     </div>
+
+                                    <div className="flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md">
+                                      <p className="text-lg font-bold">Defesa final</p>
+                                      <div className="flex items-center gap-3">
+                                        <div className="flex gap-2 items-center w-1/2">
+                                          <label htmlFor="dataPrevista">Prevista: </label>
+                                          <input
+                                            className="w-full border-[2px] px-2 py-1 rounded-md"
+                                            onClick={() => {
+                                              if (dataPrevisaoDefesaFinal == "") {
+                                                alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa final do projeto serão geradas automaticamente!");
+                                                return;
+                                              }
+                                            }}
+                                            onChange={(e) => {
+                                              gerarDatas(e.target.value, "DEFESA_FINAL");
+                                            }}
+                                            type="date"
+                                            id="dataPrevista"
+                                            value={dataPrevisaoDefesaFinal == "" ? "" : dataPrevisaoDefesaFinal}
+                                          />
+                                        </div>
+
+                                        <div className="flex gap-2 items-center w-1/2">
+                                          <label htmlFor="dataRealizada">Realizada: </label>
+                                          <input
+                                            className="w-full border-[2px] px-2 py-1 rounded-md"
+                                            type="date"
+                                            onClick={() => {
+                                              if (dataRealizadaDefesaFinal == "") {
+                                                alert("Para modificar a data de realização da defesa final, primeiro selecione uma DATA DE ENTRADA!");
+                                                return;
+                                              }
+                                            }}
+                                            onChange={(e) => {
+                                              setDataRealizadaDefesaFinal(e.target.value);
+                                            }}
+                                            value={dataRealizadaDefesaFinal == "" ? "" : dataRealizadaDefesaFinal}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <button
+                                      className="bg-[#559FB8] text-white px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
+                                      onClick={(e) => {
+                                        salvarOrientando(e);
+                                      }}
+                                    >Salvar orientando</button>
                                   </div>
-                                </div>
-                              </form>
+                                </form>
 
-                              <DialogClose
-                                className="absolute top-6 right-6 bg-red-500 text-white p-2 rounded-md"
-                                title="Fechar"
-                                onClick={() => {
-                                  setTipoOrientacao("0")
-                                  setDataEntrada("0")
-                                  setDataPrevisaoDefesa("0")
-                                  setDataRealizadaDefesa("0")
-                                  setDataPrevisaoQualificacao("0")
-                                  setDataRealizadaQualificacao("0")
-                                  setDataPrevisaoDefesaFinal("0")
-                                  setDataRealizadaDefesaFinal("0")
-                                }}
-                              >
-                                <X className="w-4 h-4" />
-                              </DialogClose>
-                            </DialogContent>
+                                <DialogClose
+                                  className="absolute top-6 right-6 bg-red-500 text-white p-2 rounded-md"
+                                  title="Fechar"
+                                  onClick={() => {
+                                    setIdOrientando("")
+                                    setIdOrientador("")
+                                    setIdCoorientador("")
+                                    setTipoOrientacao("")
+                                    setDataEntrada("")
+                                    setDataPrevisaoDefesa("")
+                                    setDataRealizadaDefesa("")
+                                    setDataPrevisaoQualificacao("")
+                                    setDataRealizadaQualificacao("")
+                                    setDataPrevisaoDefesaFinal("")
+                                    setDataRealizadaDefesaFinal("")
+                                    setDiscentesPosGraduacao([])
+                                    setDocentesPosGraduacao([])
+                                  }}
+                                >
+                                  <X className="w-4 h-4" />
+                                </DialogClose>
+                              </DialogContent>
 
-                          </Dialog>
+                            </Dialog>
 
-                        </div>
+                          </div>
 
-                        <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="entrada">
-                          <CartaoOrientando tipo="entrada" nome="Eduardo Manuel de Freitas Jorge" previsao="20/10/2023" status="Aprovado" />
-                          <CartaoOrientando tipo="entrada" nome="Hugo Saba" previsao="20/10/2023" status="atraso" />
-                          <CartaoOrientando tipo="entrada" nome="Joaquim Silva" previsao="20/10/2023" status="pendente" />
-                          <CartaoOrientando tipo="entrada" nome="Alana Carolina" previsao="20/10/2023" status="pendente" />
-                        </TabsContent>
+                          <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="entrada">
+                            <CartaoOrientando tipo="entrada" nome="Eduardo Manuel de Freitas Jorge" previsao="20/10/2023" status="Aprovado" />
+                            <CartaoOrientando tipo="entrada" nome="Hugo Saba" previsao="20/10/2023" status="atraso" />
+                            <CartaoOrientando tipo="entrada" nome="Joaquim Silva" previsao="20/10/2023" status="pendente" />
+                            <CartaoOrientando tipo="entrada" nome="Alana Carolina" previsao="20/10/2023" status="pendente" />
+                          </TabsContent>
 
-                        <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="projetos_defendidos">
-                          <CartaoOrientando tipo="defendido" nome="Camila Santos" previsao="20/10/2023" status="pendente" />
-                          <CartaoOrientando tipo="defendido" nome="Pedro Oliveira" previsao="21/10/2024" status="Aprovado" />
-                        </TabsContent>
+                          <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="projetos_defendidos">
+                            <CartaoOrientando tipo="defendido" nome="Camila Santos" previsao="20/10/2023" status="pendente" />
+                            <CartaoOrientando tipo="defendido" nome="Pedro Oliveira" previsao="21/10/2024" status="Aprovado" />
+                          </TabsContent>
 
-                        <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="qualificados">
-                          <CartaoOrientando tipo="qualificado" nome="Pedro Marcarenhas" previsao="20/10/2023" status="qualificado" />
-                          <CartaoOrientando tipo="qualificado" nome="Rafaela Silva" previsao="20/10/2022" status="pendente" />
-                        </TabsContent>
+                          <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="qualificados">
+                            <CartaoOrientando tipo="qualificado" nome="Pedro Marcarenhas" previsao="20/10/2023" status="qualificado" />
+                            <CartaoOrientando tipo="qualificado" nome="Rafaela Silva" previsao="20/10/2022" status="pendente" />
+                          </TabsContent>
 
-                        <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="concluidos">
-                          <CartaoOrientando tipo="concluido" nome="Rafaela Silva" previsao="20/10/2021" />
-                        </TabsContent>
-                      </Tabs>
+                          <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="concluidos">
+                            <CartaoOrientando tipo="concluido" nome="Rafaela Silva" previsao="20/10/2021" />
+                          </TabsContent>
+                        </Tabs>
 
+                      </div>
                     </div>
+
+
                   </AccordionContent>
                 </AccordionItem>
               </Alert>
