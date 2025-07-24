@@ -52,7 +52,7 @@ export function DocentesGraduate(props: Props) {
   const { urlGeralAdm, user, urlGeral } = useContext(UserContext);
   const [input, setInput] = useState('')
   const { onOpen, isOpen, type: typeModal } = useModal();
-  const [researcher, setResearcher] = useState<PesquisadorProps[]>([]);
+  const [researcher, setResearcher] = useState<any[]>([]);
 
   const urlGetResearcher = `${urlGeralAdm}GraduateProgramResearcherRest/Query?graduate_program_id=${props.graduate_program_id}`;
   console.log(urlGetResearcher)
@@ -546,7 +546,7 @@ export function DocentesGraduate(props: Props) {
 
   const [input2, setInput2] = useState('')
 
-  const filteredTotal = Array.isArray(researcher) ? researcher.filter(item => {
+  const filteredTotal: any = Array.isArray(researcher) ? researcher.filter(item => {
     // Normaliza a string do item e da busca para comparação
     const normalizeString = (str: any) => str
       .normalize("NFD") // Decompõe os caracteres acentuados
@@ -1038,7 +1038,7 @@ export function DocentesGraduate(props: Props) {
                                             }}
                                             type="date"
                                             id="dataPrevista"
-                                            value={dataPrevisaoDefesa == "" ? "" : dataPrevisaoDefesa}
+                                            value={dataPrevisaoDefesa == null ? "" : dataPrevisaoDefesa}
                                           />
                                         </div>
 
@@ -1056,7 +1056,7 @@ export function DocentesGraduate(props: Props) {
                                               setDataRealizadaDefesa(e.target.value);
                                             }}
                                             type="date"
-                                            value={dataRealizadaDefesa == "" ? "" : dataRealizadaDefesa}
+                                            value={dataRealizadaDefesa == null ? "" : dataRealizadaDefesa}
                                           />
                                         </div>
                                       </div>
@@ -1080,7 +1080,7 @@ export function DocentesGraduate(props: Props) {
                                             }}
                                             type="date"
                                             id="dataPrevista"
-                                            value={dataPrevisaoQualificacao == "" ? "" : dataPrevisaoQualificacao}
+                                            value={dataPrevisaoQualificacao == null ? "" : dataPrevisaoQualificacao}
                                           />
                                         </div>
 
@@ -1098,7 +1098,7 @@ export function DocentesGraduate(props: Props) {
                                             onChange={(e) => {
                                               setDataRealizadaQualificacao(e.target.value);
                                             }}
-                                            value={dataRealizadaQualificacao == "" ? "" : dataRealizadaQualificacao}
+                                            value={dataRealizadaQualificacao == null ? "" : dataRealizadaQualificacao}
                                           />
                                         </div>
                                       </div>
@@ -1122,7 +1122,7 @@ export function DocentesGraduate(props: Props) {
                                             }}
                                             type="date"
                                             id="dataPrevista"
-                                            value={dataPrevisaoDefesaFinal == "" ? "" : dataPrevisaoDefesaFinal}
+                                            value={dataPrevisaoDefesaFinal == null ? "" : dataPrevisaoDefesaFinal}
                                           />
                                         </div>
 
@@ -1140,7 +1140,7 @@ export function DocentesGraduate(props: Props) {
                                             onChange={(e) => {
                                               setDataRealizadaDefesaFinal(e.target.value);
                                             }}
-                                            value={dataRealizadaDefesaFinal == "" ? "" : dataRealizadaDefesaFinal}
+                                            value={dataRealizadaDefesaFinal == null ? "" : dataRealizadaDefesaFinal}
                                           />
                                         </div>
                                       </div>
