@@ -88,7 +88,7 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
   return loading ? (
     <main className="h-screen w-full flex items-center justify-center">
       <div className="h-20 animate-pulse">
-        <img src="iapos.png" />
+        <img src="/iapos.png" />
       </div>
     </main>
   ) : (

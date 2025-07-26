@@ -21,6 +21,7 @@ import { UserCircleGear, UserPlus } from "phosphor-react";
 import { LayoutDashboard, LogInIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
+
 export function Header() {
   const { loggedIn, role, setItensSelecionados, version, searchType, maria, user, permission } = useContext(UserContext)
 
@@ -39,14 +40,14 @@ export function Header() {
           <div className="flex w-full md:gap-3 gap-1 items-center md:h-full md:justify-center">
 
             <Link to={"/"} className="w-[80px]">
-              <img src="/assets/iapos.png" className="" alt="Logo Iapos" />
+              <img src="/iapos.png" className="" alt="Logo Iapos" />
             </Link>
 
             <Separator orientation="vertical" className="mx-2 md:mx-0 h-6 bg-slate-300" />
 
             <div className="min-w-max">
               <Link to={"https://www.senaicimatec.com.br"} target="_blank" className="whitespace-nowrap ">
-                <img src="logo_cimatec.png" className="h-6" alt="Logo Cimatec" />
+                <img src="/logo_cimatec.png" className="h-6" alt="Logo Cimatec" />
               </Link>
             </div>
 
