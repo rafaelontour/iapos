@@ -38,30 +38,6 @@ async function adicionarOrientacao(orientacao: any): Promise<any> {
             body: JSON.stringify(orientacao)
         })
 
-        console.log(orientacao)
-
-        alert(resposta.status)
-
-        /* const resposta = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                "student_research_id": idOrientando,
-                "supervisor_research_id": idOrientador,
-                "co_supervisor_research_id": idCoorientador,
-                "graduate_program_id": props.graduate_program_id,
-                "start_date": dataEntrada,
-                "planned_date_project": dataPrevisaoDefesa,
-                "done_date_project": dataRealizadaDefesa,
-                "planned_date_qualification": dataPrevisaoQualificacao,
-                "done_date_qualification": dataRealizadaQualificacao,
-                "planned_date_conclusion": dataPrevisaoDefesaFinal,
-                "done_date_conclusion": dataRealizadaDefesaFinal
-            })
-        }) */
-
         return resposta
 
     } catch (error) {
@@ -69,7 +45,56 @@ async function adicionarOrientacao(orientacao: any): Promise<any> {
     }
 }
 
+async function getOrientacoesPorDocente(id: string): Promise<any[] | undefined> {
+
+    try {
+        const url = `https://iapos-api.senaicimatec.com.br/adm/guidance_tracking/?supervisor_researcher_id=${id}`
+
+        const resposta = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+
+        if (!resposta.ok) {
+            throw new Error("Erro ao buscar orientacoes por docente!")
+        }
+
+        const dados = await resposta.json();
+        console.log("Orientacoes do docente: ", dados)
+        return dados
+    } catch (error) {
+        console.log("Erro ao buscar orientacoes por docente: ", error);
+    }
+}
+
+async function getImagemDocente(nome: string): Promise<string | undefined> {
+    try {
+        const url = `https://iapos-api.senaicimatec.com.br/adm/ResearcherData/Image?name=${nome}`
+
+        const resposta = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!resposta.ok) {
+            throw new Error("Erro ao buscar imagem do docente!")
+        }
+
+        const dados = await resposta.json();
+        return dados
+    } catch (error) {
+        console.log("Erro ao buscar imagem do docente: ", error);
+    }
+
+}
+
 export {
     getDocentesPorPrograma,
-    adicionarOrientacao
+    adicionarOrientacao,
+    getOrientacoesPorDocente,
+    getImagemDocente
 }

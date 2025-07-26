@@ -12,8 +12,6 @@ import {
 
 import { UserContext } from "../../context/context";
 
-import { useTheme } from "next-themes"
-
 import { Badge } from "../ui/badge";
 import { ModeToggle } from "../mode-toggle";
 import { Separator } from "../ui/separator";
@@ -48,7 +46,7 @@ export function Header() {
 
             <div className="min-w-max">
               <Link to={"https://www.senaicimatec.com.br"} target="_blank" className="whitespace-nowrap ">
-                <img src="/assets/logo_cimatec.png" className="h-6" alt="Logo Cimatec" />
+                <img src="logo_cimatec.png" className="h-6" alt="Logo Cimatec" />
               </Link>
             </div>
 

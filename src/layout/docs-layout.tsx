@@ -14,7 +14,7 @@ import { BarChartBig, Blocks, BookOpen, Bug, Building2, Check, Cookie, Download,
 import logo_4 from '../assets/logo_4.png';
 import logo_4_white from '../assets/logo_4_white.png';
 
-import logo_5 from '../assets/logo_cimatec.png';
+import logo_5 from 'logo_cimatec.png';
 import logo_5_white from '../assets/logo_cimatec_white.png';
 
 
@@ -88,7 +88,7 @@ export default function DocsLayout({
   ///popup
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  
+
   useEffect(() => {
     // Verifica no localStorage se o modal já foi exibido
     const hasVisited = localStorage.getItem('hasVisited');
@@ -96,11 +96,11 @@ export default function DocsLayout({
     if (!hasVisited && (!isOpen)) {
       // Se não foi exibido, abre o modal
       setIsModalOpen(true);
-      
+
     }
   }, []);
 
-  
+
   const handleClose = () => {
     setIsModalOpen(false);
     // Marca no localStorage que o modal foi exibido
@@ -121,7 +121,7 @@ export default function DocsLayout({
     }
   }, [location]);
 
-  
+
 
   const hasBaremaAvaliacao = permission.some(
     (perm) => perm.permission === 'criar_barema_avaliacao'
@@ -199,11 +199,11 @@ export default function DocsLayout({
         <Toaster />
 
 
-        <UserProfileInitialModal/>
+        <UserProfileInitialModal />
 
       </SidebarProvider >
 
-    
+
     </div>
   );
 };

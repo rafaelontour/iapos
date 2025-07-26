@@ -271,7 +271,7 @@ export function SignUpContent() {
 
         <a href="/">
           <img
-            src="/logo_cimatec.png"
+            src="logo_cimatec.png"
             alt="Logo cimatec"
             className="
                           mt-8 w-[500px]

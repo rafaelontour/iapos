@@ -24,12 +24,13 @@ import CartaoOrientando from "./CartaoOrientando";
 import { Separator } from "../../ui/separator";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { getDiscentesPorPrograma } from "../../../service/discentes";
-import { adicionarOrientacao, getDocentesPorPrograma } from "../../../service/docentes";
+import { adicionarOrientacao, getDocentesPorPrograma, getOrientacoesPorDocente } from "../../../service/docentes";
 
 
 
 export interface PesquisadorProps {
   lattes_id: string
+  researcher_id: string
   name: string
   type_: string
   graduate_program_id: string
@@ -52,7 +53,7 @@ export function DocentesGraduate(props: Props) {
   const { urlGeralAdm, user, urlGeral } = useContext(UserContext);
   const [input, setInput] = useState('')
   const { onOpen, isOpen, type: typeModal } = useModal();
-  const [researcher, setResearcher] = useState<any[]>([]);
+  const [researcher, setResearcher] = useState<PesquisadorProps[]>([]);
 
   const urlGetResearcher = `${urlGeralAdm}GraduateProgramResearcherRest/Query?graduate_program_id=${props.graduate_program_id}`;
   console.log(urlGetResearcher)
@@ -561,6 +562,8 @@ export function DocentesGraduate(props: Props) {
 
   // Rafael
 
+  const [orientacoes, setOrientacoes] = useState<any>([])
+
   const [idOrientador, setIdOrientador] = useState<string | null>(null)
   const [idOrientando, setIdOrientando] = useState<string | null>(null)
   const [idCoorientador, setIdCoorientador] = useState<string | null>(null)
@@ -657,10 +660,18 @@ export function DocentesGraduate(props: Props) {
     }
   }
 
+  async function buscarOrientacoesPorDocente(id: string) {
+    const o = await getOrientacoesPorDocente(id);
+
+    setOrientacoes(o)
+    console.log("ORIENTACOES: ", o)
+  }
+
+
   async function salvarOrientando(evento: any) {
     evento.preventDefault();
-    if (dataEntrada == "" || idOrientador == "" || idOrientando == "" || idCoorientador == "" || dataPrevisaoDefesa == "" || dataPrevisaoQualificacao == "" || dataPrevisaoDefesaFinal == "") {
-      alert("Preencha todos os campos!\n\nDados OBRIGATÓRIOS:\n- Data de Entrada\n- Data da previsão da defesa\n- Data de previsão da qualificação\n- Data de previsão da defesa final");
+    if (dataEntrada == null || idOrientador == null || idOrientando == null || idCoorientador == null || dataPrevisaoDefesa == null || dataPrevisaoQualificacao == null || dataPrevisaoDefesaFinal == null) {
+      alert("Preencha todos os campos!\n\nDados OBRIGATÓRIOS:\n- Orientando e Coorientador\n- Data de Entrada\n- Data da previsão da defesa\n- Data de previsão da qualificação\n- Data de previsão da defesa final");
       return
     }
 
@@ -683,6 +694,22 @@ export function DocentesGraduate(props: Props) {
     if (response.status == 201) {
       alert("Orientação cadastrada com sucesso!");
     }
+  }
+
+  function limparCampos() {
+    setIdOrientando(null)
+    setIdOrientador(null)
+    setIdCoorientador(null)
+    setTipoOrientacao(null)
+    setDataEntrada(null)
+    setDataPrevisaoDefesa(null)
+    setDataRealizadaDefesa(null)
+    setDataPrevisaoQualificacao(null)
+    setDataRealizadaQualificacao(null)
+    setDataPrevisaoDefesaFinal(null)
+    setDataRealizadaDefesaFinal(null)
+    setDiscentesPosGraduacao([])
+    setDocentesPosGraduacao([])
   }
 
   return (
@@ -873,7 +900,7 @@ export function DocentesGraduate(props: Props) {
                         </Button>
                       </div>
 
-                      <AccordionTrigger></AccordionTrigger>
+                      <AccordionTrigger onClick={() => { buscarOrientacoesPorDocente(props.researcher_id) }}></AccordionTrigger>
                     </div>
                   </div>
 
@@ -932,7 +959,7 @@ export function DocentesGraduate(props: Props) {
                       { /* Rafael - Modificações pro IAPÓS */}
 
                       <div className="flex">
-                        <Tabs className="w-full ">
+                        <Tabs defaultValue="entrada" className="w-full ">
                           <div className="flex items-center justify-between mb-3">
                             <TabsList className="py-3">
                               <TabsTrigger value="entrada">Entrada</TabsTrigger> <Separator orientation="vertical" />
@@ -945,15 +972,19 @@ export function DocentesGraduate(props: Props) {
                               <DialogTrigger asChild>
                                 <Button
                                   onClick={() => {
-                                    setIdOrientador(props.researcher_id) // Existe researcher_id sim
-                                    alert("ID ORIENTADOR: " + props.researcher_id)
+                                    setIdOrientador(props.researcher_id)
                                   }}
                                 >
                                   Adicionar orientando
                                 </Button>
                               </DialogTrigger>
 
-                              <DialogContent className="w-[60%]">
+                              <DialogContent
+                                onCloseAutoFocus={() => {
+                                  limparCampos()
+                                }}
+                                className="w-[60%]"
+                              >
                                 <p className="text-3xl font-bold">Adicione um orientando para este docente</p>
 
                                 <form className="flex flex-col gap-3 text-sm" action="">
@@ -981,13 +1012,18 @@ export function DocentesGraduate(props: Props) {
                                           className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
                                           onChange={(event) => {
                                             setIdCoorientador(event.target.value)
-                                            alert("ID COORIENTADOR: " + event.target.value)
                                           }}
                                         >
                                           <option disabled selected>Selecione um coorientador</option>
                                           {
                                             docentesPosGraduacao && docentesPosGraduacao.map((docente) => (
-                                              <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
+                                              props.researcher_id !== docente.researcher_id ?
+                                                <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
+                                                :
+                                                <p>
+                                                  <option disabled key={docente.researcher_id} value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
+
+                                                </p>
                                             ))
                                           }
                                         </select>
@@ -1151,7 +1187,7 @@ export function DocentesGraduate(props: Props) {
                                       onClick={(e) => {
                                         salvarOrientando(e);
                                       }}
-                                    >Salvar orientando</button>
+                                    >Salvar orientação</button>
                                   </div>
                                 </form>
 
@@ -1159,19 +1195,7 @@ export function DocentesGraduate(props: Props) {
                                   className="absolute top-6 right-6 bg-red-500 text-white p-2 rounded-md"
                                   title="Fechar"
                                   onClick={() => {
-                                    setIdOrientando("")
-                                    setIdOrientador("")
-                                    setIdCoorientador("")
-                                    setTipoOrientacao("")
-                                    setDataEntrada("")
-                                    setDataPrevisaoDefesa("")
-                                    setDataRealizadaDefesa("")
-                                    setDataPrevisaoQualificacao("")
-                                    setDataRealizadaQualificacao("")
-                                    setDataPrevisaoDefesaFinal("")
-                                    setDataRealizadaDefesaFinal("")
-                                    setDiscentesPosGraduacao([])
-                                    setDocentesPosGraduacao([])
+                                    limparCampos();
                                   }}
                                 >
                                   <X className="w-4 h-4" />
@@ -1183,25 +1207,61 @@ export function DocentesGraduate(props: Props) {
                           </div>
 
                           <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="entrada">
-                            <CartaoOrientando tipo="entrada" nome="Eduardo Manuel de Freitas Jorge" previsao="20/10/2023" status="Aprovado" />
-                            <CartaoOrientando tipo="entrada" nome="Hugo Saba" previsao="20/10/2023" status="atraso" />
-                            <CartaoOrientando tipo="entrada" nome="Joaquim Silva" previsao="20/10/2023" status="pendente" />
-                            <CartaoOrientando tipo="entrada" nome="Alana Carolina" previsao="20/10/2023" status="pendente" />
+                            {orientacoes?.filter((o: any) => o.type === "PROJETO").length > 0 ? (
+                              orientacoes
+                                .filter((o: any) => o.type === "PROJETO")
+                                .map((o: any) => (
+                                  <CartaoOrientando key={o.id} orientacaoC={o} />
+                                ))
+                            ) : (
+                              <p className="p-3 animate-pulse">
+                                Sem orientações novas pra este docente.
+                              </p>
+                            )}
                           </TabsContent>
 
                           <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="projetos_defendidos">
-                            <CartaoOrientando tipo="defendido" nome="Camila Santos" previsao="20/10/2023" status="pendente" />
-                            <CartaoOrientando tipo="defendido" nome="Pedro Oliveira" previsao="21/10/2024" status="Aprovado" />
+                            {orientacoes?.filter((o: any) => o.type === "QUALIFICAÇÃO").length > 0 ? (
+                              orientacoes
+                                .filter((o: any) => o.type === "QUALIFICAÇÃO")
+                                .map((o: any) => (
+                                  <CartaoOrientando key={o.id} orientacaoC={o} />
+                                ))
+                            ) : (
+                              <p className="p-3 animate-pulse">
+                                Sem orientações a defender para este docente.
+                              </p>
+                            )}
                           </TabsContent>
 
                           <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="qualificados">
-                            <CartaoOrientando tipo="qualificado" nome="Pedro Marcarenhas" previsao="20/10/2023" status="qualificado" />
-                            <CartaoOrientando tipo="qualificado" nome="Rafaela Silva" previsao="20/10/2022" status="pendente" />
+                            {orientacoes?.filter((o: any) => o.type === "CONCLUSÃO").length > 0 ? (
+                              orientacoes
+                                .filter((o: any) => o.type === "CONCLUSÃO")
+                                .map((o: any) => (
+                                  <CartaoOrientando key={o.id} orientacaoC={o} />
+                                ))
+                            ) : (
+                              <p className="p-3 animate-pulse">
+                                Sem orientações a qualificar para este docente.
+                              </p>
+                            )}
                           </TabsContent>
 
-                          <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="concluidos">
-                            <CartaoOrientando tipo="concluido" nome="Rafaela Silva" previsao="20/10/2021" />
+                          <TabsContent className="w-full grid grid-cols-3 gap-3 mt-0" value="concluidos">
+                            {orientacoes?.filter((o: any) => o.type === "FINALIZADO").length > 0 ? (
+                              orientacoes
+                                .filter((o: any) => o.type === "FINALIZADO")
+                                .map((o: any) => (
+                                  <CartaoOrientando key={o.id} orientacaoC={o} />
+                                ))
+                            ) : (
+                              <p className="p-3 animate-pulse">
+                                Sem orientações concluídas para este docente.
+                              </p>
+                            )}
                           </TabsContent>
+
                         </Tabs>
 
                       </div>

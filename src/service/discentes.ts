@@ -1,7 +1,7 @@
 async function getDiscentesPorPrograma(idPrograma: string): Promise<any> {
-    const url = `https://iapos-api.senaicimatec.com.br/adm/studentRest/query?graduate_program_id=${idPrograma}`;
 
     try {
+        const url = `https://iapos-api.senaicimatec.com.br/adm/studentRest/query?graduate_program_id=${idPrograma}`;
 
         const resposta = await fetch(url, {
             mode: "cors",
@@ -26,6 +26,33 @@ async function getDiscentesPorPrograma(idPrograma: string): Promise<any> {
     }
 }
 
+async function getInfoPesquisadorPorId(id: string): Promise<string | undefined> {
+    try {
+        const url = `https://iapos-api.senaicimatec.com.br/adm/ResearcherRest/Query?researcher_id=${id}`;
+
+        console.log("URL: ", url)
+        const resposta = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        console.log("Resposta: ", resposta)
+
+        if (!resposta.ok) {
+            throw new Error("Erro ao buscar discentes!")
+        }
+
+        const dados = await resposta.json();
+
+        return dados.name
+    } catch (error) {
+        console.log("Erro ao buscar informação do pesquisador: ", error);
+    }
+}
+
 export {
-    getDiscentesPorPrograma
+    getDiscentesPorPrograma,
+    getInfoPesquisadorPorId
 }
