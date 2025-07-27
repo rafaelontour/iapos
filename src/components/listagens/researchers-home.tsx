@@ -60,10 +60,10 @@ type CityData = {
 };
 
 interface Total {
-  researcher_count:number
-  orcid_count:number
-  scopus_count:number
-  among:number
+  researcher_count: number
+  orcid_count: number
+  scopus_count: number
+  among: number
 }
 
 
@@ -72,23 +72,23 @@ export type Research = {
   status: boolean
   articles: number,
   book: number,
- 
+
   book_chapters: number,
   id: string,
   name: string,
   university: string,
   lattes_id: string,
-  rt:string
+  rt: string
   area: string,
   lattes_10_id: string,
   abstract: string,
   city: string,
-  classe:string
+  classe: string
   orcid: string,
   image: string
   graduation: string,
   patent: string,
-  genero:string
+  genero: string
   software: string,
   brand: string,
   lattes_update: Date,
@@ -123,15 +123,15 @@ interface Ufmg {
   career_category: string;
   academic_unit: string;
   unit_code: string;
-  function_code: string 
-  position_code: string 
-  leadership_start_date: string 
-  leadership_end_date: string 
-  current_function_name: string 
-  function_location: string 
-  registration_number: string 
-  ufmg_registration_number: string 
-  semester_reference: string 
+  function_code: string
+  position_code: string
+  leadership_start_date: string
+  leadership_end_date: string
+  current_function_name: string
+  function_location: string
+  registration_number: string
+  ufmg_registration_number: string
+  semester_reference: string
 }
 
 interface Departments {
@@ -215,30 +215,30 @@ export function ResearchersHomeListagens() {
   let FinalOpenAlex = openAlexState || ''
 
   const isModalOpen = isOpen && type === "researchers-home";
- 
-    const {
-      setSelectedAreas,
-      setSelectedGraduations,
-      setSelectedCities,
-      setSelectedDepartaments,
-      setSelectedGraduatePrograms,
-      setSelectedSubsidies,
-      setSelectedUniversities,
-      clearFilters,
-      selectedAreas,
-      selectedGraduations,
-      selectedCities,
-      selectedDepartaments,
-      selectedGraduatePrograms,
-      selectedSubsidies,
-      selectedUniversities
-    } = useFiltersContext(); // ✅ correto
-  
 
-  const Page =  queryUrl.get('page') || '1';
-  const Length =  queryUrl.get('length') || '24';
-  
-  let urlTermPesquisadores =`${urlGeral}researcherName?name=&lenght=${Length}&page=${Page}&area=${arrayToParam(selectedAreas)}&graduate_program=${arrayToParam(selectedGraduatePrograms)}&city=${arrayToParam(selectedCities)}&institution=${arrayToParam(selectedUniversities)}&modality=${arrayToParam(selectedSubsidies)}&graduation=${arrayToParam(selectedGraduations)}&departament=${arrayToParam(selectedDepartaments)}`;
+  const {
+    setSelectedAreas,
+    setSelectedGraduations,
+    setSelectedCities,
+    setSelectedDepartaments,
+    setSelectedGraduatePrograms,
+    setSelectedSubsidies,
+    setSelectedUniversities,
+    clearFilters,
+    selectedAreas,
+    selectedGraduations,
+    selectedCities,
+    selectedDepartaments,
+    selectedGraduatePrograms,
+    selectedSubsidies,
+    selectedUniversities
+  } = useFiltersContext(); // ✅ correto
+
+
+  const Page = queryUrl.get('page') || '1';
+  const Length = queryUrl.get('length') || '24';
+
+  let urlTermPesquisadores = `${urlGeral}researcherName?name=&lenght=${Length}&page=${Page}&area=${arrayToParam(selectedAreas)}&graduate_program=${arrayToParam(selectedGraduatePrograms)}&city=${arrayToParam(selectedCities)}&institution=${arrayToParam(selectedUniversities)}&modality=${arrayToParam(selectedSubsidies)}&graduation=${arrayToParam(selectedGraduations)}&departament=${arrayToParam(selectedDepartaments)}`;
 
   function arrayToParam(arr?: string[]) {
     return (arr || []).join(';');
@@ -341,105 +341,105 @@ export function ResearchersHomeListagens() {
       .toLowerCase(); // Converte para minúsculas
   };
 
- ////
-    const [total, setTotal] = useState<Total>()
-    let urlTotais = `${urlGeral}researcher_metrics?type=&term=&area=${arrayToParam(selectedAreas)}&graduate_program=${arrayToParam(selectedGraduatePrograms)}&city=${arrayToParam(selectedCities)}&institution=${arrayToParam(selectedUniversities)}&modality=${arrayToParam(selectedSubsidies)}&graduation=${arrayToParam(selectedGraduations)}&departament=${arrayToParam(selectedDepartaments)}`;
-    
-    console.log(urlTotais)
-      useEffect(() => {
-        const fetchData = async () => {
-    
-          try {
-            const response = await fetch(urlTotais, {
-              mode: 'cors',
-              headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Max-Age': '3600',
-                'Content-Type': 'text/plain'
-              }
-            });
-            const data = await response.json();
-            if (data) {
-              setTotal(data[0])
-            }
-          } catch (err) {
-            console.log(err);
-          } finally {
-    
-          }
-        };
-        fetchData();
-      }, [urlTotais]);
+  ////
+  const [total, setTotal] = useState<Total>()
+  let urlTotais = `${urlGeral}researcher_metrics?type=&term=&area=${arrayToParam(selectedAreas)}&graduate_program=${arrayToParam(selectedGraduatePrograms)}&city=${arrayToParam(selectedCities)}&institution=${arrayToParam(selectedUniversities)}&modality=${arrayToParam(selectedSubsidies)}&graduation=${arrayToParam(selectedGraduations)}&departament=${arrayToParam(selectedDepartaments)}`;
 
-  const currentDate = new Date().toLocaleDateString(); 
+  console.log(urlTotais)
+  useEffect(() => {
+    const fetchData = async () => {
+
+      try {
+        const response = await fetch(urlTotais, {
+          mode: 'cors',
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600',
+            'Content-Type': 'text/plain'
+          }
+        });
+        const data = await response.json();
+        if (data) {
+          setTotal(data[0])
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+
+      }
+    };
+    fetchData();
+  }, [urlTotais]);
+
+  const currentDate = new Date().toLocaleDateString();
   return (
     <div className="w-full">
       <div className="w-full flex gap-4 justify-center">
         <div className="flex-1 gap-4 flex flex-col">
-         
+
           <div className="w-full">
             <HeaderResult />
           </div>
 
-  <FiltersBadge/>
+          <FiltersBadge />
 
-<div className="grid gap-8 mt-4   lg:grid-cols-3">
-<Alert className={`p-0  bg-cover bg-no-repeat bg-center ${(searchType == 'abstract' || searchType == 'name' || searchType == 'area') && ('col-span-4')}`}  >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total de pesquisadores
-                  </CardTitle>
-                  <User className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{total?.among|| 0}</div>
-                  <p className="text-xs text-muted-foreground">
-                    encontrados na busca
-                  </p>
-                </CardContent>
-              </Alert>
+          <div className="grid gap-8 mt-4   lg:grid-cols-3">
+            <Alert className={`p-0  bg-cover bg-no-repeat bg-center ${(searchType == 'abstract' || searchType == 'name' || searchType == 'area') && ('col-span-4')}`}  >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total de pesquisadores
+                </CardTitle>
+                <User className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{total?.among || 0}</div>
+                <p className="text-xs text-muted-foreground">
+                  encontrados na busca
+                </p>
+              </CardContent>
+            </Alert>
 
-              <Alert className={`p-0  bg-cover bg-no-repeat bg-center ${(searchType == 'abstract' || searchType == 'name' || searchType == 'area') && ('col-span-4')}`}  >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
+            <Alert className={`p-0  bg-cover bg-no-repeat bg-center ${(searchType == 'abstract' || searchType == 'name' || searchType == 'area') && ('col-span-4')}`}  >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
                   Percentual de
-                  </CardTitle>
-                  <IdentificationBadge className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{Number( (total?.orcid_count || 0) / (total?.researcher_count || 0) * 100).toFixed(2)}%</div>
-                  <p className="text-xs text-muted-foreground">
-                    com ORCID
-                  </p>
-                </CardContent>
-              </Alert>
+                </CardTitle>
+                <IdentificationBadge className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{Number((total?.orcid_count || 0) / (total?.researcher_count || 0) * 100).toFixed(2)}%</div>
+                <p className="text-xs text-muted-foreground">
+                  com ORCID
+                </p>
+              </CardContent>
+            </Alert>
 
-              <Alert className={`p-0  bg-cover bg-no-repeat bg-center ${(searchType == 'abstract' || searchType == 'name' || searchType == 'area') && ('col-span-4')}`}  >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                   Percentual de
-                  </CardTitle>
-                  <StripeLogo className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{Number( (total?.scopus_count || 0) / (total?.researcher_count || 0) * 100).toFixed(2)}%</div>
-                  <p className="text-xs text-muted-foreground">
-                    com SCOPUS
-                  </p>
-                </CardContent>
-              </Alert>
+            <Alert className={`p-0  bg-cover bg-no-repeat bg-center ${(searchType == 'abstract' || searchType == 'name' || searchType == 'area') && ('col-span-4')}`}  >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Percentual de
+                </CardTitle>
+                <StripeLogo className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{Number((total?.scopus_count || 0) / (total?.researcher_count || 0) * 100).toFixed(2)}%</div>
+                <p className="text-xs text-muted-foreground">
+                  com SCOPUS
+                </p>
+              </CardContent>
+            </Alert>
 
-</div>
+          </div>
 
-      
 
-         
 
-  
-            {simcc && (
-              <Accordion defaultValue="item-1" type="single" collapsible className="hidden md:flex ">
+
+
+
+          {simcc && (
+            <Accordion defaultValue="item-1" type="single" collapsible className="hidden md:flex ">
               <AccordionItem value="item-1" className="w-full ">
                 <div className="flex mb-2">
                   <HeaderResultTypeHome title="Pesquisadores no mapa" icon={<MapIcon size={24} className="text-gray-400" />}>
@@ -454,237 +454,237 @@ export function ResearchersHomeListagens() {
                     <Skeleton className="rounded-md w-full h-[300px] " />
                   ) : (
                     <div>
-                     <Alert className="p-0">
-                     <MapaResearcher
-                        cityData={cityData}
-                      />
-                     </Alert>
+                      <Alert className="p-0">
+                        <MapaResearcher
+                          cityData={cityData}
+                        />
+                      </Alert>
                     </div>
                   )}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            )}
-     
-            <Accordion defaultValue="item-1" type="single" collapsible className="hidden md:flex ">
-              <AccordionItem value="item-1" className="w-full ">
-                <div className="flex mb-2">
-                  <HeaderResultTypeHome title="Gráficos dos pesquisadores" icon={<ChartBar size={24} className="text-gray-400" />}>
-                  </HeaderResultTypeHome>
+          )}
 
+          <Accordion defaultValue="item-1" type="single" collapsible className="hidden md:flex ">
+            <AccordionItem value="item-1" className="w-full ">
+              <div className="flex mb-2">
+                <HeaderResultTypeHome title="Gráficos dos pesquisadores" icon={<ChartBar size={24} className="text-gray-400" />}>
+                </HeaderResultTypeHome>
+
+                <AccordionTrigger>
+
+                </AccordionTrigger>
+              </div>
+              <AccordionContent className="p-0">
+                {loading ? (
+                  <Skeleton className="rounded-md w-full h-[300px] " />
+                ) : (
+                  <div className="grid gap-8">
+                    <div className="grid gap-8 xl:grid-cols-2">
+                      <GraficoTitulacao researchers={researcher} />
+                      <GraficoAreaPesquisares researchers={researcher} />
+                    </div>
+
+                    {version && (
+                      <div className="grid gap-8">
+                        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+                          <Alert className="lg:col-span-2 ">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <div>
+                                <CardTitle className="text-sm font-medium">
+                                  Perfil da carreira
+                                </CardTitle>
+                                <CardDescription>Classe de trabalho</CardDescription>
+                              </div>
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Fonte: Instituição</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                            </CardHeader>
+
+                            <CardContent className="flex py-0 flex-1  items-center justify-center">
+                              <GraficoDocentesCargo docentes={researcher} />
+                            </CardContent>
+
+                          </Alert>
+
+                          <Alert className="">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <div>
+                                <CardTitle className="text-sm font-medium">
+                                  Regime de trabalho
+                                </CardTitle>
+                                <CardDescription>Carga horária semanal</CardDescription>
+                              </div>
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Fonte: Instituição</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                            </CardHeader>
+
+                            <CardContent className="flex py-0 flex-1  items-center justify-center">
+                              <GraficoDocentesRt docentes={researcher} />
+                            </CardContent>
+                          </Alert>
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+                          <Alert className=" h-full">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <div>
+                                <CardTitle className="text-sm font-medium">
+                                  Divisão por gênero
+                                </CardTitle>
+                                <CardDescription>Distribuição na instituição</CardDescription>
+                              </div>
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Fonte: Instituição</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                            </CardHeader>
+
+                            <CardContent className="flex py-0 flex-1  items-center justify-center">
+                              <GraficoDocentesGenero docentes={researcher} />
+                            </CardContent>
+
+                          </Alert>
+
+
+
+
+                          <Alert className="">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <div>
+                                <CardTitle className="text-sm font-medium">
+                                  Atualização do Currículo Lattes
+                                </CardTitle>
+                                <CardDescription>Tempo de atualização desde {String(currentDate)}</CardDescription>
+                              </div>
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Fonte: Instituição</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                            </CardHeader>
+
+                            <CardContent className="flex py-0 flex-1  items-center justify-center">
+                              <GraficoAtualizacaoCurriculos researchers={researcher} />
+                            </CardContent>
+                          </Alert>
+                        </div>
+                      </div>
+                    )}
+
+                    {!version && (
+                      <Alert className="">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <div>
+                            <CardTitle className="text-sm font-medium">
+                              Atualização do Currículo Lattes
+                            </CardTitle>
+                            <CardDescription>Tempo de atualização desde {String(currentDate)}</CardDescription>
+                          </div>
+
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                              <TooltipContent>
+                                <p>Fonte: Instituição</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                        </CardHeader>
+
+                        <CardContent className="flex py-0 flex-1  items-center justify-center">
+                          <GraficoAtualizacaoCurriculosBar researchers={researcher} />
+                        </CardContent>
+                      </Alert>
+                    )}
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          <div>
+            <Accordion defaultValue="item-1" type="single" collapsible>
+              <AccordionItem value="item-1">
+                <div className="flex mb-2">
+                  <HeaderResultTypeHome title="Pesquisadores por detalhamento" icon={<UserList size={24} className="text-gray-400" />}>
+                    <div className="hidden md:flex gap-3 mr-3">
+                      <Button onClick={() => setTypeVisu('rows')} variant={typeVisu === 'block' ? 'ghost' : 'outline'} size={'icon'}>
+                        <Rows size={16} className="whitespace-nowrap" />
+                      </Button>
+                      <Button onClick={() => setTypeVisu('block')} variant={typeVisu === 'block' ? 'outline' : 'ghost'} size={'icon'}>
+                        <SquaresFour size={16} className="whitespace-nowrap" />
+                      </Button>
+                    </div>
+                  </HeaderResultTypeHome>
                   <AccordionTrigger>
 
                   </AccordionTrigger>
                 </div>
-                <AccordionContent className="p-0">
-                  {loading ? (
-                    <Skeleton className="rounded-md w-full h-[300px] " />
+                <AccordionContent>
+                  {typeVisu === 'block' ? (
+                    loading ? (
+                      <ResponsiveMasonry
+                        columnsCountBreakPoints={{
+                          350: 2,
+                          750: 3,
+                          900: 4,
+                          1200: 6,
+                          1500: 6,
+                          1700: 7
+                        }}
+                      >
+                        <Masonry gutter="16px">
+                          {items.map((item, index) => (
+                            <div className="w-full" key={index}>{item}</div>
+                          ))}
+                        </Masonry>
+                      </ResponsiveMasonry>
+                    ) : (
+                      <ResearchersBloco researcher={researcher} />
+                    )
                   ) : (
-                    <div className="grid gap-8">
-                    <div className="grid gap-8 xl:grid-cols-2">
-                      <GraficoTitulacao researchers={researcher}/>
-                      <GraficoAreaPesquisares researchers={researcher}/>
-                    </div>
-
-                    {version && (
-                       <div className="grid gap-8">
-                       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-                                      <Alert className="lg:col-span-2 ">
-                                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                          <div>
-                                            <CardTitle className="text-sm font-medium">
-                                              Perfil da carreira
-                                            </CardTitle>
-                                            <CardDescription>Classe de trabalho</CardDescription>
-                                          </div>
-                      
-                                          <TooltipProvider>
-                                            <Tooltip>
-                                              <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                                              <TooltipContent>
-                                                <p>Fonte: Instituição</p>
-                                              </TooltipContent>
-                                            </Tooltip>
-                                          </TooltipProvider>
-                      
-                                        </CardHeader>
-                      
-                                        <CardContent className="flex py-0 flex-1  items-center justify-center">
-                                        <GraficoDocentesCargo docentes={researcher}/>
-                                        </CardContent>
-                      
-                                      </Alert>
-                      
-                                      <Alert className="">
-                                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                          <div>
-                                            <CardTitle className="text-sm font-medium">
-                                              Regime de trabalho
-                                            </CardTitle>
-                                            <CardDescription>Carga horária semanal</CardDescription>
-                                          </div>
-                      
-                                          <TooltipProvider>
-                                            <Tooltip>
-                                              <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                                              <TooltipContent>
-                                                <p>Fonte: Instituição</p>
-                                              </TooltipContent>
-                                            </Tooltip>
-                                          </TooltipProvider>
-                      
-                                        </CardHeader>
-                      
-                                        <CardContent className="flex py-0 flex-1  items-center justify-center">
-                                           <GraficoDocentesRt docentes={researcher} />
-                                        </CardContent>
-                                      </Alert>
-                                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-                      <Alert className=" h-full">
-                                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                          <div>
-                                            <CardTitle className="text-sm font-medium">
-                                              Divisão por gênero
-                                            </CardTitle>
-                                            <CardDescription>Distribuição na instituição</CardDescription>
-                                          </div>
-                      
-                                          <TooltipProvider>
-                                            <Tooltip>
-                                              <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                                              <TooltipContent>
-                                                <p>Fonte: Instituição</p>
-                                              </TooltipContent>
-                                            </Tooltip>
-                                          </TooltipProvider>
-                      
-                                        </CardHeader>
-                      
-                                        <CardContent className="flex py-0 flex-1  items-center justify-center">
-                                          <GraficoDocentesGenero docentes={researcher} />
-                                        </CardContent>
-                      
-                                      </Alert>
-
-                                    
-
-
-                                                      <Alert className="">
-                                                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                                          <div>
-                                                            <CardTitle className="text-sm font-medium">
-                                                              Atualização do Currículo Lattes
-                                                            </CardTitle>
-                                                            <CardDescription>Tempo de atualização desde {String(currentDate)}</CardDescription>
-                                                          </div>
-                                      
-                                                          <TooltipProvider>
-                                                            <Tooltip>
-                                                              <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                                                              <TooltipContent>
-                                                                <p>Fonte: Instituição</p>
-                                                              </TooltipContent>
-                                                            </Tooltip>
-                                                          </TooltipProvider>
-                                      
-                                                        </CardHeader>
-                                      
-                                                        <CardContent className="flex py-0 flex-1  items-center justify-center">
-                                                         <GraficoAtualizacaoCurriculos researchers={researcher}/>
-                                                        </CardContent>
-                                                      </Alert>
-                    </div>
-                     </div>
-                    )}
-
-                    {!version && (
-                       <Alert className="">
-                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                         <div>
-                           <CardTitle className="text-sm font-medium">
-                             Atualização do Currículo Lattes
-                           </CardTitle>
-                           <CardDescription>Tempo de atualização desde {String(currentDate)}</CardDescription>
-                         </div>
-     
-                         <TooltipProvider>
-                           <Tooltip>
-                             <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                             <TooltipContent>
-                               <p>Fonte: Instituição</p>
-                             </TooltipContent>
-                           </Tooltip>
-                         </TooltipProvider>
-     
-                       </CardHeader>
-     
-                       <CardContent className="flex py-0 flex-1  items-center justify-center">
-                        <GraficoAtualizacaoCurriculosBar researchers={researcher}/>
-                       </CardContent>
-                     </Alert>
-                    )}
-                    </div>
+                    loading ? (
+                      <Skeleton className="w-full rounded-md h-[400px]" />
+                    ) : (
+                      <TableReseracherhome researcher={researcher} />
+                    )
                   )}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-        
-            <div>
-              <Accordion defaultValue="item-1" type="single" collapsible>
-                <AccordionItem value="item-1">
-                  <div className="flex mb-2">
-                    <HeaderResultTypeHome title="Pesquisadores por detalhamento" icon={<UserList size={24} className="text-gray-400" />}>
-                      <div className="hidden md:flex gap-3 mr-3">
-                        <Button onClick={() => setTypeVisu('rows')} variant={typeVisu === 'block' ? 'ghost' : 'outline'} size={'icon'}>
-                          <Rows size={16} className="whitespace-nowrap" />
-                        </Button>
-                        <Button onClick={() => setTypeVisu('block')} variant={typeVisu === 'block' ? 'outline' : 'ghost'} size={'icon'}>
-                          <SquaresFour size={16} className="whitespace-nowrap" />
-                        </Button>
-                      </div>
-                    </HeaderResultTypeHome>
-                    <AccordionTrigger>
+          </div>
 
-                    </AccordionTrigger>
-                  </div>
-                  <AccordionContent>
-                    {typeVisu === 'block' ? (
-                      loading ? (
-                        <ResponsiveMasonry
-                          columnsCountBreakPoints={{
-                            350: 2,
-                            750: 3,
-                            900: 4,
-                            1200: 6,
-                            1500: 6,
-                            1700: 7
-                          }}
-                        >
-                          <Masonry gutter="16px">
-                            {items.map((item, index) => (
-                              <div className="w-full" key={index}>{item}</div>
-                            ))}
-                          </Masonry>
-                        </ResponsiveMasonry>
-                      ) : (
-                        <ResearchersBloco researcher={researcher} />
-                      )
-                    ) : (
-                      loading ? (
-                        <Skeleton className="w-full rounded-md h-[400px]" />
-                      ) : (
-                        <TableReseracherhome researcher={researcher} />
-                      )
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-          
 
-        
+
         </div>
 
 

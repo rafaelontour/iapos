@@ -29,14 +29,10 @@ export function ResultHome() {
 
   const queryUrl = useQuery();
 
-
-
   const researcher = queryUrl.get('researcher');
 
   const type_search = queryUrl.get('type_search');
   const terms = queryUrl.get('terms');
-  const [previousTypeSearch, setPreviousTypeSearch] = useState(type_search);
-  const isModalOpen = isOpen && type === "result-home";
 
   useEffect(() => {
     if (type_search == 'patent' && terms == '') {
@@ -63,21 +59,21 @@ export function ResultHome() {
   const navigate = useNavigate();
 
   const updateFilters = (category: string, values: any) => {
-    if (values  ) {
-     
+    if (values) {
+
       queryUrl.set(category, values);
-     
+
     } else {
-     queryUrl.delete(category)
+      queryUrl.delete(category)
     }
-   
+
   };
 
   useEffect(() => {
     console.log("typeResult mudou para:", typeResult);
-     updateFilters("tab", typeResult );
+    updateFilters("tab", typeResult);
 
-     navigate({
+    navigate({
       pathname: '/resultados',
       search: queryUrl.toString(),
     })
@@ -85,11 +81,11 @@ export function ResultHome() {
   }, [typeResult]);
 
   useEffect(() => {
-    if(tab != null && tab != undefined) {
+    if (tab != null && tab != undefined) {
       onOpen(tab as ModalType)
     }
-     
-   }, []);
+
+  }, []);
 
   const [jsonData, setJsonData] = useState<any[]>([]);
 
@@ -128,7 +124,7 @@ export function ResultHome() {
       urlPublicacoesPorPesquisador = `${urlGeral}institutionFrequenci?terms=${valoresSelecionadosExport}&university=&type=ABSTRACT`
     } else if (searchType == 'area') {
       urlPublicacoesPorPesquisador = `${urlGeral}institutionFrequenci?terms=${valoresSelecionadosExport}&university=&type=AREA`
-    } 
+    }
   } else if (typeResult == 'patent-home') {
     urlPublicacoesPorPesquisador = `${urlGeral}patent_production_researcher?researcher_id=&year=1900&term=${valoresSelecionadosExport}&distinct=`
   } else if (typeResult == 'book-home') {
@@ -194,7 +190,6 @@ export function ResultHome() {
     }
   };
 
-  const { version } = useContext(UserContext)
   return (
     <div className="h-full w-full flex flex-col">
       <Helmet>
@@ -224,61 +219,61 @@ export function ResultHome() {
               </div>
             )}
             <div className={`flex w-full flex-wrap gap-4 pt-2 justify-between ${isOn ? '' : ''} `}>
-             <div className="flex flex-1 w-full">
-             <ScrollArea>
-                <div className="w-full flex items-center gap-2">
-                  {!((researcher == 'false' && itemsSelecionados.length == 0) && itemsSelecionados.length == 0) && (
-                    <div className={`pb-2 border-b-2 transition-all ${typeResult == 'researchers-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
-                      <Button variant={typeResult == 'researchers-home' ? ('ghost') : ('ghost')} className={`${typeResult}`} onClick={() => onOpen('researchers-home')}>
-                        <Users className="h-4 w-4" />
-                        Pesquisadores
-                      </Button>
-                    </div>
-                  )}
-                  {searchType === 'article' && (
-                    <div className={`pb-2 border-b-2  transition-all ${typeResult == 'articles-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
-                      <Button variant={typeResult == 'articles-home' ? ('ghost') : ('ghost')} className="m-0" onClick={() => onOpen('articles-home')}>
-                        <File className="h-4 w-4" />
-                        Artigos
-                      </Button>
-                    </div>
-                  )}
-                  {searchType === 'book' && (
-                    <div className={`pb-2 border-b-2  transition-all ${typeResult == 'book-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
-                      <Button variant={typeResult == 'book-home' ? ('ghost') : ('ghost')} className="m-0" onClick={() => onOpen('book-home')}>
-                        <BookOpen className="h-4 w-4" />
-                        Livros e capítulos
-                      </Button>
-                    </div>
-                  )}
-                  {searchType === 'patent' && (
-                    <div className={`pb-2 border-b-2  transition-all ${typeResult == 'patent-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
-                      <Button variant={typeResult == 'patent-home' ? ('ghost') : ('ghost')} className="m-0" onClick={() => onOpen('patent-home')}>
-                        <Copyright className="h-4 w-4" />
-                        Patentes
-                      </Button>
-                    </div>
-                  )}
-                  {searchType === 'speaker' && (
-                    <div className={`pb-2 border-b-2  transition-all ${typeResult == 'speaker-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
-                      <Button variant={typeResult == 'speaker-home' ? ('ghost') : ('ghost')} className="m-0" onClick={() => onOpen('speaker-home')}>
-                        <Ticket className="h-4 w-4" />
-                        Participação em eventos
-                      </Button>
-                    </div>
-                  )}
-                  {!((simcc && researcher == 'false' && itemsSelecionados.length == 0) && itemsSelecionados.length == 0 ) && (
-                   searchType != 'name' && (
-                    <div className={`pb-2 border-b-2 transition-all ${typeResult == 'institutions-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
-                   
-                  </div>
+              <div className="flex flex-1 w-full">
+                <ScrollArea>
+                  <div className="w-full flex items-center gap-2">
+                    {!((researcher == 'false' && itemsSelecionados.length == 0) && itemsSelecionados.length == 0) && (
+                      <div className={`pb-2 border-b-2 transition-all ${typeResult == 'researchers-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
+                        <Button variant={typeResult == 'researchers-home' ? ('ghost') : ('ghost')} className={`${typeResult}`} onClick={() => onOpen('researchers-home')}>
+                          <Users className="h-4 w-4" />
+                          Pesquisadores
+                        </Button>
+                      </div>
+                    )}
+                    {searchType === 'article' && (
+                      <div className={`pb-2 border-b-2  transition-all ${typeResult == 'articles-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
+                        <Button variant={typeResult == 'articles-home' ? ('ghost') : ('ghost')} className="m-0" onClick={() => onOpen('articles-home')}>
+                          <File className="h-4 w-4" />
+                          Artigos
+                        </Button>
+                      </div>
+                    )}
+                    {searchType === 'book' && (
+                      <div className={`pb-2 border-b-2  transition-all ${typeResult == 'book-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
+                        <Button variant={typeResult == 'book-home' ? ('ghost') : ('ghost')} className="m-0" onClick={() => onOpen('book-home')}>
+                          <BookOpen className="h-4 w-4" />
+                          Livros e capítulos
+                        </Button>
+                      </div>
+                    )}
+                    {searchType === 'patent' && (
+                      <div className={`pb-2 border-b-2  transition-all ${typeResult == 'patent-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
+                        <Button variant={typeResult == 'patent-home' ? ('ghost') : ('ghost')} className="m-0" onClick={() => onOpen('patent-home')}>
+                          <Copyright className="h-4 w-4" />
+                          Patentes
+                        </Button>
+                      </div>
+                    )}
+                    {searchType === 'speaker' && (
+                      <div className={`pb-2 border-b-2  transition-all ${typeResult == 'speaker-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
+                        <Button variant={typeResult == 'speaker-home' ? ('ghost') : ('ghost')} className="m-0" onClick={() => onOpen('speaker-home')}>
+                          <Ticket className="h-4 w-4" />
+                          Participação em eventos
+                        </Button>
+                      </div>
+                    )}
+                    {!((simcc && researcher == 'false' && itemsSelecionados.length == 0) && itemsSelecionados.length == 0) && (
+                      searchType != 'name' && (
+                        <div className={`pb-2 border-b-2 transition-all ${typeResult == 'institutions-home' ? ('border-b-[#719CB8]') : (' border-b-transparent ')}`}>
 
-                   )
-                  )}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-             </div>
+                        </div>
+
+                      )
+                    )}
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
 
               <div className="block xl:hidden">
                 <DropdownMenu>
@@ -288,30 +283,30 @@ export function ResultHome() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    
+
                     <Link to={`${urlGeral}dictionary.pdf`} target="_blank">
-                    <DropdownMenuItem className="gap-2">
-                    
+                      <DropdownMenuItem className="gap-2">
+
                         <File size={16} className="" />
                         Dicionário de dados
-                  
-                    </DropdownMenuItem></Link>
+
+                      </DropdownMenuItem></Link>
 
                     <DropdownMenuItem onClick={() => handleDownloadJson()} className="gap-2" >
-                     
-                        <Download size={16} className="" />
-                        Baixar resultado
-                      
+
+                      <Download size={16} className="" />
+                      Baixar resultado
+
                     </DropdownMenuItem >
 
                     {typeResult == 'researchers-home' && (
-                    <DropdownMenuItem onClick={() => onOpenModal('filters')} className="gap-2">
-                     
-                            <SlidersHorizontal size={16} className="" />
-                            Filtros
-                         
-                    </DropdownMenuItem>
-                     )}
+                      <DropdownMenuItem onClick={() => onOpenModal('filters')} className="gap-2">
+
+                        <SlidersHorizontal size={16} className="" />
+                        Filtros
+
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

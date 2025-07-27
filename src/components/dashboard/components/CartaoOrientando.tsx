@@ -1,4 +1,3 @@
-import { string } from "prop-types";
 import { getInfoPesquisadorPorId } from "../../../service/discentes";
 import { useEffect, useState } from "react";
 
@@ -29,7 +28,7 @@ interface InfoOrientacaoProps {
 
 
 export default function CartaoOrientando(o: InfoOrientacaoProps) {
-    const [nomeDiscente, setNomeDiscente] = useState<string>('');
+    const [nomeDiscente, setNomeDiscente] = useState<string>("");
 
     const tipo = () => {
         if (o.orientacaoC.type === 'PROJETO') {
@@ -98,7 +97,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     useEffect(() => {
         getNomePorId(o.orientacaoC.student_researcher_id)
-    }, [])
+    }, [o.orientacaoC.student_researcher_id])
 
     function data() {
         if (o.orientacaoC.peding === "EM DIA" && o.orientacaoC.type === "FINALIZADO") {
@@ -117,7 +116,13 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     return (
         <div className="flex items-center gap-5 border rounded-md shadow-md p-5 max-h-[170px]">
-            <div className={`flex items-center w-[100px] h-[100px] bg-[url(https://picsum.photos/200)] bg-cover`}>
+            <div
+                className={`flex items-center w-[100px] h-[100px] rounded-md bg-cover`}
+                style={{
+                    backgroundImage: nomeDiscente ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?name=${encodeURIComponent(nomeDiscente)}) ` : "",
+                    boxShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                }}
+            >
 
             </div>
 

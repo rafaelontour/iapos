@@ -96,11 +96,9 @@ export function DataTable<TData, TValue>({
 
   };
 
-  const { type } = useModalResult()
-
   return (
     <div>
-     
+
 
       <div className="rounded-md border dark:border-none">
         <Table>

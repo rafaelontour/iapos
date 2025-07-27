@@ -371,37 +371,37 @@ export function Search() {
               <div className="flex items-center gap-2 w-full flex-1">
                 <div className="hidden md:flex gap-2 w-fit  items-center">
 
-                  
-                <SelectTypeSearch />
 
-                 {itemsSelecionados.length > 0 && (
-                   <div className='flex gap-2 mx-2 items-center'>
-                   {itemsSelecionados.map((valor, index) => {
-                     return (
-                       <>
-                         <div key={index} className={`flex gap-2 items-center h-10 p-2 px-4 capitalize rounded-md text-xs ${searchType == 'article' && ('bg-blue-500 dark:bg-blue-500')} ${searchType == 'abstract' && ('bg-yellow-500 dark:bg-yellow-500')} ${searchType == 'speaker' && ('bg-orange-500 dark:bg-orange-500')} ${searchType == 'book' && ('bg-pink-500 dark:bg-pink-500')} ${searchType == 'patent' && ('bg-cyan-500 dark:bg-cyan-500')} ${searchType == 'name' && ('bg-red-500 dark:bg-red-500')} ${searchType == 'area' && ('bg-green-500 dark:bg-green-500')} ${searchType == '' && ('bg-blue-700 dark:bg-blue-700')} text-white border-0 `} >
-                           {valor.term.replace(/[|;]/g, '')}
-                           <X size={12} onClick={() => handleRemoveItem(index)} className="cursor-pointer" />
-                           {/* Adicionando a escolha entre "e" ou "ou" */}
+                  <SelectTypeSearch />
 
-                         </div>
+                  {itemsSelecionados.length > 0 && (
+                    <div className='flex gap-2 mx-2 items-center'>
+                      {itemsSelecionados.map((valor, index) => {
+                        return (
+                          <>
+                            <div key={index} className={`flex gap-2 items-center h-10 p-2 px-4 capitalize rounded-md text-xs ${searchType == 'article' && ('bg-blue-500 dark:bg-blue-500')} ${searchType == 'abstract' && ('bg-yellow-500 dark:bg-yellow-500')} ${searchType == 'speaker' && ('bg-orange-500 dark:bg-orange-500')} ${searchType == 'book' && ('bg-pink-500 dark:bg-pink-500')} ${searchType == 'patent' && ('bg-cyan-500 dark:bg-cyan-500')} ${searchType == 'name' && ('bg-red-500 dark:bg-red-500')} ${searchType == 'area' && ('bg-green-500 dark:bg-green-500')} ${searchType == '' && ('bg-blue-700 dark:bg-blue-700')} text-white border-0 `} >
+                              {valor.term.replace(/[|;]/g, '')}
+                              <X size={12} onClick={() => handleRemoveItem(index)} className="cursor-pointer" />
+                              {/* Adicionando a escolha entre "e" ou "ou" */}
 
-                         {index < itemsSelecionados.length - 1 && (
-                           <button className="rounded-full cursor-pointer flex items-center justify-center whitespace-nowrap h-8 w-8 bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-900 dark:bg-neutral-800 transition-all text-xs outline-none" onClick={() => {
-                             const connector = itemsSelecionados[index].term.endsWith('|') ? ';' : '|'; // Alterna entre "|" e ";" conforme necessário
-                             handleConnectorChange(index, connector);
-                              
-                           }} >
-                            
-                             {itemsSelecionados[index].term.endsWith(';') ? "e" : "ou"}
-                           </button>
-                         )}
+                            </div>
 
-                       </>
-                     );
-                   })}
-                 </div>
-                 )}
+                            {index < itemsSelecionados.length - 1 && (
+                              <button className="rounded-full cursor-pointer flex items-center justify-center whitespace-nowrap h-8 w-8 bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-900 dark:bg-neutral-800 transition-all text-xs outline-none" onClick={() => {
+                                const connector = itemsSelecionados[index].term.endsWith('|') ? ';' : '|'; // Alterna entre "|" e ";" conforme necessário
+                                handleConnectorChange(index, connector);
+
+                              }} >
+
+                                {itemsSelecionados[index].term.endsWith(';') ? "e" : "ou"}
+                              </button>
+                            )}
+
+                          </>
+                        );
+                      })}
+                    </div>
+                  )}
 
                 </div>
                 <div className="relative">
@@ -415,7 +415,7 @@ export function Search() {
                     <span className="text-zinc-400 text-md">Clique aqui e pesquise</span>
                   </div>
                   <Input onClick={() => handlePopUppesquisa()} onChange={(e) => setInput(e.target.value)} value={input} type="text" className="border-0 w-full flex flex-1" />
-                  </div>
+                </div>
               </div>
 
               <div className="w-fit flex gap-2">
@@ -428,29 +428,29 @@ export function Search() {
                     } else (
                       history('/resultados')
                     )
-                    
+
 
                   }}><Trash size={16} /></Button>
                 )}
-               <Button 
-  onClick={() => handlePesquisa()} 
-  variant="outline" 
-  className={`
-    ${searchType == 'article' && 'bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white'}
-    ${searchType == 'abstract' && 'bg-yellow-500 dark:bg-yellow-500 hover:bg-yellow-600 dark:hover:bg-yellow-600 hover:text-white'}
-    ${maria && 'bg-[#82AAC0] dark:bg-[#82AAC0] hover:bg-[#6F97AD] dark:hover:bg-[#6F97AD] hover:text-white'}
-    ${searchType == 'speaker' && 'bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 hover:text-white'}
-    ${searchType == 'book' && 'bg-pink-500 dark:bg-pink-500 hover:bg-pink-600 dark:hover:bg-pink-600 hover:text-white'}
-    ${searchType == 'patent' && 'bg-cyan-500 dark:bg-cyan-500 hover:bg-cyan-600 dark:hover:bg-cyan-600 hover:text-white'}
-    ${searchType == 'name' && 'bg-red-500 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600 hover:text-white'}
-    ${searchType == 'area' && 'bg-green-500 dark:bg-green-500 hover:bg-green-600 dark:hover:bg-green-600 hover:text-white'}
-    ${searchType == '' && 'bg-blue-700 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-800 hover:text-white'}
-    text-white border-0
-  `} 
-  size={'icon'}
-> 
-  <MagnifyingGlass size={16} className="" />
-</Button>
+                <Button
+                  onClick={() => handlePesquisa()}
+                  variant="outline"
+                  className={`
+                    ${searchType == 'article' && 'bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white'}
+                    ${searchType == 'abstract' && 'bg-yellow-500 dark:bg-yellow-500 hover:bg-yellow-600 dark:hover:bg-yellow-600 hover:text-white'}
+                    ${maria && 'bg-[#82AAC0] dark:bg-[#82AAC0] hover:bg-[#6F97AD] dark:hover:bg-[#6F97AD] hover:text-white'}
+                    ${searchType == 'speaker' && 'bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 hover:text-white'}
+                    ${searchType == 'book' && 'bg-pink-500 dark:bg-pink-500 hover:bg-pink-600 dark:hover:bg-pink-600 hover:text-white'}
+                    ${searchType == 'patent' && 'bg-cyan-500 dark:bg-cyan-500 hover:bg-cyan-600 dark:hover:bg-cyan-600 hover:text-white'}
+                    ${searchType == 'name' && 'bg-red-500 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600 hover:text-white'}
+                    ${searchType == 'area' && 'bg-green-500 dark:bg-green-500 hover:bg-green-600 dark:hover:bg-green-600 hover:text-white'}
+                    ${searchType == '' && 'bg-blue-700 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-800 hover:text-white'}
+                    text-white border-0
+                  `}
+                  size={'icon'}
+                >
+                  <MagnifyingGlass size={16} className="" />
+                </Button>
 
               </div>
             </Alert>

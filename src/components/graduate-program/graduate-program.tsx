@@ -615,8 +615,6 @@ export function GraduateProgram() {
 
   const { version, simcc } = useContext(UserContext)
 
-  const [isOn, setIsOn] = useState(true);
-
   const [jsonData, setJsonData] = useState<any[]>([]);
 
 

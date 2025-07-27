@@ -1,26 +1,7 @@
 
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { UserContext } from "../../context/context";
-import bg_graduate from '../../assets/bg_home.png'
-import bg_popup from '../../assets/bg_popup.png';
-
-import {
-  Book,
-  Books,
-
-  ChartBar,
-
-  ChartLine,
-
-  Copyright,
-
-  Quotes,
-
-} from "phosphor-react";
-import { ArrowRight, BarChartBig, Blocks, Download, File, GraduationCap, Info, InfoIcon, Link2, List } from "lucide-react";
-import { Alert } from "../ui/alert";
 import { useModalHomepage } from "../hooks/use-modal-homepage";
-
 
 interface VisaoPrograma {
   article: number;
@@ -52,13 +33,9 @@ interface GrupoPesquisa {
   situacao: string
 }
 
+import { useNavigate } from "react-router-dom";
 
-
-
-import { Link, useNavigate } from "react-router-dom";
-
-import { AreaChart, Area, LineChart, Line, BarChart, Bar, XAxis, PieChart, Pie, LabelList, Cell, CartesianGrid, Legend, ResponsiveContainer } from 'recharts';
-import { Label as LabelChart } from 'recharts';
+import { AreaChart, Area, LineChart, Line } from 'recharts';
 
 type Count = {
   count_article: number
@@ -232,11 +209,6 @@ export function InitialHome() {
 
   }, [urlRt]);
 
-  // Função para somar os counts de technician
-  const sumTechnicianCounts = (technician: CoutRt[]): number => {
-    return technician.reduce((total, item) => total + item.count, 0);
-  };
-
   const { theme } = useTheme();
 
   const urlVisaoPrograma = `${urlGeral}/graduate_program_production?graduate_program_id=0&year=1900`;
@@ -375,19 +347,6 @@ export function InitialHome() {
       },
     },
   };
-
-  const [activeChart, setActiveChart] = useState<keyof typeof chartConfig>('producao_bibliografica')
-
-  const total = useMemo(
-    () => ({
-      producao_bibliografica: dados.reduce(
-        (acc, curr) => acc + curr.count_article + curr.count_book + curr.count_book_chapter,
-        0
-      ),
-      producao_tecnica: dados.reduce((acc, curr) => acc + curr.count_patent + curr.count_software + curr.count_brand, 0),
-    }),
-    [dados]
-  );
 
   const [visibleChart, setVisibleChart] = useState(0);
   const chartKeys = ['count_article', 'count_patent', 'count_guidance_in_progress'];

@@ -542,7 +542,6 @@ function App() {
                     }
                   />
 
-
                   <Route
                     path='/dashboard/grupos-pesquisa'
                     element={
@@ -583,11 +582,6 @@ function App() {
                     }
                   />
 
-
-                  {/*
-        Este é um comentário de múltiplas linhas dentro do JSX.
-        Pode ser usado para descrições mais longas.
-      */}
                   <Route
                     path='/minhaufmg/dashboard/administrativo'
                     element={
@@ -598,12 +592,10 @@ function App() {
                     }
                   />
 
-
                   <Route
                     path='/minhaufmg/dashboard'
                     element={<Dashboard />}
                   />
-
 
                   <Route
                     path='/minhaufmg/dashboard/programas'
@@ -644,7 +636,6 @@ function App() {
                       />
                     }
                   />
-
 
                   <Route
                     path='/minhaufmg/dashboard/pesos-avaliacao'
@@ -697,13 +688,6 @@ function App() {
                   />
 
                   <Route path='/minhaufmg/dashboard/informacoes' element={<Dashboard />} />
-
-
-                  {/*
-        Este é um comentário de múltiplas linhas dentro do JSX.
-        Pode ser usado para descrições mais longas.
-      */}
-
 
                   <Route path='/dashboard/informacoes' element={<Dashboard />} />
 

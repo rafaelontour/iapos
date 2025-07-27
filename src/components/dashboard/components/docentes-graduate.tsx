@@ -692,7 +692,11 @@ export function DocentesGraduate(props: Props) {
     const response = await adicionarOrientacao(orientacao)
 
     if (response.status == 201) {
-      alert("Orientação cadastrada com sucesso!");
+      buscarOrientacoesPorDocente(idOrientador);
+      limparCampos();
+      alert("Orientação adicionada com sucesso!");
+    } else {
+      alert("Não foi possível adicionar a orientação!");
     }
   }
 
@@ -708,8 +712,6 @@ export function DocentesGraduate(props: Props) {
     setDataRealizadaQualificacao(null)
     setDataPrevisaoDefesaFinal(null)
     setDataRealizadaDefesaFinal(null)
-    setDiscentesPosGraduacao([])
-    setDocentesPosGraduacao([])
   }
 
   return (
@@ -962,10 +964,10 @@ export function DocentesGraduate(props: Props) {
                         <Tabs defaultValue="entrada" className="w-full ">
                           <div className="flex items-center justify-between mb-3">
                             <TabsList className="py-3">
-                              <TabsTrigger value="entrada">Entrada</TabsTrigger> <Separator orientation="vertical" />
-                              <TabsTrigger value="projetos_defendidos">Projetos Defendidos</TabsTrigger> <Separator orientation="vertical" />
-                              <TabsTrigger value="qualificados">Qualificados</TabsTrigger> <Separator orientation="vertical" />
-                              <TabsTrigger value="concluidos">Concluídos</TabsTrigger>
+                              <TabsTrigger value="entrada">Entrada &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "PROJETO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "PROJETO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
+                              <TabsTrigger value="projetos_defendidos">Projetos Defendidos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
+                              <TabsTrigger value="qualificados">Qualificados &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
+                              <TabsTrigger value="concluidos">Concluídos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
                             </TabsList>
 
                             <Dialog>

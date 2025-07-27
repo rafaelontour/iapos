@@ -64,15 +64,15 @@ export interface Ufmg {
   career_category: string;
   academic_unit: string;
   unit_code: string;
-  function_code: string 
-  position_code: string 
-  leadership_start_date: string 
-  leadership_end_date: string 
-  current_function_name: string 
-  function_location: string 
-  registration_number: string 
-  ufmg_registration_number: string 
-  semester_reference: string 
+  function_code: string
+  position_code: string
+  leadership_start_date: string
+  leadership_end_date: string
+  current_function_name: string
+  function_location: string
+  registration_number: string
+  ufmg_registration_number: string
+  semester_reference: string
 }
 
 
@@ -101,16 +101,16 @@ export function ResearchItem(props: Research) {
     (perm) => perm.permission === 'criar_barema_avaliacao'
   );
 
-   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  
-    useEffect(() => {
-      const fetchImage = async () => {
-        const url = await getInstitutionImageName(props.university);
-        setImageUrl(url);
-      };
-  
-      fetchImage();
-    }, [props]);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const url = await getInstitutionImageName(props.university);
+      setImageUrl(url);
+    };
+
+    fetchImage();
+  }, [props]);
 
   return (
     <div onClick={() => onOpen('researcher-modal', { name: props.name })} className="flex group min-h-[300px] w-full cursor-pointer">
@@ -121,125 +121,114 @@ export function ResearchItem(props: Research) {
             <div className="z-[1] w-full  p-4 flex gap-3 justify-end">
 
               <div className="mr-auto flex h-fit  gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation(); // Impede a propagação do evento de clique para o contêiner pai
 
+                          if (pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name)) {
+                            setPesquisadoresSelecionados(prev =>
+                              prev.filter(pesquisador => pesquisador.name !== props.name)
+                            );
 
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                            <Button
-  onClick={(event) => {
-    event.stopPropagation(); // Impede a propagação do evento de clique para o contêiner pai
+                            toast("Pesquisador(a) removido dos selecionados", {
+                              description: `${props.name}`,
+                              action: {
+                                label: "Fechar",
+                                onClick: () => console.log("Fechar"),
+                              },
+                            });
+                          } else {
+                            setPesquisadoresSelecionados(prev => [
+                              ...prev,
+                              {
+                                id: props.id,
+                                name: props.name,
+                                university: props.university,
+                                lattes_id: props.lattes_id,
+                                city: props.city,
+                                area: props.area,
+                                graduation: props.graduation,
+                              }
+                            ]);
 
-    if (pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name)) {
-      setPesquisadoresSelecionados(prev =>
-        prev.filter(pesquisador => pesquisador.name !== props.name)
-      );
-
-       toast("Pesquisador(a) removido dos selecionados", {
-                                          description: `${props.name}`,
-                                          action: {
-                                            label: "Fechar",
-                                            onClick: () => console.log("Fechar"),
-                                          },
-                                        });
-    } else {
-      setPesquisadoresSelecionados(prev => [
-        ...prev,
-        {
-          id: props.id,
-          name: props.name,
-          university: props.university,
-          lattes_id: props.lattes_id,
-          city: props.city,
-          area: props.area,
-          graduation: props.graduation,
-        }
-      ]);
-
-        toast("Pesquisador(a) adicionado aos selecionados", {
-                                          description: `${props.name}`,
-                                          action: {
-                                            label: "Fechar",
-                                            onClick: () => console.log("Fechar"),
-                                          },
-                                        });
-    }
-  }}
-  size={'icon'}
-  className={`hidden group-hover:flex transition-all h-8 w-8 ${pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) && 'bg-red-500 hover:bg-red-600 text-white'}`}
->
-  {pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) ? (
-    <X size={16} />
-  ) : (
-    <Plus size={16} />
-  )}
-</Button>
-                            </TooltipTrigger>
-                            <TooltipContent> {pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) ? (
-                              'Remover pesquisador(a)'
-                            ) : (
-                              'Adicionar pesquisador(a)'
-                            )}</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                 
-              
-                     
-
+                            toast("Pesquisador(a) adicionado aos selecionados", {
+                              description: `${props.name}`,
+                              action: {
+                                label: "Fechar",
+                                onClick: () => console.log("Fechar"),
+                              },
+                            });
+                          }
+                        }}
+                        size={'icon'}
+                        className={`hidden group-hover:flex transition-all h-8 w-8 ${pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) && 'bg-red-500 hover:bg-red-600 text-white'}`}
+                      >
+                        {pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) ? (
+                          <X size={16} />
+                        ) : (
+                          <Plus size={16} />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent> {pesquisadoresSelecionados.some(pesquisador => pesquisador.name === props.name) ? (
+                      'Remover pesquisador(a)'
+                    ) : (
+                      'Adicionar pesquisador(a)'
+                    )}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
                 <div className="flex group-hover:hidden">
                   <div className="flex text-white gap-2 items-center" >
-                  {!props.status && (
+                    {!props.status && (
                       <div className={` rounded-md h-4 w-4 bg-red-500`}></div>
-                  )}
+                    )}
                     <div className="flex-1 flex">{!props.status && ('Inativo')}</div></div>
                 </div>
               </div>
-           
-            
-              {props.ufmg.current_function_name   &&  (
-                      <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                <img src={fc} className="w-8 relative -top-4" alt="" />
 
-                </TooltipTrigger>
-                
 
-                <TooltipContent>
-                 Função de confiança
-                </TooltipContent>
+              {props.ufmg.current_function_name && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <img src={fc} className="w-8 relative -top-4" alt="" />
+                    </TooltipTrigger>
 
-                </Tooltip>
+                    <TooltipContent>
+                      Função de confiança
+                    </TooltipContent>
+
+                  </Tooltip>
                 </TooltipProvider>
               )}
 
               {props.subsidy && props.subsidy.length != 0 && props.subsidy.slice(0, 1).map((item) => (
-                      <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                <img src={item.modality_code == 'DT' ? (dt) : (pq)} className="w-8 relative -top-4" alt="" />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <img src={item.modality_code == 'DT' ? (dt) : (pq)} className="w-8 relative -top-4" alt="" />
 
-                </TooltipTrigger>
-                
+                    </TooltipTrigger>
 
-                <TooltipContent>
-                  {item.modality_code == 'PQ' ? ('Bolsista de Proatividade CNPq'):('Bolsista de Desenvolvimento Tecnológico CNPq')}
-                </TooltipContent>
 
-                </Tooltip>
+                    <TooltipContent>
+                      {item.modality_code == 'PQ' ? ('Bolsista de Proatividade CNPq') : ('Bolsista de Desenvolvimento Tecnológico CNPq')}
+                    </TooltipContent>
+
+                  </Tooltip>
                 </TooltipProvider>
               ))}
 
-              
+
             </div>
 
             <div className="flex gap-2 px-6 flex-col pb-6  w-full h-full text-white justify-end  ">
               <div className="flex gap-1 flex-col">
 
-             {!version && (
-               <img src={imageUrl || ''} alt="" className="h-5 group-hover:hidden w-fit flex" />
-             )}
                 <CardTitle className="text-lg font-medium">{props.name}</CardTitle>
 
                 <div className="group-hover:flex hidden items-center flex-wrap gap-1  mb-2">
@@ -252,7 +241,6 @@ export function ResearchItem(props: Research) {
 
                 </div>
               </div>
-
 
               {props.area.length !== 0 && (
                 <div className="flex gap-3 flex-wrap">

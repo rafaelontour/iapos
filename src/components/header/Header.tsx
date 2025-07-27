@@ -21,9 +21,8 @@ import { UserCircleGear, UserPlus } from "phosphor-react";
 import { LayoutDashboard, LogInIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
-
 export function Header() {
-  const { loggedIn, role, setItensSelecionados, version, searchType, maria, user, permission } = useContext(UserContext)
+  const { loggedIn, role, setItensSelecionados, permission } = useContext(UserContext)
 
   const navigate = useNavigate()
 
@@ -39,7 +38,10 @@ export function Header() {
 
           <div className="flex w-full md:gap-3 gap-1 items-center md:h-full md:justify-center">
 
-            <Link to={"/"} className="w-[80px]">
+            <Link
+              onClick={() => setItensSelecionados([])}
+              to={"/"} className="w-[80px]"
+            >
               <img src="/iapos.png" className="" alt="Logo Iapos" />
             </Link>
 

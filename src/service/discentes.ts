@@ -54,5 +54,5 @@ async function getInfoPesquisadorPorId(id: string): Promise<string | undefined> 
 
 export {
     getDiscentesPorPrograma,
-    getInfoPesquisadorPorId
+    getInfoPesquisadorPorId,
 }
