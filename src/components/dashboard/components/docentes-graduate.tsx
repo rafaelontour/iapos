@@ -227,10 +227,6 @@ export function DocentesGraduate(props: Props) {
 
   // Crie estados para os tipos e anos selecionados para cada pesquisador
   const [types, setTypes] = useState(researcher.map((props) => props.type_));
-
-
-
-
   const [selectedYears, setSelectedYears] = useState(
     researcher.map((props) => props.years ?? []) // Garantir um array vazio caso 'props.years' seja undefined
   );
@@ -590,13 +586,16 @@ export function DocentesGraduate(props: Props) {
     }
   }, [dataEntrada])
 
-  useEffect(() => {
+  function buscarDiscentes() {
     const discentes = getDiscentesPorPrograma(props.graduate_program_id);
 
     discentes.then((response) => {
       setDiscentesPosGraduacao(response)
     })
+  }
 
+  useEffect(() => {
+    buscarDiscentes();
     const docentes = getDocentesPorPrograma(props.graduate_program_id);
 
     docentes.then((response) => {
@@ -664,7 +663,6 @@ export function DocentesGraduate(props: Props) {
     const o = await getOrientacoesPorDocente(id);
 
     setOrientacoes(o)
-    console.log("ORIENTACOES: ", o)
   }
 
 
@@ -1066,7 +1064,7 @@ export function DocentesGraduate(props: Props) {
                                           <input
                                             className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
                                             onClick={() => {
-                                              if (dataEntrada == "") {
+                                              if (dataEntrada == null) {
                                                 alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa do projeto serão geradas automaticamente!");
                                                 return;
                                               }
@@ -1085,7 +1083,7 @@ export function DocentesGraduate(props: Props) {
                                           <input
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
                                             onClick={() => {
-                                              if (dataPrevisaoDefesa == "") {
+                                              if (dataPrevisaoDefesa == null) {
                                                 alert("Para modificar a data de realização da defesa, primeiro selecione uma DATA DE ENTRADA!");
                                                 return;
                                               }
@@ -1108,7 +1106,7 @@ export function DocentesGraduate(props: Props) {
                                           <input
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
                                             onClick={() => {
-                                              if (dataPrevisaoQualificacao == "") {
+                                              if (dataPrevisaoQualificacao == null) {
                                                 alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da qualificação do projeto serão geradas automaticamente!");
                                                 return;
                                               }
@@ -1150,7 +1148,7 @@ export function DocentesGraduate(props: Props) {
                                           <input
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
                                             onClick={() => {
-                                              if (dataPrevisaoDefesaFinal == "") {
+                                              if (dataPrevisaoDefesaFinal == null) {
                                                 alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa final do projeto serão geradas automaticamente!");
                                                 return;
                                               }
@@ -1170,7 +1168,7 @@ export function DocentesGraduate(props: Props) {
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
                                             type="date"
                                             onClick={() => {
-                                              if (dataRealizadaDefesaFinal == "") {
+                                              if (dataRealizadaDefesaFinal == null) {
                                                 alert("Para modificar a data de realização da defesa final, primeiro selecione uma DATA DE ENTRADA!");
                                                 return;
                                               }
@@ -1208,12 +1206,12 @@ export function DocentesGraduate(props: Props) {
 
                           </div>
 
-                          <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="entrada">
+                          <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="entrada">
                             {orientacoes?.filter((o: any) => o.type === "PROJETO").length > 0 ? (
                               orientacoes
                                 .filter((o: any) => o.type === "PROJETO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} orientacaoC={o} />
+                                  <CartaoOrientando key={o.id} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
@@ -1222,12 +1220,12 @@ export function DocentesGraduate(props: Props) {
                             )}
                           </TabsContent>
 
-                          <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="projetos_defendidos">
+                          <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="projetos_defendidos">
                             {orientacoes?.filter((o: any) => o.type === "QUALIFICAÇÃO").length > 0 ? (
                               orientacoes
                                 .filter((o: any) => o.type === "QUALIFICAÇÃO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} orientacaoC={o} />
+                                  <CartaoOrientando key={o.id} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
@@ -1236,12 +1234,12 @@ export function DocentesGraduate(props: Props) {
                             )}
                           </TabsContent>
 
-                          <TabsContent className="grid grid-cols-3 gap-3 mt-0" value="qualificados">
+                          <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="qualificados">
                             {orientacoes?.filter((o: any) => o.type === "CONCLUSÃO").length > 0 ? (
                               orientacoes
                                 .filter((o: any) => o.type === "CONCLUSÃO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} orientacaoC={o} />
+                                  <CartaoOrientando key={o.id} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
@@ -1250,12 +1248,12 @@ export function DocentesGraduate(props: Props) {
                             )}
                           </TabsContent>
 
-                          <TabsContent className="w-full grid grid-cols-3 gap-3 mt-0" value="concluidos">
+                          <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="concluidos">
                             {orientacoes?.filter((o: any) => o.type === "FINALIZADO").length > 0 ? (
                               orientacoes
                                 .filter((o: any) => o.type === "FINALIZADO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} orientacaoC={o} />
+                                  <CartaoOrientando key={o.id} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">

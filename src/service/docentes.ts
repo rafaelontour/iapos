@@ -45,6 +45,25 @@ async function adicionarOrientacao(orientacao: any): Promise<any> {
     }
 }
 
+async function atualizarOrientacao(orientacao: any): Promise<number | undefined> {
+
+    try {
+        const url = `https://iapos-api.senaicimatec.com.br/adm/guidance_tracking/${orientacao.id}/`
+
+        const resposta = await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orientacao)
+        })
+
+        return resposta.status
+    } catch (error) {
+        console.log("Não foi possivel atualizar a orientação!", error);
+    }
+}
+
 async function getOrientacoesPorDocente(id: string): Promise<any[] | undefined> {
 
     try {
@@ -92,9 +111,28 @@ async function getImagemDocente(nome: string): Promise<string | undefined> {
 
 }
 
+async function excluirOrientacao(id: string): Promise<number | undefined> {
+    try {
+        const url = `https://iapos-api.senaicimatec.com.br/adm/guidance_tracking/${id}/`
+
+        const resposta = await fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        return resposta.status
+    } catch (error) {
+        console.log("Erro ao excluir orientacao: ", error);
+    }
+}
+
 export {
     getDocentesPorPrograma,
     adicionarOrientacao,
     getOrientacoesPorDocente,
-    getImagemDocente
+    getImagemDocente,
+    atualizarOrientacao,
+    excluirOrientacao
 }
