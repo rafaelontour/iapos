@@ -8,7 +8,7 @@ COPY package*.json ./
 
 RUN npm install --legacy-peer-deps --force
 
-RUN npm i emoji-mart
+RUN npm i emoji-mart
 
 COPY . .
 
