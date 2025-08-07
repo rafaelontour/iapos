@@ -20,6 +20,7 @@ async function getDiscentesPorPrograma(idPrograma: string): Promise<any> {
         }
 
         const dados = resposta.json();
+        console.log("Discentes: ", dados)
         return dados;
     } catch (err) {
         console.log("Erro ao buscar discentes: ", err);
@@ -37,8 +38,6 @@ async function getInfoPesquisadorPorId(id: string): Promise<string | undefined> 
                 "Content-Type": "application/json"
             }
         })
-
-        console.log("Resposta: ", resposta)
 
         if (!resposta.ok) {
             throw new Error("Erro ao buscar discentes!")

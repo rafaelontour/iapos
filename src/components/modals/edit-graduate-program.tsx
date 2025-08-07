@@ -63,9 +63,6 @@ export function EditGraduateProgram() {
   }, [data]);
 
   const handleSubmit = async () => {
-
-
-
     try {
       const data = [
         {

@@ -128,10 +128,8 @@ export function ProgramaDashboard() {
   const { theme } = useTheme()
 
   const tabs = [
-    { id: "visao_geral", label: "Visão geral", icon: Home },
     { id: "docentes", label: "Docentes", icon: Users },
     { id: "discentes", label: "Discentes", icon: Users },
-
   ];
 
   const tab = queryUrl.get('pagina');
@@ -283,7 +281,6 @@ export function ProgramaDashboard() {
 
   const { onOpen: onOpenModal } = useModal()
 
-
   const storage = getStorage();
   // Função para upload de imagem
   const handleUpload = async (folder: "profile" | "background") => {
@@ -313,7 +310,6 @@ export function ProgramaDashboard() {
       }));
     };
   };
-
 
   if (loading) {
     return (

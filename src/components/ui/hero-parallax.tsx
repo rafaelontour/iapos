@@ -108,21 +108,18 @@ export const HeroParallax = ({
   );
 };
 
-
-
-
 export const Header = () => {
-    const {version} = useContext(UserContext)
+  const { version } = useContext(UserContext)
 
-const {theme} = useTheme()
+  const { theme } = useTheme()
 
   return (
     <div className="max-w-7xl relative mx-auto py-20 md:py-40 px-4 w-full  left-0 top-0">
-       {theme == 'dark' ? (
-         <div className="h-6 mb-4">{version?(<LogoConecteeWhite/>):(<LogoIaposWhite/>)}</div>
-       ):(
-        <div className="h-6 mb-4">{version?(<LogoConectee/>):(<LogoIapos/>)}</div>
-       )}
+      {theme == 'dark' ? (
+        <div className="h-6 mb-4">{version ? (<LogoConecteeWhite />) : (<LogoIaposWhite />)}</div>
+      ) : (
+        <div className="h-6 mb-4">{version ? (<LogoConectee />) : (<LogoIapos />)}</div>
+      )}
       <h1 className="text-2xl md:text-5xl font-bold dark:text-white">
         Conheça tudo que a <br /> plataforma pode oferecer
       </h1>

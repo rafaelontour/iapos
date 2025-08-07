@@ -12,8 +12,6 @@ import { EditGraduateProgram } from "../modals/edit-graduate-program";
 
 import { AddResearcherCsvModal } from "../modals/add-researcher-csv-modal";
 
-
-
 import { ConfirmDeleteResearcherGraduateProgram } from "../modals/confirm-delete-researcher-graduate-program";
 import { ConfirmDeleteStudentGraduateProgram } from "../modals/confirm-delete-student-graduate-program";
 import { useModal } from "../hooks/use-modal-store";
@@ -76,7 +74,7 @@ const ModalContent = () => {
     case 'minha-area':
       return <MinhaArea />
     case 'confirm-delete-institution':
-      return<ConfirmDeleteInstitution/>
+      return <ConfirmDeleteInstitution />
     case 'add-background':
       return <AddBackground />
     case 'relatar-problema':
@@ -84,11 +82,11 @@ const ModalContent = () => {
     case 'pesquisadores-selecionados':
       return <PesquisadoresSelecionadosModal />
     case 'user-profile-initial':
-      return <UserProfileInitialModal/>
+      return <UserProfileInitialModal />
     case 'edit-background':
-      return <AddBackground/>
+      return <AddBackground />
     case 'filters':
-      return <FiltersModal/>
+      return <FiltersModal />
     default:
       return null;
   }

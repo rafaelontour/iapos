@@ -398,8 +398,6 @@ export function DocentesGraduate(props: Props) {
 
               const currentYear = new Date().getFullYear();
 
-
-
               try {
                 const data = [
                   {
@@ -659,8 +657,8 @@ export function DocentesGraduate(props: Props) {
     }
   }
 
-  async function buscarOrientacoesPorDocente(id: string) {
-    const o = await getOrientacoesPorDocente(id);
+  async function buscarOrientacoesPorDocente(idDocente: string, idPrograma: string) {
+    const o = await getOrientacoesPorDocente(idDocente, idPrograma);
 
     setOrientacoes(o)
   }
@@ -690,7 +688,7 @@ export function DocentesGraduate(props: Props) {
     const response = await adicionarOrientacao(orientacao)
 
     if (response.status == 201) {
-      buscarOrientacoesPorDocente(idOrientador);
+      buscarOrientacoesPorDocente(idOrientador, props.graduate_program_id);
       limparCampos();
       alert("Orientação adicionada com sucesso!");
     } else {
@@ -900,7 +898,7 @@ export function DocentesGraduate(props: Props) {
                         </Button>
                       </div>
 
-                      <AccordionTrigger onClick={() => { buscarOrientacoesPorDocente(props.researcher_id) }}></AccordionTrigger>
+                      <AccordionTrigger onClick={() => { buscarOrientacoesPorDocente(props.researcher_id, props.graduate_program_id) }}></AccordionTrigger>
                     </div>
                   </div>
 
@@ -1001,6 +999,7 @@ export function DocentesGraduate(props: Props) {
                                           <option value="" disabled selected>Selecione um orientando</option>
                                           {
                                             discentesPosGraduacao && discentesPosGraduacao.map((discente) => (
+                                              discente.oriented === false &&
                                               <option key={discente.researcher_id} value={discente.researcher_id}>{discente.name}</option>
                                             ))
                                           }

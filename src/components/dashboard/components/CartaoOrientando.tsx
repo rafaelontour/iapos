@@ -29,7 +29,7 @@ interface OrientacaoProps {
 interface InfoOrientacaoProps {
     orientacaoC: OrientacaoProps
     pesquisador: any
-    buscarOrientacoes: (id: string) => void
+    buscarOrientacoes: (idDocente: string, idPrograma: string) => void
 }
 
 
@@ -217,7 +217,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
         if (resposta == 200) {
             limparCampos();
-            o.buscarOrientacoes(o.pesquisador.researcher_id);
+            o.buscarOrientacoes(o.pesquisador.researcher_id, o.orientacaoC.graduate_program_id);
             alert("Orientação salva com sucesso!");
         } else {
             alert("Falha ao atualizar orientação!");
@@ -229,7 +229,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
         if (resposta == 200) {
             limparCampos();
-            o.buscarOrientacoes(o.pesquisador.researcher_id);
+            o.buscarOrientacoes(o.pesquisador.researcher_id, o.orientacaoC.graduate_program_id);
             alert("Orientação excluida com sucesso!");
         }
     }
@@ -267,10 +267,10 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         <div className="flex flex-col items-center gap-5 border rounded-md shadow-md p-5 h-fit">
             <div className="flex w-full gap-6">
                 <div
-                    className={`flex items-center w-[120px] full rounded-md bg-cover`}
+                    className={`flex items-center w-[120px] full rounded-md bg-contain bg-no-repeat bg-center`}
                     style={{
                         backgroundImage: nomeDiscente ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?name=${encodeURIComponent(nomeDiscente)})` : "",
-                        boxShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                        boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
                     }}
                 >
                 </div>

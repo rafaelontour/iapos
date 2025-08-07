@@ -64,10 +64,10 @@ async function atualizarOrientacao(orientacao: any): Promise<number | undefined>
     }
 }
 
-async function getOrientacoesPorDocente(id: string): Promise<any[] | undefined> {
+async function getOrientacoesPorDocente(idOrientador: string, idPrograma: string): Promise<any[] | undefined> {
 
     try {
-        const url = `https://iapos-api.senaicimatec.com.br/adm/guidance_tracking/?supervisor_researcher_id=${id}`
+        const url = `https://iapos-api.senaicimatec.com.br/adm/guidance_tracking/?supervisor_researcher_id=${idOrientador}&graduate_program_id=${idPrograma}`
 
         const resposta = await fetch(url, {
             method: "GET",
@@ -81,7 +81,6 @@ async function getOrientacoesPorDocente(id: string): Promise<any[] | undefined> 
         }
 
         const dados = await resposta.json();
-        console.log("Orientacoes do docente: ", dados)
         return dados
     } catch (error) {
         console.log("Erro ao buscar orientacoes por docente: ", error);
