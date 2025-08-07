@@ -30,6 +30,7 @@ interface InfoOrientacaoProps {
     orientacaoC: OrientacaoProps
     pesquisador: any
     buscarOrientacoes: (idDocente: string, idPrograma: string) => void
+    tipoPrograma: any
 }
 
 
@@ -122,7 +123,10 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [docentesPosGraduacao, setDocentesPosGraduacao] = useState<any[]>([])
 
     useEffect(() => {
-        if (dataEntrada !== null) {
+        console.log("dataEntrada", dataEntrada)
+        if (dataEntrada) {
+            console.log("tipo", o.tipoPrograma)
+
             gerarDatas(dataEntrada, "DEFESA_DO_PROJETO");
             gerarDatas(dataEntrada, "QUALIFICACAO");
             gerarDatas(dataEntrada, "DEFESA_FINAL");
@@ -135,6 +139,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         docentes.then((response) => {
             setDocentesPosGraduacao(response)
         })
+
     }, [])
 
     function gerarDatas(d: string, tipo?: string): void {
@@ -147,9 +152,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         const data = new Date(ano, mes, dia);
         let mesesAdicionais: number;
 
+        console.log("tipo", o.tipoPrograma[0].type)
+
         if (tipo) {
             if (tipo === "DEFESA_DO_PROJETO") {
-                tipoOrientacao === "MESTRADO" ? mesesAdicionais = 3 : mesesAdicionais = 5;
+                o.tipoPrograma[0].type === "Mestrado" ? mesesAdicionais = 3 : mesesAdicionais = 5;
+                console.log("meses adicionais", mesesAdicionais)
 
                 data.setMonth(data.getMonth() + mesesAdicionais);
                 data.setDate(dia);
@@ -163,7 +171,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             }
 
             if (tipo === "QUALIFICACAO") {
-                tipoOrientacao === "MESTRADO" ? mesesAdicionais = 12 : mesesAdicionais = 24;
+                o.tipoPrograma[0].type === "Mestrado" ? mesesAdicionais = 12 : mesesAdicionais = 24;
 
                 data.setMonth(data.getMonth() + mesesAdicionais);
                 data.setDate(dia);
@@ -178,7 +186,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
             if (tipo === "DEFESA_FINAL") {
                 setDataPrevisaoDefesaFinal(d);
-                tipoOrientacao === "MESTRADO" ? mesesAdicionais = 24 : mesesAdicionais = 48;
+                o.tipoPrograma[0].type === "Mestrado" ? mesesAdicionais = 24 : mesesAdicionais = 48;
 
                 data.setMonth(data.getMonth() + mesesAdicionais);
                 data.setDate(dia);

@@ -164,10 +164,8 @@ export function ProgramaDashboard() {
     const { theme } = useTheme()
 
     const tabs = [
-        { id: "visao_geral", label: "Visão geral", icon: Home },
         { id: "docentes", label: "Docentes", icon: Users },
         { id: "discentes", label: "Discentes", icon: Users },
-
     ];
 
     const tab = queryUrl.get('pagina');
@@ -403,16 +401,16 @@ export function ProgramaDashboard() {
             </Helmet>
 
             <main className="grid grid-cols-1 ">
-                <Tabs defaultValue={tabs[0].id} value={value} className="">
+                <Tabs defaultValue="docentes">
                     <div className="md:p-8 p-4 pb-0">
                         <div style={{ backgroundImage: `url(${keepoData.app.background_image})` }} className="bg-eng-blue bg-no-repeat bg-center bg-cover border dark:border-neutral-800 w-full rounded-md h-[300px]">
                             <div className={`w-full h-full rounded-md ${!(keepoData.app.background_image == "") && ('bg-black/25 ')}  pb-0 md:pb-0 p-4 md:p-8 flex-col flex justify-between `}>
                                 <div
                                     className="
-                    flex flex-col items-center gap-4 justify-between
+                                        flex flex-col items-center gap-4 justify-between
 
-                    md:flex-row
-                  "
+                                        md:flex-row
+                                    "
                                 >
                                     <div className="flex gap-2">
                                         <Button onClick={handleVoltar} variant="outline" size="icon" className="h-7 w-7 text-eng-blue hover:text-eng-blue">
@@ -669,21 +667,9 @@ export function ProgramaDashboard() {
 
                         </div>
 
-
-
-
-                        <TabsContent value="visao_geral" className="m-0">
-                            <div>
-                                <BuilderPage />
-                            </div>
-                        </TabsContent>
-
-
-
                         <TabsContent value="docentes" className="m-0">
-                            <DocentesGraduate graduate_program_id={graduatePrograms.graduate_program_id} />
+                            <DocentesGraduate type_program={graduatePrograms.type} graduate_program_id={graduatePrograms.graduate_program_id} />
                         </TabsContent>
-
 
                         <TabsContent value="discentes" className="m-0">
                             <DiscentesGraduate graduate_program_id={graduatePrograms.graduate_program_id} />

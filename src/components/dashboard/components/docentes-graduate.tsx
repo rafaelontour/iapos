@@ -46,6 +46,7 @@ export interface PesquisadorProps2 {
 
 interface Props {
   graduate_program_id: string
+  type_program: string
 }
 
 export function DocentesGraduate(props: Props) {
@@ -239,8 +240,6 @@ export function DocentesGraduate(props: Props) {
 
   }, [researcher]);
 
-  console.log(selectedYears)
-
   const handleUpdateData = (index: number, id_r: string) => {
     const yearsString = ''
     console.log(`Atualizar dados: Tipo: ${types[index]}, Researcher ID: ${researcher[index].graduate_program_id}, Anos: ${yearsString}`);
@@ -308,8 +307,6 @@ export function DocentesGraduate(props: Props) {
         }
       };
       fetchData();
-
-
 
     } catch (error) {
       toast("Erro ao processar requisição", {
@@ -556,13 +553,13 @@ export function DocentesGraduate(props: Props) {
 
   // Rafael
 
+  const [tipoOrientacao, setTipoOrientacao] = useState<any>(null)
   const [orientacoes, setOrientacoes] = useState<any>([])
 
   const [idOrientador, setIdOrientador] = useState<string | null>(null)
   const [idOrientando, setIdOrientando] = useState<string | null>(null)
   const [idCoorientador, setIdCoorientador] = useState<string | null>(null)
 
-  const [tipoOrientacao, setTipoOrientacao] = useState<string | null>(null)
   const [dataEntrada, setDataEntrada] = useState<string | null>(null)
   const [dataPrevisaoDefesa, setDataPrevisaoDefesa] = useState<string | null>(null)
   const [dataRealizadaDefesa, setDataRealizadaDefesa] = useState<string | null>(null)
@@ -599,6 +596,8 @@ export function DocentesGraduate(props: Props) {
     docentes.then((response) => {
       setDocentesPosGraduacao(response)
     })
+
+    infoPrograma()
   }, [])
 
   function gerarDatas(d: string, tipo?: string): void {
@@ -611,9 +610,11 @@ export function DocentesGraduate(props: Props) {
     const data = new Date(ano, mes, dia);
     let mesesAdicionais: number;
 
+    console.log("tipo", tipoOrientacao[0].type)
+
     if (tipo) {
       if (tipo === "DEFESA_DO_PROJETO") {
-        tipoOrientacao === "MESTRADO" ? mesesAdicionais = 3 : mesesAdicionais = 5;
+        tipoOrientacao[0].type === "Mestrado" ? mesesAdicionais = 3 : mesesAdicionais = 5;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
         data.setDate(dia);
@@ -627,7 +628,7 @@ export function DocentesGraduate(props: Props) {
       }
 
       if (tipo === "QUALIFICACAO") {
-        tipoOrientacao === "MESTRADO" ? mesesAdicionais = 12 : mesesAdicionais = 24;
+        tipoOrientacao[0].type === "Mestrado" ? mesesAdicionais = 12 : mesesAdicionais = 24;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
         data.setDate(dia);
@@ -642,7 +643,7 @@ export function DocentesGraduate(props: Props) {
 
       if (tipo === "DEFESA_FINAL") {
         setDataPrevisaoDefesaFinal(d);
-        tipoOrientacao === "MESTRADO" ? mesesAdicionais = 24 : mesesAdicionais = 48;
+        tipoOrientacao[0].type === "Mestrado" ? mesesAdicionais = 24 : mesesAdicionais = 48;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
         data.setDate(dia);
@@ -710,9 +711,28 @@ export function DocentesGraduate(props: Props) {
     setDataRealizadaDefesaFinal(null)
   }
 
+  const infoPrograma = async () => {
+    const token = localStorage.getItem('jwt_token');
+    const resposta = await fetch(`${urlGeralAdm}GraduateProgramRest/Query?graduate_program_id=${props.graduate_program_id}`, {
+      mode: "cors",
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "3600",
+        "Content-Type": "text/plain",
+      },
+    });
+
+    const data = await resposta.json();
+    setTipoOrientacao(data);
+  }
+
   return (
     <div>
-      <div className="">
+      <div>
         <CardContent className="flex flex-col justify-between p-8 pt-0 ">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 ">
             <Alert className="p-0 mb-4 md:mb-8">
@@ -722,6 +742,7 @@ export function DocentesGraduate(props: Props) {
                 </CardTitle>
                 <User className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
+
               <CardContent>
                 <div className="text-2xl font-bold">{permanenteCount}</div>
                 <p className="text-xs text-muted-foreground">
@@ -990,6 +1011,7 @@ export function DocentesGraduate(props: Props) {
                                     <div className="flex flex-col gap-3 w-full border border-gray-300 rounded-md p-3">
                                       <div className="flex items-center justify-between">
                                         <label className="text-lg font-bold" htmlFor="name">Orientando: </label>
+
                                         <select
                                           className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
                                           onChange={(event) => {
@@ -1005,6 +1027,7 @@ export function DocentesGraduate(props: Props) {
                                           }
                                         </select>
                                       </div>
+
                                       <div className="flex items-center justify-between gap-0">
                                         <label className="text-lg font-bold" htmlFor="name">Coorientador: </label>
                                         <select
@@ -1210,7 +1233,7 @@ export function DocentesGraduate(props: Props) {
                               orientacoes
                                 .filter((o: any) => o.type === "PROJETO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
@@ -1224,7 +1247,7 @@ export function DocentesGraduate(props: Props) {
                               orientacoes
                                 .filter((o: any) => o.type === "QUALIFICAÇÃO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
@@ -1238,7 +1261,7 @@ export function DocentesGraduate(props: Props) {
                               orientacoes
                                 .filter((o: any) => o.type === "CONCLUSÃO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao[0]} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
@@ -1252,7 +1275,7 @@ export function DocentesGraduate(props: Props) {
                               orientacoes
                                 .filter((o: any) => o.type === "FINALIZADO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
