@@ -46,7 +46,6 @@ export interface PesquisadorProps2 {
 
 interface Props {
   graduate_program_id: string
-  type_program: string
 }
 
 export function DocentesGraduate(props: Props) {

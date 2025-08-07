@@ -49,7 +49,6 @@ interface Patrimonio {
     site: string
     acronym: string
     onMenuState: (newResearcher: boolean) => void;
-    type_program: string
 }
 
 export interface PesquisadorProps {
@@ -58,7 +57,6 @@ export interface PesquisadorProps {
     type_: string
     graduate_program_id: string
     years: Array<number>
-    type_program: string
 }
 
 export interface PesquisadorProps2 {

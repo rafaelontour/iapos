@@ -668,7 +668,7 @@ export function ProgramaDashboard() {
                         </div>
 
                         <TabsContent value="docentes" className="m-0">
-                            <DocentesGraduate type_program={graduatePrograms.type} graduate_program_id={graduatePrograms.graduate_program_id} />
+                            <DocentesGraduate graduate_program_id={graduatePrograms.graduate_program_id} />
                         </TabsContent>
 
                         <TabsContent value="discentes" className="m-0">
