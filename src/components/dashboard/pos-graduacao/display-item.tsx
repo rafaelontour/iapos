@@ -232,6 +232,8 @@ export function DisplayItem(props: Patrimonio) {
 
     }, [urlGeralAdm, props.graduate_program_id]);
 
+    console.log(props)
+
     return (
         <Tabs defaultValue={tab} value={tab}>
             <Helmet>
@@ -390,7 +392,7 @@ export function DisplayItem(props: Patrimonio) {
 
                 <TabsContent value="unread" className="mt-0 pb-6">
                     <div className="overflow-y-auto ">
-                        <DocentesGraduate graduate_program_id={props.graduate_program_id} />
+                        <DocentesGraduate type_program={props} graduate_program_id={props.graduate_program_id} />
                     </div>
                 </TabsContent>
 

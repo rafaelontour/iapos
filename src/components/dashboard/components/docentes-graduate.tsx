@@ -46,6 +46,7 @@ export interface PesquisadorProps2 {
 
 interface Props {
   graduate_program_id: string
+  type_program: any
 }
 
 export function DocentesGraduate(props: Props) {
@@ -589,14 +590,13 @@ export function DocentesGraduate(props: Props) {
   }
 
   useEffect(() => {
+    infoPrograma();
     buscarDiscentes();
     const docentes = getDocentesPorPrograma(props.graduate_program_id);
 
     docentes.then((response) => {
       setDocentesPosGraduacao(response)
     })
-
-    infoPrograma()
   }, [])
 
   function gerarDatas(d: string, tipo?: string): void {
@@ -608,8 +608,6 @@ export function DocentesGraduate(props: Props) {
 
     const data = new Date(ano, mes, dia);
     let mesesAdicionais: number;
-
-    console.log("tipo", tipoOrientacao[0].type)
 
     if (tipo) {
       if (tipo === "DEFESA_DO_PROJETO") {
@@ -726,7 +724,7 @@ export function DocentesGraduate(props: Props) {
     });
 
     const data = await resposta.json();
-    setTipoOrientacao(data);
+    setTipoOrientacao(data[0].type);
   }
 
   return (
@@ -1260,7 +1258,7 @@ export function DocentesGraduate(props: Props) {
                               orientacoes
                                 .filter((o: any) => o.type === "CONCLUSÃO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao[0]} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">

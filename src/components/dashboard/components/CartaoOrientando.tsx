@@ -106,6 +106,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         getNomePorId(o.orientacaoC.student_researcher_id)
     }, [o.orientacaoC.student_researcher_id])
 
+    const [openDialog, setOpenDialog] = useState<boolean>(false);
+
     const [idOrientador, setIdOrientador] = useState<string | null>(null)
     const [idOrientando, setIdOrientando] = useState<string | null>(null)
     const [idCoorientador, setIdCoorientador] = useState<string | null>(null)
@@ -123,10 +125,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [docentesPosGraduacao, setDocentesPosGraduacao] = useState<any[]>([])
 
     useEffect(() => {
-        console.log("dataEntrada", dataEntrada)
-        if (dataEntrada) {
-            console.log("tipo", o.tipoPrograma)
-
+        if (dataEntrada !== null) {
             gerarDatas(dataEntrada, "DEFESA_DO_PROJETO");
             gerarDatas(dataEntrada, "QUALIFICACAO");
             gerarDatas(dataEntrada, "DEFESA_FINAL");
@@ -139,7 +138,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         docentes.then((response) => {
             setDocentesPosGraduacao(response)
         })
-
     }, [])
 
     function gerarDatas(d: string, tipo?: string): void {
@@ -151,8 +149,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
         const data = new Date(ano, mes, dia);
         let mesesAdicionais: number;
-
-        console.log("tipo", o.tipoPrograma[0].type)
 
         if (tipo) {
             if (tipo === "DEFESA_DO_PROJETO") {
@@ -227,6 +223,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             limparCampos();
             o.buscarOrientacoes(o.pesquisador.researcher_id, o.orientacaoC.graduate_program_id);
             alert("Orientação salva com sucesso!");
+            setOpenDialog(!openDialog);
         } else {
             alert("Falha ao atualizar orientação!");
         }
@@ -296,11 +293,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             </div>
 
             <div className="flex gap-3 w-full">
-                <Dialog>
+                <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                     <DialogTrigger asChild>
                         <Button
                             className="w-1/2"
                             onClick={() => {
+                                setOpenDialog(!openDialog)
                             }}
                         >
                             Editar orientação
@@ -504,7 +502,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                     onClick={(e) => {
                                         salvarOrientando(e);
                                     }}
-                                >Salvar</button>
+                                >
+                                    Salvar
+                                </button>
                             </div>
                         </form>
 
