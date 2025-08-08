@@ -205,19 +205,22 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         const orientacao = {
             id: o.orientacaoC.id,
             start_date: dataEntrada ? dataEntrada : o.orientacaoC.start_date,
+
             planned_date_project: dataPrevisaoDefesa ? dataPrevisaoDefesa : o.orientacaoC.planned_date_project,
-            done_date_project: dataRealizadaDefesa ? dataRealizadaDefesa : o.orientacaoC.done_date_project,
+            done_date_project: dataRealizadaDefesa === "1" ? null : dataRealizadaDefesa ? dataRealizadaDefesa : o.orientacaoC.done_date_project,
+
             graduate_program_id: o.orientacaoC.graduate_program_id,
+
             planned_date_qualification: dataPrevisaoQualificacao ? dataPrevisaoQualificacao : o.orientacaoC.planned_date_qualification,
-            done_date_qualification: dataRealizadaQualificacao ? dataRealizadaQualificacao : o.orientacaoC.done_date_qualification,
+            done_date_qualification: dataRealizadaQualificacao === "1" ? null : dataRealizadaQualificacao ? dataRealizadaQualificacao : o.orientacaoC.done_date_qualification,
+
             planned_date_conclusion: dataPrevisaoDefesaFinal ? dataPrevisaoDefesaFinal : o.orientacaoC.planned_date_conclusion,
-            done_date_conclusion: dataRealizadaDefesaFinal ? dataRealizadaDefesaFinal : o.orientacaoC.done_date_conclusion,
+            done_date_conclusion: dataRealizadaDefesaFinal === "1" ? null : dataRealizadaDefesaFinal ? dataRealizadaDefesaFinal : o.orientacaoC.done_date_conclusion,
+
             supervisor_researcher_id: o.orientacaoC.supervisor_researcher_id,
             student_researcher_id: o.orientacaoC.student_researcher_id,
             co_supervisor_researcher_id: idCoorientador ? idCoorientador : o.orientacaoC.co_supervisor_researcher_id
         }
-
-        console.log(orientacao)
 
         const resposta = await atualizarOrientacao(orientacao)
 
@@ -380,7 +383,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
                                                 onChange={(e) => {
-                                                    gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
+                                                    setDataPrevisaoDefesa(e.target.value);
+                                                    // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
                                                 }}
                                                 type="date"
                                                 id="dataPrevista"
@@ -401,6 +405,10 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
                                                     setDataRealizadaDefesa(e.target.value);
+
+                                                    if (e.target.value === "") {
+                                                        setDataRealizadaDefesa("1");
+                                                    }
                                                 }}
                                                 type="date"
                                                 value={
@@ -424,7 +432,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
-                                                    gerarDatas(e.target.value, "QUALIFICACAO");
+                                                    setDataPrevisaoQualificacao(e.target.value);
+                                                    // gerarDatas(e.target.value, "QUALIFICACAO");
                                                 }}
                                                 type="date"
                                                 id="dataPrevista"
@@ -445,10 +454,14 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 type="date"
                                                 onChange={(e) => {
                                                     setDataRealizadaQualificacao(e.target.value);
+
+                                                    if (e.target.value === "") {
+                                                        setDataRealizadaQualificacao("1");
+                                                    }
                                                 }}
                                                 onClick={() => {
-                                                    if (dataRealizadaDefesa == null) {
-                                                        alert("Para definir data de realização de qualificação é preciso ter concluído a defesa!");
+                                                    if (o.orientacaoC.done_date_project == null && dataRealizadaDefesa == null) {
+                                                        alert("Para definir data de realização de qualificação é preciso ter concluído a defesa do projeto!");
                                                     }
                                                 }}
                                                 value={
@@ -471,14 +484,10 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
-                                                    gerarDatas(e.target.value, "DEFESA_FINAL");
+                                                    setDataPrevisaoDefesaFinal(e.target.value);
+                                                    // gerarDatas(e.target.value, "DEFESA_FINAL");
                                                 }}
-                                                onClick={() => {
-                                                    if (dataRealizadaDefesaFinal == null && dataRealizadaQualificacao == null) {
-                                                        alert("Para definir data de realização de defesa final é preciso ter concluído a qualificação!");
-                                                        return
-                                                    }
-                                                }}
+
                                                 type="date"
                                                 id="dataPrevista"
                                                 value={
@@ -498,12 +507,16 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 type="date"
                                                 onClick={() => {
-                                                    if (dataEntrada == null && dataRealizadaQualificacao == null) {
+                                                    if (o.orientacaoC.done_date_qualification == null && dataRealizadaQualificacao == null) {
                                                         alert("Para definir data de realização de defesa final é preciso ter concluído a qualificação!");
                                                     }
                                                 }}
                                                 onChange={(e) => {
                                                     setDataRealizadaDefesaFinal(e.target.value);
+
+                                                    if (e.target.value === "") {
+                                                        setDataRealizadaDefesaFinal("1");
+                                                    }
                                                 }}
                                                 value={
                                                     dataRealizadaDefesaFinal != null
@@ -520,6 +533,13 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 <button
                                     className="bg-[#559FB8] text-white px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
                                     onClick={(e) => {
+                                        console.log("dataRealizadaDefesaFinal: " + dataRealizadaDefesaFinal);
+                                        console.log("dataRealizadaQualificacao: " + dataRealizadaQualificacao);
+                                        console.log("dataPrevisaoDefesa: " + dataPrevisaoDefesa);
+                                        if (dataRealizadaDefesaFinal != null && (dataRealizadaQualificacao == "" || dataRealizadaDefesa == "")) {
+                                            alert("Corrija os dados e tente novamente!");
+                                            return;
+                                        }
                                         salvarOrientando(e);
                                     }}
                                 >
@@ -544,7 +564,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                     <DialogTrigger asChild>
                         <Button
                             className="w-1/2 bg-red-500 hover:bg-red-600"
-
                         >
                             Excluir
                         </Button>

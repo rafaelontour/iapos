@@ -25,6 +25,7 @@ import { Separator } from "../../ui/separator";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { getDiscentesPorPrograma } from "../../../service/discentes";
 import { adicionarOrientacao, getDocentesPorPrograma, getOrientacoesPorDocente } from "../../../service/docentes";
+import { set } from "date-fns";
 
 
 
@@ -1101,8 +1102,13 @@ export function DocentesGraduate(props: Props) {
                                                 return;
                                               }
                                             }}
+                                            onKeyDown={(e) => {
+
+                                            }}
                                             onChange={(e) => {
-                                              gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
+                                              setDataPrevisaoDefesa(e.target.value);
+                                              console.log("data: ", dataPrevisaoDefesa)
+                                              // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
                                             }}
                                             type="date"
                                             id="dataPrevista"
@@ -1144,7 +1150,8 @@ export function DocentesGraduate(props: Props) {
                                               }
                                             }}
                                             onChange={(e) => {
-                                              gerarDatas(e.target.value, "QUALIFICACAO");
+                                              setDataPrevisaoQualificacao(e.target.value);
+                                              // gerarDatas(e.target.value, "QUALIFICACAO");
                                             }}
                                             type="date"
                                             id="dataPrevista"
@@ -1194,7 +1201,8 @@ export function DocentesGraduate(props: Props) {
                                               }
                                             }}
                                             onChange={(e) => {
-                                              gerarDatas(e.target.value, "DEFESA_FINAL");
+                                              setDataPrevisaoDefesaFinal(e.target.value);
+                                              //gerarDatas(e.target.value, "DEFESA_FINAL");
                                             }}
                                             type="date"
                                             id="dataPrevista"
