@@ -73,15 +73,11 @@ export function DiscentesGraduate(props: Props) {
     }
   };
 
-
   const [nomePesquisador, setNomePesquisador] = useState('');
   const [lattesID, setLattesID] = useState('');
 
   const handleSubmitPesquisadorUnique = async () => {
     const currentYear = new Date().getFullYear();
-
-
-
 
     try {
       const data = [

@@ -1,7 +1,7 @@
 import { getDiscentesPorPrograma, getInfoPesquisadorPorId } from "../../../service/discentes";
 import { useEffect, useState } from "react";
 import { Button } from "../../ui/button";
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from "../../ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { X } from "lucide-react";
 import { atualizarOrientacao, excluirOrientacao, getDocentesPorPrograma, getOrientacoesPorDocente } from "../../../service/docentes";
 
@@ -124,6 +124,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [dataRealizadaDefesaFinal, setDataRealizadaDefesaFinal] = useState<string | null>(null)
     const [docentesPosGraduacao, setDocentesPosGraduacao] = useState<any[]>([])
 
+    const [openDialogExcluir, setOpenDialogExcluir] = useState<boolean>(false);
+
     useEffect(() => {
         if (dataEntrada !== null) {
             gerarDatas(dataEntrada, "DEFESA_DO_PROJETO");
@@ -235,7 +237,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         if (resposta == 200) {
             limparCampos();
             o.buscarOrientacoes(o.pesquisador.researcher_id, o.orientacaoC.graduate_program_id);
-            alert("Orientação excluida com sucesso!");
         }
     }
 
@@ -522,14 +523,50 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                     </DialogContent>
                 </Dialog>
 
-                <Button
-                    className="w-1/2 bg-red-500 hover:bg-red-600"
-                    onClick={() => {
-                        handleExcluirOrientacao(o.orientacaoC.id);
-                    }}
-                >
-                    Excluir
-                </Button>
+                <Dialog open={openDialogExcluir} onOpenChange={setOpenDialogExcluir}>
+                    <DialogTrigger asChild>
+                        <Button
+                            className="w-1/2 bg-red-500 hover:bg-red-600"
+
+                        >
+                            Excluir
+                        </Button>
+                    </DialogTrigger>
+
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Excluir orientação</DialogTitle>
+                            <DialogDescription>
+                                Tem certeza que deseja excluir essa orientação?
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogClose
+                            className="absolute top-6 right-6 bg-red-500 text-white p-2 rounded-md"
+                            title="Fechar"
+                        >
+                            <X className="w-4 h-4" />
+                        </DialogClose>
+
+                        <div className="w-full flex gap-3 items-center">
+                            <button
+                                className="text-white w-1/2 bg-gray-500 px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
+                                onClick={(e) => {
+                                    setOpenDialogExcluir(false);
+                                }}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                className="bg-red-500 w-1/2 text-white px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
+                                onClick={(e) => {
+                                    handleExcluirOrientacao(o.orientacaoC.id);
+                                }}
+                            >
+                                Excluir
+                            </button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
 
         </div>
