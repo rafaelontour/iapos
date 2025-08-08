@@ -1012,6 +1012,7 @@ export function DocentesGraduate(props: Props) {
 
                                         <select
                                           className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
+                                          onClick={() => buscarDiscentes()}
                                           onChange={(event) => {
                                             setIdOrientando(event.target.value)
                                           }}
