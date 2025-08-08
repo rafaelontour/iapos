@@ -572,6 +572,8 @@ export function DocentesGraduate(props: Props) {
   const [discentesPosGraduacao, setDiscentesPosGraduacao] = useState<any[]>([])
   const [docentesPosGraduacao, setDocentesPosGraduacao] = useState<any[]>([])
 
+  const [openDialogAdicionar, setOpenDialogAdicionar] = useState<boolean>(false);
+
   useEffect(() => {
     if (dataEntrada !== null) {
       gerarDatas(dataEntrada, "DEFESA_DO_PROJETO");
@@ -697,7 +699,7 @@ export function DocentesGraduate(props: Props) {
     setIdOrientando(null)
     setIdOrientador(null)
     setIdCoorientador(null)
-    setTipoOrientacao(null)
+    setOpenDialogAdicionar(false)
     setDataEntrada(null)
     setDataPrevisaoDefesa(null)
     setDataRealizadaDefesa(null)
@@ -983,7 +985,7 @@ export function DocentesGraduate(props: Props) {
                               <TabsTrigger value="concluidos">Concluídos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
                             </TabsList>
 
-                            <Dialog>
+                            <Dialog open={openDialogAdicionar} onOpenChange={setOpenDialogAdicionar}>
                               <DialogTrigger asChild>
                                 <Button
                                   onClick={() => {
@@ -1015,11 +1017,17 @@ export function DocentesGraduate(props: Props) {
                                           }}
                                         >
                                           <option value="" disabled selected>Selecione um orientando</option>
-                                          {
-                                            discentesPosGraduacao && discentesPosGraduacao.map((discente) => (
-                                              discente.oriented === false &&
-                                              <option key={discente.researcher_id} value={discente.researcher_id}>{discente.name}</option>
-                                            ))
+                                          {discentesPosGraduacao &&
+                                            discentesPosGraduacao
+                                              .slice() // cria uma cópia para não mutar o original
+                                              .sort((a, b) => a.name.localeCompare(b.name)) // ordena por nome
+                                              .map((discente) => (
+                                                discente.oriented === false && (
+                                                  <option key={discente.researcher_id} value={discente.researcher_id}>
+                                                    {discente.name}
+                                                  </option>
+                                                )
+                                              ))
                                           }
                                         </select>
                                       </div>
@@ -1034,15 +1042,18 @@ export function DocentesGraduate(props: Props) {
                                         >
                                           <option disabled selected>Selecione um coorientador</option>
                                           {
-                                            docentesPosGraduacao && docentesPosGraduacao.map((docente) => (
-                                              props.researcher_id !== docente.researcher_id ?
-                                                <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
-                                                :
-                                                <p>
-                                                  <option disabled key={docente.researcher_id} value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
+                                            docentesPosGraduacao && docentesPosGraduacao
+                                              .slice()
+                                              .sort((a, b) => a.name.localeCompare(b.name))
+                                              .map((docente) => (
+                                                props.researcher_id !== docente.researcher_id ?
+                                                  <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
+                                                  :
+                                                  <p>
+                                                    <option disabled key={docente.researcher_id} value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
 
-                                                </p>
-                                            ))
+                                                  </p>
+                                              ))
                                           }
                                         </select>
                                       </div>

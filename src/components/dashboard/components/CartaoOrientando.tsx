@@ -332,15 +332,17 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                         >
                                             <option disabled selected>Selecione um coorientador</option>
                                             {
-                                                docentesPosGraduacao && docentesPosGraduacao.map((docente) => (
-                                                    o.pesquisador.researcher_id !== docente.researcher_id ?
-                                                        <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
-                                                        :
-                                                        <p>
-                                                            <option disabled key={docente.researcher_id} value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
-
-                                                        </p>
-                                                ))
+                                                docentesPosGraduacao && docentesPosGraduacao
+                                                    .slice()
+                                                    .sort((a, b) => a.name.localeCompare(b.name))
+                                                    .map((docente) => (
+                                                        o.pesquisador.researcher_id !== docente.researcher_id ?
+                                                            <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
+                                                            :
+                                                            <p>
+                                                                <option disabled key={docente.researcher_id} value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
+                                                            </p>
+                                                    ))
                                             }
                                         </select>
                                     </div>
