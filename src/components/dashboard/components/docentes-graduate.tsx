@@ -1163,7 +1163,7 @@ export function DocentesGraduate(props: Props) {
                                                 return;
                                               } else {
                                                 if (dataRealizadaDefesa == null) {
-                                                  alert("A orientação deve ter defesa concluída para definir a data de qqualificação!");
+                                                  alert("A orientação deve ter defesa concluída para definir a data de qualificação!");
                                                 }
                                               }
                                             }}

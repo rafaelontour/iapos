@@ -397,6 +397,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                         <div className="flex gap-2 items-center w-1/2">
                                             <label htmlFor="dataRealizada">Realizada: </label>
                                             <input
+                                                defaultValue={new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0]}
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
                                                     setDataRealizadaDefesa(e.target.value);
@@ -445,6 +446,11 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 onChange={(e) => {
                                                     setDataRealizadaQualificacao(e.target.value);
                                                 }}
+                                                onClick={() => {
+                                                    if (dataRealizadaDefesa == null) {
+                                                        alert("Para definir data de realização de qualificação é preciso ter concluído a defesa!");
+                                                    }
+                                                }}
                                                 value={
                                                     dataRealizadaQualificacao != null
                                                         ? dataRealizadaQualificacao
@@ -467,6 +473,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 onChange={(e) => {
                                                     gerarDatas(e.target.value, "DEFESA_FINAL");
                                                 }}
+                                                onClick={() => {
+                                                    if (dataRealizadaDefesaFinal == null && dataRealizadaQualificacao == null) {
+                                                        alert("Para definir data de realização de defesa final é preciso ter concluído a qualificação!");
+                                                        return
+                                                    }
+                                                }}
                                                 type="date"
                                                 id="dataPrevista"
                                                 value={
@@ -485,6 +497,11 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 defaultValue={""}
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 type="date"
+                                                onClick={() => {
+                                                    if (dataEntrada == null && dataRealizadaQualificacao == null) {
+                                                        alert("Para definir data de realização de defesa final é preciso ter concluído a qualificação!");
+                                                    }
+                                                }}
                                                 onChange={(e) => {
                                                     setDataRealizadaDefesaFinal(e.target.value);
                                                 }}
