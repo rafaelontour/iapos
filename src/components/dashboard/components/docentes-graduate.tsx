@@ -610,9 +610,11 @@ export function DocentesGraduate(props: Props) {
     const data = new Date(ano, mes, dia);
     let mesesAdicionais: number;
 
+    console.log("tipo", tipoOrientacao)
+
     if (tipo) {
       if (tipo === "DEFESA_DO_PROJETO") {
-        tipoOrientacao[0].type === "Mestrado" ? mesesAdicionais = 3 : mesesAdicionais = 5;
+        tipoOrientacao === "Mestrado" ? mesesAdicionais = 3 : mesesAdicionais = 5;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
         data.setDate(dia);
@@ -626,7 +628,7 @@ export function DocentesGraduate(props: Props) {
       }
 
       if (tipo === "QUALIFICACAO") {
-        tipoOrientacao[0].type === "Mestrado" ? mesesAdicionais = 12 : mesesAdicionais = 24;
+        tipoOrientacao === "Mestrado" ? mesesAdicionais = 12 : mesesAdicionais = 24;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
         data.setDate(dia);
@@ -641,7 +643,7 @@ export function DocentesGraduate(props: Props) {
 
       if (tipo === "DEFESA_FINAL") {
         setDataPrevisaoDefesaFinal(d);
-        tipoOrientacao[0].type === "Mestrado" ? mesesAdicionais = 24 : mesesAdicionais = 48;
+        tipoOrientacao === "Mestrado" ? mesesAdicionais = 24 : mesesAdicionais = 48;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
         data.setDate(dia);
@@ -1156,9 +1158,13 @@ export function DocentesGraduate(props: Props) {
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
                                             type="date"
                                             onClick={() => {
-                                              if (dataPrevisaoQualificacao == "") {
+                                              if (dataEntrada == null) {
                                                 alert("Para modificar a data de realização da qualificação, primeiro selecione uma DATA DE ENTRADA!");
                                                 return;
+                                              } else {
+                                                if (dataRealizadaDefesa == null) {
+                                                  alert("A orientação deve ter defesa concluída para definir a data de qqualificação!");
+                                                }
                                               }
                                             }}
                                             onChange={(e) => {
@@ -1182,6 +1188,10 @@ export function DocentesGraduate(props: Props) {
                                                 alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa final do projeto serão geradas automaticamente!");
                                                 return;
                                               }
+
+                                              if (dataPrevisaoQualificacao == null) {
+                                                alert("Não é possível adicionar data de realização de defesa final sem qualificação realizada!")
+                                              }
                                             }}
                                             onChange={(e) => {
                                               gerarDatas(e.target.value, "DEFESA_FINAL");
@@ -1198,10 +1208,16 @@ export function DocentesGraduate(props: Props) {
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
                                             type="date"
                                             onClick={() => {
-                                              if (dataRealizadaDefesaFinal == null) {
+                                              if (dataEntrada == null) {
                                                 alert("Para modificar a data de realização da defesa final, primeiro selecione uma DATA DE ENTRADA!");
                                                 return;
+                                              } else {
+                                                if (dataRealizadaQualificacao == null) {
+                                                  alert("A orientação deve ter defesa e qualificação concluídas para definir a data de defesa final!");
+                                                }
                                               }
+
+
                                             }}
                                             onChange={(e) => {
                                               setDataRealizadaDefesaFinal(e.target.value);
