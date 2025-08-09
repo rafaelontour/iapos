@@ -285,7 +285,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                 </div>
 
                 <div className="flex flex-col justify-center gap-2 h-[150px]">
-                    <p className="font-bold text-[14px]">{nomeDiscente}</p>
+                    <p className="font-bold text-[17px]">{nomeDiscente}</p>
                     <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
                     {
                         o.orientacaoC.peding && (
