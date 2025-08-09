@@ -1269,7 +1269,7 @@ export function DocentesGraduate(props: Props) {
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
-                                Sem orientações novas pra este docente.
+                                Sem orientações novas para este docente.
                               </p>
                             )}
                           </TabsContent>
