@@ -174,27 +174,22 @@ export function ProgramaDashboard() {
     const [value, setValue] = useState(tab || tabs[0].id)
 
     const navigate = useNavigate();
+
     const updateFilters = (category: string, values: any) => {
         if (values) {
-
             queryUrl.set(category, values);
-
         } else {
             queryUrl.delete(category)
         }
-
     };
 
 
     useEffect(() => {
-        console.log("typeResult mudou para:", value);
         updateFilters("pagina", value);
-
         navigate({
             pathname: location.pathname,
             search: queryUrl.toString(),
         })
-
     }, [value]);
 
 
@@ -206,12 +201,10 @@ export function ProgramaDashboard() {
         ? `${graduatePrograms.name} | Conectee`
         : `${version ? "Conectee" : "Simcc"} | ${version ? "Escola de Engenharia UFMG" : "SECTI-BA"}`;
 
-
     const [loadingMessage, setLoadingMessage] = useState("Estamos procurando todas as informações no nosso banco de dados, aguarde.");
 
     useEffect(() => {
         let timeouts: NodeJS.Timeout[] = [];
-
 
         setLoadingMessage("Estamos procurando todas as informações no nosso banco de dados, aguarde.");
 
@@ -230,7 +223,6 @@ export function ProgramaDashboard() {
         timeouts.push(setTimeout(() => {
             setLoadingMessage("Estamos empenhados em achar todos os dados, aguarde só mais um pouco");
         }, 15000));
-
 
         return () => {
             timeouts.forEach(clearTimeout);
@@ -269,9 +261,8 @@ export function ProgramaDashboard() {
     const documentId = graduate_program_id || group_id || dep_id;
 
     const db = getFirestore();
-    const isDataLoaded = useRef(false); // Flag para evitar loop de salvamento
+    const isDataLoaded = useRef(false);
 
-    // Carregar dados ao montar a página
     useEffect(() => {
         if (documentId) {
             const fetchData = async () => {
@@ -279,7 +270,6 @@ export function ProgramaDashboard() {
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data() as Partial<Keepo>;
-
                     setKeepoData({
                         app: {
                             background_color: data.app?.background_color || "",
@@ -304,7 +294,7 @@ export function ProgramaDashboard() {
                         content: data.content || [],
                     });
 
-                    isDataLoaded.current = true; // Marca que os dados foram carregados
+                    isDataLoaded.current = true;
                 }
             };
             fetchData();
@@ -312,21 +302,17 @@ export function ProgramaDashboard() {
     }, [documentId]);
 
     const storage = getStorage();
-    // Função para upload de imagem
     const handleUpload = async (folder: "profile" | "background") => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.accept = "image/*";
         fileInput.click();
-
         fileInput.onchange = async (event) => {
             const file = (event.target as HTMLInputElement).files?.[0];
             if (!file) return;
-
             const storageRef = ref(storage, `/${folder}/${file.name}`);
             await uploadBytes(storageRef, file);
             const downloadURL = await getDownloadURL(storageRef);
-
             setKeepoData((prev) => ({
                 ...prev,
                 app: {
@@ -340,7 +326,6 @@ export function ProgramaDashboard() {
             }));
         };
     };
-
 
     if (loading) {
         return (
@@ -359,10 +344,7 @@ export function ProgramaDashboard() {
 
     if (!graduatePrograms) {
         return (
-            <div
-                className="h-full bg-cover bg-center flex flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-900"
-
-            >
+            <div className="h-full bg-cover bg-center flex flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-900">
                 {version ? (
                     <Link to="/" className="absolute top-16">
                         {theme === "dark" ? <LogoConecteeWhite /> : <LogoConectee />}
@@ -380,12 +362,9 @@ export function ProgramaDashboard() {
                     <h1 className="text-center text-2xl md:text-4xl text-neutral-400 font-medium leading-tight tracking-tighter lg:leading-[1.1] ">
                         Não foi possível acessar as <br />  informações deste programa.
                     </h1>
-
-
                     <div className="flex gap-3 mt-8">
                         <Button onClick={handleVoltar} variant={'ghost'}><Undo2 size={16} /> Voltar</Button>
                         <Link to={'/'}> <Button><Home size={16} /> Página Inicial</Button></Link>
-
                     </div>
                 </div>
             </div>
@@ -401,7 +380,7 @@ export function ProgramaDashboard() {
             </Helmet>
 
             <main className="grid grid-cols-1 ">
-                <Tabs defaultValue="docentes">
+                <Tabs value={value} onValueChange={setValue}>
                     <div className="md:p-8 p-4 pb-0">
                         <div style={{ backgroundImage: `url(${keepoData.app.background_image})` }} className="bg-eng-blue bg-no-repeat bg-center bg-cover border dark:border-neutral-800 w-full rounded-md h-[300px]">
                             <div className={`w-full h-full rounded-md ${!(keepoData.app.background_image == "") && ('bg-black/25 ')}  pb-0 md:pb-0 p-4 md:p-8 flex-col flex justify-between `}>
@@ -664,9 +643,7 @@ export function ProgramaDashboard() {
                                     <div></div>
                                 </div>
                             </div>
-
                         </div>
-
                         <TabsContent value="docentes" className="m-0">
                             <DocentesGraduate graduate_program_id={graduatePrograms.graduate_program_id} />
                         </TabsContent>
@@ -674,11 +651,7 @@ export function ProgramaDashboard() {
                         <TabsContent value="discentes" className="m-0">
                             <DiscentesGraduate graduate_program_id={graduatePrograms.graduate_program_id} />
                         </TabsContent>
-
-
                     </div>
-
-
                 </Tabs>
             </main>
 
