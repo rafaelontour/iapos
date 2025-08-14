@@ -87,8 +87,10 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
 
   return loading ? (
     <main className="h-screen w-full flex items-center justify-center">
-      <div className="h-20 animate-pulse">
+      <div className="flex justify-center items-center gap-5 h-20 animate-pulse">
         <img src="/iapos.png" />
+        <div className="w-[1px] h-12 bg-slate-300" />
+        <img className="w-24" src="/logo_cimatec.png" />
       </div>
     </main>
   ) : (

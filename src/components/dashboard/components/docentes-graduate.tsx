@@ -615,7 +615,7 @@ export function DocentesGraduate(props: Props) {
 
     if (tipo) {
       if (tipo === "DEFESA_DO_PROJETO") {
-        tipoOrientacao === "Mestrado" ? mesesAdicionais = 3 : mesesAdicionais = 5;
+        tipoOrientacao === "Mestrado" ? mesesAdicionais = 3 : mesesAdicionais = 18;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
         data.setDate(dia);
@@ -629,7 +629,7 @@ export function DocentesGraduate(props: Props) {
       }
 
       if (tipo === "QUALIFICACAO") {
-        tipoOrientacao === "Mestrado" ? mesesAdicionais = 12 : mesesAdicionais = 24;
+        tipoOrientacao === "Mestrado" ? mesesAdicionais = 21 : mesesAdicionais = 30;
 
         data.setMonth(data.getMonth() + mesesAdicionais);
         data.setDate(dia);
@@ -1082,61 +1082,64 @@ export function DocentesGraduate(props: Props) {
 
 
                                   <div
-                                    className="flex flex-col gap-3 border rounded-md h-[400px] p-3"
+                                    className={`flex flex-col gap-3 border rounded-md h-[400px] p-3 ${tipoOrientacao === "Mestrado" && "h-fit"}`}
                                     style={{ boxShadow: '3px 3px 3px rgba(0, 0, 0, 0.25)' }}
                                   >
-                                    <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
-                                      <p className="text-lg font-bold">Defesa do Projeto</p>
-                                      <div className="flex items-center gap-3">
+                                    {tipoOrientacao === "Doutorado" &&
 
-                                        <div className="flex gap-2 items-center w-1/2">
-                                          <label
-                                            htmlFor="dataPrevista
+                                      <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
+                                        <p className="text-lg font-bold">Defesa do Projeto</p>
+                                        <div className="flex items-center gap-3">
+
+                                          <div className="flex gap-2 items-center w-1/2">
+                                            <label
+                                              htmlFor="dataPrevista
                                           on
                                         ">Prevista: </label>
-                                          <input
-                                            className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
-                                            onClick={() => {
-                                              if (dataEntrada == null) {
-                                                alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa do projeto serão geradas automaticamente!");
-                                                return;
-                                              }
-                                            }}
-                                            onKeyDown={(e) => {
+                                            <input
+                                              className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
+                                              onClick={() => {
+                                                if (dataEntrada == null) {
+                                                  alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa do projeto serão geradas automaticamente!");
+                                                  return;
+                                                }
+                                              }}
+                                              onKeyDown={(e) => {
 
-                                            }}
-                                            onChange={(e) => {
-                                              setDataPrevisaoDefesa(e.target.value);
-                                              console.log("data: ", dataPrevisaoDefesa)
-                                              // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
-                                            }}
-                                            type="date"
-                                            id="dataPrevista"
-                                            value={dataPrevisaoDefesa == null ? "" : dataPrevisaoDefesa}
-                                          />
-                                        </div>
+                                              }}
+                                              onChange={(e) => {
+                                                setDataPrevisaoDefesa(e.target.value);
+                                                console.log("data: ", dataPrevisaoDefesa)
+                                                // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
+                                              }}
+                                              type="date"
+                                              id="dataPrevista"
+                                              value={dataPrevisaoDefesa == null ? "" : dataPrevisaoDefesa}
+                                            />
+                                          </div>
 
-                                        <div className="flex gap-2 items-center w-1/2">
-                                          <label htmlFor="dataRealizada">Realizada: </label>
-                                          <input
-                                            className="w-full border-[2px] px-2 py-1 rounded-md"
-                                            onClick={() => {
-                                              if (dataPrevisaoDefesa == null) {
-                                                alert("Para modificar a data de realização da defesa, primeiro selecione uma DATA DE ENTRADA!");
-                                                return;
-                                              }
-                                            }}
-                                            onChange={(e) => {
-                                              setDataRealizadaDefesa(e.target.value);
-                                            }}
-                                            type="date"
-                                            value={dataRealizadaDefesa == null ? "" : dataRealizadaDefesa}
-                                          />
+                                          <div className="flex gap-2 items-center w-1/2">
+                                            <label htmlFor="dataRealizada">Realizada: </label>
+                                            <input
+                                              className="w-full border-[2px] px-2 py-1 rounded-md"
+                                              onClick={() => {
+                                                if (dataPrevisaoDefesa == null) {
+                                                  alert("Para modificar a data de realização da defesa, primeiro selecione uma DATA DE ENTRADA!");
+                                                  return;
+                                                }
+                                              }}
+                                              onChange={(e) => {
+                                                setDataRealizadaDefesa(e.target.value);
+                                              }}
+                                              type="date"
+                                              value={dataRealizadaDefesa == null ? "" : dataRealizadaDefesa}
+                                            />
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
+                                    }
 
-                                    <div className="flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md">
+                                    <div className={`${tipoOrientacao === "Mestrado" && "-h-fit"} flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md`}>
                                       <p className="text-lg font-bold">Qualificação </p>
                                       <div className="flex items-center gap-3">
                                         <div className="flex gap-2 items-center w-1/2">
@@ -1183,10 +1186,10 @@ export function DocentesGraduate(props: Props) {
                                       </div>
                                     </div>
 
-                                    <div className="flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md">
+                                    <div className={`${tipoOrientacao === "Mestrado" && "h-fit"} flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md`}>
                                       <p className="text-lg font-bold">Defesa final</p>
                                       <div className="flex items-center gap-3">
-                                        <div className="flex gap-2 items-center w-1/2">
+                                        <div className={`flex gap-2 items-center w-1/2`}>
                                           <label htmlFor="dataPrevista">Prevista: </label>
                                           <input
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
