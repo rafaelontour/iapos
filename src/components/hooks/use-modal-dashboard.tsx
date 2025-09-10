@@ -1,7 +1,7 @@
 
 import { create } from "zustand";
 
-export type ModalType = "general" | "researcher"| "graduate-program" | "master" | 'departamento' | 'peso-producao' | 'grupo-pesquisa' | 'indicadores' | 'baremas' | 'enviar-notificacoes' | 'informacoes' | 'minha-area' | 'home-dashboard' | 'minhas-producoes' | 'parametros-pesquisa' | 'sessao-pessoal' | 'construtor-pagina' | 'cargos-permissoes' | 'instituicoes' | 'programa' | 'departamentos'
+export type ModalType = "general" | "researcher" | "dados-pos-graduacao" | "graduate-program" | "master" | 'departamento' | 'peso-producao' | 'grupo-pesquisa' | 'indicadores' | 'baremas' | 'enviar-notificacoes' | 'informacoes' | 'minha-area' | 'home-dashboard' | 'minhas-producoes' | 'parametros-pesquisa' | 'sessao-pessoal' | 'construtor-pagina' | 'cargos-permissoes' | 'instituicoes' | 'programa' | 'departamentos'
 
 
 interface ModalStore {
@@ -11,10 +11,10 @@ interface ModalStore {
   onClose: () => void;
 }
 
-export const useModalDashboard = create<ModalStore>((set:any) => ({
+export const useModalDashboard = create<ModalStore>((set: any) => ({
   type: null,
   data: {},
   isOpen: false,
-  onOpen: (type: any) => set({ isOpen: true, type}),
+  onOpen: (type: any) => set({ isOpen: true, type }),
   onClose: () => set({ type: null, isOpen: false })
 }));

@@ -135,35 +135,35 @@ export default function AdminLayout({
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
-  
+
   // Função para criar os itens do breadcrumb
   const createBreadcrumbItems = (pathname) => {
     const pathSegments = pathname.split('/').filter(Boolean);
-    
+
     if (pathSegments.length === 0) {
       return [{ label: 'Página Inicial', href: '/', isLast: true }];
     }
-  
+
     const items = [
       { label: 'Página Inicial', href: '/', isLast: false }
     ];
-  
+
     pathSegments.forEach((segment, index) => {
       const href = `/${pathSegments.slice(0, index + 1).join('/')}`;
       const isLast = index === pathSegments.length - 1;
-      
+
       items.push({
         label: formatSegment(segment),
         href,
         isLast
       });
     });
-  
+
     return items;
   };
-  
+
   const breadcrumbItems = createBreadcrumbItems(router.pathname);
-  
+
 
   return (
     <div>
@@ -179,37 +179,37 @@ export default function AdminLayout({
             {/* Assuming Header is another component */}
 
             <div className="flex p-8 pt-8 pb-2 h-[68px] items-center justify-between top-0 sticky z-[3] supports-[backdrop-filter]:bg-neutral-50/60 supports-[backdrop-filter]:dark:bg-neutral-900/60 backdrop-blur ">
-            <div className="flex pb-0 items-center gap-2">
-    <SidebarTrigger />
-    <Separator orientation="vertical" className="mr-2 h-4" />
+              <div className="flex pb-0 items-center gap-2">
+                <SidebarTrigger />
+                <Separator orientation="vertical" className="mr-2 h-4" />
 
-    <Breadcrumb>
-      <BreadcrumbList>
-        {breadcrumbItems.map((item, index) => (
-          <React.Fragment key={`breadcrumb-${index}`}>
-            <BreadcrumbItem className="hidden md:block">
-              {item.isLast ? (
-                <span className="text-foreground font-medium capitalize">
-                  {item.label}
-                </span>
-              ) : (
-                <BreadcrumbLink 
-                  to={item.href} 
-                  className="capitalize text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item.label}
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
-            
-            {!item.isLast && (
-              <BreadcrumbSeparator className="hidden md:block" />
-            )}
-          </React.Fragment>
-        ))}
-      </BreadcrumbList>
-    </Breadcrumb>
-  </div>
+                <Breadcrumb>
+                  <BreadcrumbList>
+                    {breadcrumbItems.map((item, index) => (
+                      <React.Fragment key={`breadcrumb-${index}`}>
+                        <BreadcrumbItem className="hidden md:block">
+                          {item.isLast ? (
+                            <span className="text-foreground font-medium capitalize">
+                              {item.label}
+                            </span>
+                          ) : (
+                            <BreadcrumbLink
+                              to={item.href}
+                              className="capitalize text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              {item.label}
+                            </BreadcrumbLink>
+                          )}
+                        </BreadcrumbItem>
+
+                        {!item.isLast && (
+                          <BreadcrumbSeparator className="hidden md:block" />
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </BreadcrumbList>
+                </Breadcrumb>
+              </div>
 
               <div className="flex items-center gap-2">
                 <Button variant={'outline'} size={'icon'} className="w-8 h-8" onClick={() => setIsCollapsedRight(!isCollapsedRight)}>
@@ -222,14 +222,14 @@ export default function AdminLayout({
             <div className={`h-full ${(location.pathname == '/dashboard/administrativo' && has_atualizar_apache_hop) && ('pb-[40px]')}`}>
               {children}
 
-             
+
             </div>
           </main>
 
         </SidebarInset>
 
-        <Toaster />
-        <Mobile/>
+        <Toaster richColors />
+        <Mobile />
 
       </SidebarProvider  >
     </div>

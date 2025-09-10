@@ -27,6 +27,8 @@ import {
 
     PieChart,
 
+    Sheet,
+
     SlidersHorizontal,
     Sparkles,
     SquareTerminal,
@@ -160,6 +162,12 @@ export function AppSidebarAdmin({ ...props }: React.ComponentProps<typeof Sideba
                             },
                         ]
                         : []),
+
+                    {
+                        title: "Pós graduação",
+                        url: "/dashboard/dados-pos-graduacao",
+                        icon: Sheet
+                    }
                 ],
             },
 

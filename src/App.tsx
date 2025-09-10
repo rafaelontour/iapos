@@ -461,6 +461,11 @@ function App() {
                                         element={<Dashboard />}
                                     />
 
+                                    <Route
+                                        path='/dashboard/dados-pos-graduacao'
+                                        element={<Dashboard />}
+                                    />
+
                                     <Route path='/dashboard/relatar-problema' element={<Dashboard />} />
                                     <Route path='/dashboard/pesquisadores-selecionados' element={<Dashboard />} />
 
@@ -470,6 +475,16 @@ function App() {
                                         element={<ProtectedRoute element={<Dashboard />} hasPermission={has_visualizar_todos_programas} />} />
                                     <Route
                                         path='/dashboard/departamentos'
+                                        element={
+                                            <ProtectedRoute
+                                                element={<Dashboard />}
+                                                hasPermission={has_visualizar_todos_departamentos}
+                                            />
+                                        }
+                                    />
+
+                                    <Route
+                                        path='/dashboard/dados-pos-graduacao'
                                         element={
                                             <ProtectedRoute
                                                 element={<Dashboard />}

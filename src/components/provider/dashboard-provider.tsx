@@ -21,6 +21,7 @@ import { BuilderPage } from "../dashboard/builder-page/builder-page";
 import { Instituicoes } from "../dashboard/instituicoes/instituicoes";
 import { CargosFuncoes } from "../dashboard/cargos-permissoes/cargos-funcoes";
 import { ProgramaDashboard } from "../dashboard/pos-graduacao/programa";
+import DadosPosGraduacao from "../dashboard/dados-pos-graduacao/dados-pos-graduacao";
 
 
 const ModalContent = () => {
@@ -28,43 +29,45 @@ const ModalContent = () => {
 
   switch (type) {
     case "general":
-      return  <GeralViewDashboard/>
-      case 'graduate-program':
-        return  <PosGraducaoView/>
-      case 'departamentos':
-        return  <Departamentos/>
-              case 'departamento':
-        return  <Departamentos/>
-      case 'researcher':
-        return <AddResearcherDashboard/>
-      case 'peso-producao':
-        return <PesoProducoes/>
-      case 'grupo-pesquisa':
-        return <GrupoPesquisaView/>
-      case 'indicadores':
-        return <IndicadoresDashboard/>
-        case 'baremas':
-          return <BaremasHome/>
-      case 'enviar-notificacoes':
-        return <EnviarNotificacoes/>
-      case 'informacoes':
-        return <InfoDashboardPage/>
-        case 'home-dashboard':
-          return  <HomeDashboard/>
-        case 'minhas-producoes':
-          return <MinhasProducoes/>
-        case 'parametros-pesquisa':
-          return <ParametrosPesquisa/>
-        case 'sessao-pessoal':
-          return <SessaoPessoal/>
-        case 'construtor-pagina':
-          return <BuilderPage/>
-          case 'instituicoes':
-            return <Instituicoes/>
-            case 'cargos-permissoes':
-              return <CargosFuncoes/>
-              case 'programa':
-                return <ProgramaDashboard/>
+      return <GeralViewDashboard />
+    case 'graduate-program':
+      return <PosGraducaoView />
+    case 'departamentos':
+      return <Departamentos />
+    case 'departamento':
+      return <Departamentos />
+    case 'researcher':
+      return <AddResearcherDashboard />
+    case 'peso-producao':
+      return <PesoProducoes />
+    case 'grupo-pesquisa':
+      return <GrupoPesquisaView />
+    case 'indicadores':
+      return <IndicadoresDashboard />
+    case 'baremas':
+      return <BaremasHome />
+    case 'enviar-notificacoes':
+      return <EnviarNotificacoes />
+    case 'informacoes':
+      return <InfoDashboardPage />
+    case 'home-dashboard':
+      return <HomeDashboard />
+    case 'minhas-producoes':
+      return <MinhasProducoes />
+    case 'parametros-pesquisa':
+      return <ParametrosPesquisa />
+    case 'sessao-pessoal':
+      return <SessaoPessoal />
+    case 'construtor-pagina':
+      return <BuilderPage />
+    case 'instituicoes':
+      return <Instituicoes />
+    case 'cargos-permissoes':
+      return <CargosFuncoes />
+    case 'dados-pos-graduacao':
+      return <DadosPosGraduacao />
+    case 'programa':
+      return <ProgramaDashboard />
     default:
       return null;
   }
