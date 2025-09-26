@@ -46,7 +46,7 @@ export function AddResearcherDashboard() {
     const [researcher, setResearcher] = useState<PesquisadorProps[]>([]);
     const [status, setStatus] = useState('ativo')
     const [area, setArea] = useState("")
-    const [focalPoint, setFocalPoint] = useState("")
+    const [focalPoint, setFocalPoint] = useState(false)
 
     const has_editar_pesquisadores = permission.some(
         (perm) => perm.permission === 'editar_pesquisadores'
@@ -90,7 +90,7 @@ export function AddResearcherDashboard() {
                     cpf: cpf,
                     institution_id: user?.institution_id,
                     area: area,
-                    focal_point: focalPoint === "true" ? true : (focalPoint === "false" ? false : null),
+                    focal_point: focalPoint,
                     status: status == "ativo" ? true : false,
                 },
             ];
@@ -121,7 +121,7 @@ export function AddResearcherDashboard() {
                             setNomePesquisador("");
                             setCpf("");
                             setArea("");
-                            setFocalPoint("");
+                            setFocalPoint(false);
                             fetchDataTable();
                             toast("Dados enviados com sucesso", {
                                 description: "Pesquisador cadastrado na instituição",
@@ -548,15 +548,7 @@ export function AddResearcherDashboard() {
                                             />
                                         </div>
 
-                                        <div className="flex flex-col space-y-1.5 w-full flex-1 max-w-[200px]">
-                                            <Label htmlFor="focal_point">Ponto Focal</Label>
-                                            <Input
-                                                value={focalPoint}
-                                                onChange={(e) => setFocalPoint(e.target.value)}
-                                                type="text"
-                                                placeholder="Digite o ponto focal"
-                                            />
-                                        </div>
+
 
 
                                         <div className="flex flex-col max-w-[250px] space-y-1.5 w-full flex-1">
@@ -568,6 +560,22 @@ export function AddResearcherDashboard() {
                                                 <SelectContent>
                                                     <SelectItem value="ativo">Ativo</SelectItem>
                                                     <SelectItem value="inativo">Inativo</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className="flex flex-col space-y-1.5 w-full flex-1 max-w-[200px]">
+                                            <Label htmlFor="focal_point">Ponto Focal</Label>
+                                            <Select
+                                                value={focalPoint ? "sim" : "nao"}
+                                                onValueChange={(value) => setFocalPoint(value === "sim")}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Selecione" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="sim">Sim</SelectItem>
+                                                    <SelectItem value="nao">Não</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
