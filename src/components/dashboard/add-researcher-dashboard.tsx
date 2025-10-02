@@ -52,9 +52,17 @@ export function AddResearcherDashboard() {
         (perm) => perm.permission === 'editar_pesquisadores'
     );
 
+
     const has_importar_bolsistas_cnpq = permission.some(
         (perm) => perm.permission === 'importar_bolsistas_cnpq'
     );
+
+    const areas = researcher
+        .map(r => r.area)
+        .filter((area): area is string => Boolean(area));
+
+    const uniqueAreas = Array.from(new Set(areas)).sort();
+
 
     const handleVoltar = () => {
 
@@ -183,7 +191,6 @@ export function AddResearcherDashboard() {
     // upload
 
     const urlGetResearcher = urlGeralAdm + `ResearcherRest/Query?institution_id=${user?.institution_id}`;
-    console.log(urlGetResearcher)
 
     const fetchDataTable = async () => {
         setLoading(true)
@@ -686,6 +693,7 @@ export function AddResearcherDashboard() {
 
 
                                                                                                 <EditResearcherModal
+                                                                                                    uniqueAreas={uniqueAreas}
                                                                                                     researcher_id={props.researcher_id}
                                                                                                     name={props.name}
                                                                                                     lattes_id={props.lattes_id}

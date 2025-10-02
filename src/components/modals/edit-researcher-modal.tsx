@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { UserContext } from "../../context/context";
 
 export interface Props {
+    uniqueAreas: string[]
     area: string;
     focal_point: boolean;
     institution_id: string;
@@ -104,23 +105,48 @@ export function EditResearcherModal(initialProps: Props) {
                             />
                         </div>
 
-                        <div className="grid grid-cols-3 items-center gap-4">
-                            <Label>Instituição</Label>
-                            <Input
-                                value={formData.institution_id}
-                                onChange={(e) => handleChange("institution_id", e.target.value)}
-                                className="col-span-2 h-8"
-                            />
-                        </div>
 
                         <div className="grid grid-cols-3 items-center gap-4">
                             <Label>Área</Label>
-                            <Input
-                                value={formData.area}
-                                onChange={(e) => handleChange("area", e.target.value)}
-                                className="col-span-2 h-8"
-                            />
+                            <div className="col-span-2 flex gap-2">
+                                <Select
+                                    value={
+                                        formData.area && initialProps.uniqueAreas.includes(formData.area)
+                                            ? formData.area
+                                            : "outra"
+                                    }
+                                    onValueChange={(val) => {
+                                        if (val === "outra") {
+                                            handleChange("area", "");
+                                        } else {
+                                            handleChange("area", val);
+                                        }
+                                    }}
+                                >
+                                    <SelectTrigger className="h-8 w-full">
+                                        <SelectValue placeholder="Selecione a área" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {initialProps.uniqueAreas.map((area) => (
+                                            <SelectItem key={area} value={area}>
+                                                {area}
+                                            </SelectItem>
+                                        ))}
+                                        <SelectItem value="outra">Outra...</SelectItem>
+                                    </SelectContent>
+                                </Select>
+
+                                {(!formData.area || !initialProps.uniqueAreas.includes(formData.area)) && (
+                                    <Input
+                                        placeholder="Digite a área"
+                                        value={formData.area}
+                                        onChange={(e) => handleChange("area", e.target.value)}
+                                        className="h-8"
+                                    />
+                                )}
+                            </div>
                         </div>
+
 
                         <div className="grid grid-cols-3 items-center gap-4">
                             <Label>Ponto Focal</Label>
