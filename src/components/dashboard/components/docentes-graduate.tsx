@@ -141,10 +141,11 @@ interface ConfiguracaoParticipacaoStepProps {
     onSuccess: () => void;
     onCancel: () => void;
     urlGeralAdm: string;
+    isNew: boolean;
 }
 
 
-function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSuccess, onCancel, urlGeralAdm }: ConfiguracaoParticipacaoStepProps) {
+function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSuccess, onCancel, urlGeralAdm, isNew }: ConfiguracaoParticipacaoStepProps) {
     const [selectedYears, setSelectedYears] = useState<SelectedYears>({});
     const [tag, setTag] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -214,20 +215,22 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
 
     return (
         <Card className="w-full animate-in fade-in-0">
-            <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <User size={20} />
-                            {pesquisador.name}
-                        </CardTitle>
-                        <CardDescription>Defina os detalhes da participação.</CardDescription>
+            {isNew && (
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <User size={20} />
+                                {pesquisador.name}
+                            </CardTitle>
+                            <CardDescription>Defina os detalhes da participação.</CardDescription>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={onCancel}>
+                            <X className="h-4 w-4" />
+                        </Button>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={onCancel}>
-                        <X className="h-4 w-4" />
-                    </Button>
-                </div>
-            </CardHeader>
+                </CardHeader>
+            )}
             <CardContent className="flex flex-col gap-6">
                 {/* SELEÇÃO DOS ANOS */}
                 <div className="flex flex-col space-y-2">
@@ -311,6 +314,7 @@ export default function AdicionarPesquisadorForm({ graduate_program_id, availabl
                 onSuccess={handleSuccess}
                 graduate_program_id={graduate_program_id}
                 urlGeralAdm={urlGeralAdm}
+                isNew={true}
             />
         )}
     </div>
@@ -962,6 +966,7 @@ export function DocentesGraduate(props: Props) {
                                                 onSuccess={fetchDataAll}
                                                 graduate_program_id={props.graduate_program_id}
                                                 urlGeralAdm={urlGeralAdm}
+                                                isNew={false}
                                             />
                                         </div>
                                         <hr />
