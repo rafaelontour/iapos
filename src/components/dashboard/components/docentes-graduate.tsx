@@ -40,6 +40,7 @@ export interface PesquisadorProps2 {
     lattes_id: string
     researcher_id: string
     institution_id: string
+    participation?: any[]
 }
 
 interface Props {
@@ -134,7 +135,6 @@ function SelecaoPesquisadorStep({ availableResearchers, onSelectPesquisador }: S
     );
 }
 
-
 interface ConfiguracaoParticipacaoStepProps {
     pesquisador: PesquisadorProps2;
     graduate_program_id: string;
@@ -143,7 +143,6 @@ interface ConfiguracaoParticipacaoStepProps {
     urlGeralAdm: string;
     isNew: boolean;
 }
-
 function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSuccess, onCancel, urlGeralAdm, isNew }: ConfiguracaoParticipacaoStepProps) {
     const [selectedYears, setSelectedYears] = useState<SelectedYears>({});
     const [tag, setTag] = useState('');
@@ -151,6 +150,16 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
 
     const currentYear = new Date().getFullYear();
     const availableYears = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString());
+
+    useEffect(() => {
+        if (pesquisador.participation && pesquisador.participation.length > 0) {
+            const initialYears: SelectedYears = {};
+            pesquisador.participation.forEach(p => {
+                if (p.year && p.type_) initialYears[p.year.toString()] = p.type_;
+            });
+            setSelectedYears(initialYears);
+        }
+    }, [pesquisador]);
 
     const handleYearClick = (year: string) => {
         const currentType = selectedYears[year];
@@ -176,32 +185,27 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
         setIsLoading(true);
 
         try {
-            // Se não for um novo pesquisador, apaga os registros antigos primeiro
             if (!isNew) {
                 const urlDelete = `${urlGeralAdm}GraduateProgramResearcherRest/Delete`;
                 const deleteData = [{
                     graduate_program_id: graduate_program_id,
-                    lattes_id: pesquisador.researcher_id, // Conforme seu snippet
+                    lattes_id: pesquisador.researcher_id,
                 }];
-
                 const deleteResponse = await fetch(urlDelete, {
                     mode: 'cors',
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(deleteData),
                 });
-
                 if (!deleteResponse.ok) {
-                    // Se a exclusão falhar, exibe um erro e interrompe a função
                     toast.error("Tente novamente!", {
                         description: "Falha ao remover os registros antigos do pesquisador.",
                     });
-                    setIsLoading(false); // Libera o botão
+                    setIsLoading(false);
                     return;
                 }
             }
 
-            // Prossegue para inserir os novos dados (para ambos os casos: novo e edição)
             const insertData = years.map(year => ({
                 graduate_program_id: graduate_program_id,
                 researcher_id: pesquisador.researcher_id,
@@ -228,7 +232,6 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
                     description: "Erro ao salvar as novas participações do pesquisador.",
                 });
             }
-
         } catch (error) {
             console.error(error);
             toast.error("Erro ao processar requisição", {
@@ -258,7 +261,6 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
                 </CardHeader>
             )}
             <CardContent className="flex flex-col gap-6 pt-6">
-                {/* SELEÇÃO DOS ANOS */}
                 <div className="flex flex-col space-y-2">
                     <Label>Anos de participação</Label>
                     <p className="text-sm text-muted-foreground">
@@ -288,7 +290,6 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
                     </div>
                 </div>
 
-                {/* CAMPO DE TAG */}
                 <div className="flex flex-col space-y-1.5 w-full">
                     <Label htmlFor="tag">Tag (Opcional)</Label>
                     <Input
@@ -309,6 +310,7 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
         </Card>
     );
 }
+
 export default function AdicionarPesquisadorForm({ graduate_program_id, availableResearchers, onSuccess, urlGeralAdm }: AdicionarPesquisadorFormProps) {
     const [pesquisadorSelecionado, setPesquisadorSelecionado] = useState<PesquisadorProps2 | null>(null);
 
