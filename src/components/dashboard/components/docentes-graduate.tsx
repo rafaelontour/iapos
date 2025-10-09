@@ -144,7 +144,6 @@ interface ConfiguracaoParticipacaoStepProps {
     isNew: boolean;
 }
 
-
 function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSuccess, onCancel, urlGeralAdm, isNew }: ConfiguracaoParticipacaoStepProps) {
     const [selectedYears, setSelectedYears] = useState<SelectedYears>({});
     const [tag, setTag] = useState('');
@@ -176,33 +175,60 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
         }
         setIsLoading(true);
 
-        const data = years.map(year => ({
-            graduate_program_id: graduate_program_id,
-            researcher_id: pesquisador.researcher_id,
-            year: year,
-            type_: selectedYears[year],
-            tag: tag || null,
-        }));
-
         try {
-            const urlProgram = `${urlGeralAdm}GraduateProgramResearcherRest/Insert`;
-            const response = await fetch(urlProgram, {
+            // Se não for um novo pesquisador, apaga os registros antigos primeiro
+            if (!isNew) {
+                const urlDelete = `${urlGeralAdm}GraduateProgramResearcherRest/Delete`;
+                const deleteData = [{
+                    graduate_program_id: graduate_program_id,
+                    lattes_id: pesquisador.researcher_id, // Conforme seu snippet
+                }];
+
+                const deleteResponse = await fetch(urlDelete, {
+                    mode: 'cors',
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(deleteData),
+                });
+
+                if (!deleteResponse.ok) {
+                    // Se a exclusão falhar, exibe um erro e interrompe a função
+                    toast.error("Tente novamente!", {
+                        description: "Falha ao remover os registros antigos do pesquisador.",
+                    });
+                    setIsLoading(false); // Libera o botão
+                    return;
+                }
+            }
+
+            // Prossegue para inserir os novos dados (para ambos os casos: novo e edição)
+            const insertData = years.map(year => ({
+                graduate_program_id: graduate_program_id,
+                researcher_id: pesquisador.researcher_id,
+                year: year,
+                type_: selectedYears[year],
+                tag: tag || null,
+            }));
+
+            const urlInsert = `${urlGeralAdm}GraduateProgramResearcherRest/Insert`;
+            const insertResponse = await fetch(urlInsert, {
                 mode: 'cors',
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify(insertData),
             });
 
-            if (response.ok) {
+            if (insertResponse.ok) {
                 toast.success("Dados enviados com sucesso", {
                     description: "Participações do pesquisador foram salvas.",
                 });
                 onSuccess();
             } else {
                 toast.error("Tente novamente!", {
-                    description: "Erro ao cadastrar pesquisador ao programa",
+                    description: "Erro ao salvar as novas participações do pesquisador.",
                 });
             }
+
         } catch (error) {
             console.error(error);
             toast.error("Erro ao processar requisição", {
@@ -231,7 +257,7 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
                     </div>
                 </CardHeader>
             )}
-            <CardContent className="flex flex-col gap-6">
+            <CardContent className="flex flex-col gap-6 pt-6">
                 {/* SELEÇÃO DOS ANOS */}
                 <div className="flex flex-col space-y-2">
                     <Label>Anos de participação</Label>
@@ -277,14 +303,12 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
 
                 <Button onClick={handleSubmit} disabled={isLoading}>
                     <Plus size={16} className="mr-2" />
-                    {isLoading ? 'Adicionando...' : 'Adicionar Participação'}
+                    {isLoading ? 'Salvando...' : 'Salvar Participação'}
                 </Button>
             </CardContent>
         </Card>
     );
 }
-
-
 export default function AdicionarPesquisadorForm({ graduate_program_id, availableResearchers, onSuccess, urlGeralAdm }: AdicionarPesquisadorFormProps) {
     const [pesquisadorSelecionado, setPesquisadorSelecionado] = useState<PesquisadorProps2 | null>(null);
 
