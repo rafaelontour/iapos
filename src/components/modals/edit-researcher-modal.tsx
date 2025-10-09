@@ -19,8 +19,13 @@ export interface Props {
     status: boolean
 }
 
+interface AreaEntry {
+    area: string
+    focal_point: boolean
+}
+
 export function EditResearcherModal(initialProps: Props) {
-    const parseAreas = (areaString: string) => {
+    const parseAreas = (areaString: string): AreaEntry[] => {
         if (!areaString) return []
         return areaString.split(";").map(item => {
             const [areaPart, focalPart] = item.trim().split("|ponto focal:")
@@ -28,23 +33,27 @@ export function EditResearcherModal(initialProps: Props) {
             return {
                 area: areaPart.trim(),
                 focal_point: focalPart?.trim() === "true"
-            }
-        }).filter(Boolean)
+            } as AreaEntry
+        }).filter(Boolean) as AreaEntry[]
     }
 
-    const stringifyAreas = (areasArray: { area: string; focal_point: boolean }[]) =>
+    const stringifyAreas = (areasArray: AreaEntry[]) =>
         areasArray.map(a => `${a.area}|ponto focal: ${a.focal_point}`).join("; ")
 
     const [formData, setFormData] = useState({
         ...initialProps,
-        areas: parseAreas(initialProps.area)
+        areas: parseAreas(initialProps.area) as AreaEntry[]
     })
 
     const { urlGeralAdm } = useContext(UserContext)
 
-    const handleAreaChange = (index: number, field: "area" | "focal_point", value: any) => {
-        const newAreas = [...formData.areas]
-        newAreas[index] = { ...newAreas[index], [field]: value }
+    const handleAreaChange = (index: number, field: keyof AreaEntry, value: any) => {
+        const newAreas: AreaEntry[] = [...formData.areas]
+        const current = newAreas[index]
+        newAreas[index] = {
+            area: field === "area" ? String(value ?? "") : current.area,
+            focal_point: field === "focal_point" ? Boolean(value) : current.focal_point
+        }
         setFormData(prev => ({ ...prev, areas: newAreas }))
     }
 
@@ -142,7 +151,7 @@ export function EditResearcherModal(initialProps: Props) {
                                 <div key={index} className="grid grid-cols-3 items-center gap-2">
                                     <Select
                                         value={
-                                            initialProps.uniqueAreas.includes(a.area)
+                                            formData.uniqueAreas?.includes(a.area)
                                                 ? a.area
                                                 : "outra"
                                         }
@@ -155,7 +164,7 @@ export function EditResearcherModal(initialProps: Props) {
                                             <SelectValue placeholder="Selecione a área" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {initialProps.uniqueAreas.map((area) => (
+                                            {formData.uniqueAreas.map((area) => (
                                                 <SelectItem key={area} value={area}>
                                                     {area}
                                                 </SelectItem>
@@ -163,7 +172,8 @@ export function EditResearcherModal(initialProps: Props) {
                                             <SelectItem value="outra">Outra...</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    {(!a.area || !initialProps.uniqueAreas.includes(a.area)) && (
+
+                                    {(!a.area || !formData.uniqueAreas.includes(a.area)) && (
                                         <Input
                                             placeholder="Digite a área"
                                             value={a.area}
