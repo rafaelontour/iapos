@@ -289,17 +289,6 @@ function ConfiguracaoParticipacaoStep({ pesquisador, graduate_program_id, onSucc
                         })}
                     </div>
                 </div>
-
-                <div className="flex flex-col space-y-1.5 w-full">
-                    <Label htmlFor="tag">Tag (Opcional)</Label>
-                    <Input
-                        id="tag"
-                        placeholder="Ex: Bolsista PQ, Coordenador, etc."
-                        value={tag}
-                        onChange={(e) => setTag(e.target.value)}
-                    />
-                </div>
-
                 <Separator />
 
                 <Button onClick={handleSubmit} disabled={isLoading}>
