@@ -3,14 +3,16 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo } from "react"; // 1. Importar useMemo
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { toast } from "sonner";
 import { UserContext } from "../../context/context";
 
+// --- Interfaces ---
+
 export interface Props {
-    uniqueAreas: string[]
-    area: string
+    uniqueAreas: string[] // A prop está vindo como string[] (de JSONs)
+    area: string | any
     focal_point: boolean
     institution_id: string
     lattes_id: string
@@ -24,64 +26,116 @@ interface AreaEntry {
     focal_point: boolean
 }
 
+interface FormState {
+    name: string
+    lattes_id: string
+    status: boolean
+    areas: AreaEntry[]
+}
+
+// --- Funções Auxiliares (Lógica Pura) ---
+
+const parseAreas = (areaValue: string | any): AreaEntry[] => {
+    if (!areaValue) return [];
+
+    try {
+        let dataToParse = areaValue;
+
+        if (typeof areaValue === 'string') {
+            const fixedJson = areaValue.replace(/'/g, '"');
+            dataToParse = JSON.parse(fixedJson);
+        }
+
+        if (Array.isArray(dataToParse)) {
+            return dataToParse.map(item => ({
+                area: item.area_leader || "",
+                focal_point: Boolean(item.focal_point)
+            }));
+        }
+
+        return [];
+    } catch (err) {
+        console.error("Erro ao parsear áreas:", err);
+        return [];
+    }
+};
+
+const formatAreasForAPI = (areas: AreaEntry[]) => {
+    return areas.map(a => ({
+        area_leader: a.area,
+        focal_point: a.focal_point
+    }));
+};
+
+// --- Componente React ---
+
 export function EditResearcherModal(initialProps: Props) {
-    const parseAreas = (areaString: string): AreaEntry[] => {
-        if (!areaString) return []
+    const { urlGeralAdm } = useContext(UserContext);
 
+    // 2. Criar um array limpo de 'uniqueAreas'
+    const parsedUniqueAreas = useMemo(() => {
         try {
-            const fixedJson = areaString.replace(/'/g, '"')
-            const parsed = JSON.parse(fixedJson) as { focal_point: string, area_leader: string }[]
-
-            return parsed.map(item => ({
-                area: item.area_leader,
-                focal_point: item.focal_point === "true"
-            }))
-        } catch (err) {
-            console.error("Erro ao parsear áreas:", err)
-            return []
+            return initialProps.uniqueAreas
+                .map(areaJsonString => {
+                    // Parseia a string JSON (ex: '[{"area_leader": "Nome"}]')
+                    const parsedArray = JSON.parse(areaJsonString);
+                    // Pega o nome da area_leader do primeiro objeto do array
+                    if (Array.isArray(parsedArray) && parsedArray.length > 0 && parsedArray[0].area_leader) {
+                        return parsedArray[0].area_leader;
+                    }
+                    return null; // Retorna null se a estrutura for inesperada
+                })
+                .filter(Boolean) as string[]; // Filtra os nulos e garante o tipo string[]
+        } catch (e) {
+            console.error("Erro ao parsear uniqueAreas:", e, initialProps.uniqueAreas);
+            return []; // Retorna um array vazio em caso de erro
         }
-    }
+    }, [initialProps.uniqueAreas]);
 
 
-    const [formData, setFormData] = useState({
-        ...initialProps,
-        areas: parseAreas(initialProps.area) as AreaEntry[]
-    })
+    const [formData, setFormData] = useState<FormState>(() => ({
+        name: initialProps.name,
+        lattes_id: initialProps.lattes_id,
+        status: initialProps.status,
+        areas: parseAreas(initialProps.area),
+    }));
 
-    const { urlGeralAdm } = useContext(UserContext)
+    const handleFieldChange = (field: keyof FormState, value: string | boolean) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
 
-    const handleAreaChange = (index: number, field: keyof AreaEntry, value: any) => {
-        const newAreas: AreaEntry[] = [...formData.areas]
-        const current = newAreas[index]
-        newAreas[index] = {
-            area: field === "area" ? String(value ?? "") : current.area,
-            focal_point: field === "focal_point" ? Boolean(value) : current.focal_point
-        }
-        setFormData(prev => ({ ...prev, areas: newAreas }))
-    }
+    const handleAreaChange = (index: number, field: keyof AreaEntry, value: string | boolean) => {
+        const newAreas = formData.areas.map((item, i) => {
+            if (i !== index) return item;
+            return { ...item, [field]: value };
+        });
+        setFormData(prev => ({ ...prev, areas: newAreas }));
+    };
 
     const addNewArea = () => {
         setFormData(prev => ({
             ...prev,
             areas: [...prev.areas, { area: "", focal_point: false }]
-        }))
-    }
+        }));
+    };
 
     const removeArea = (index: number) => {
-        const newAreas = formData.areas.filter((_, i) => i !== index)
-        setFormData(prev => ({ ...prev, areas: newAreas }))
-    }
+        setFormData(prev => ({
+            ...prev,
+            areas: prev.areas.filter((_, i) => i !== index)
+        }));
+    };
 
     const handleSubmitPesquisador = async () => {
         try {
-            const areasFormatted = formData.areas.map(a => ({
-                focal_point: String(a.focal_point),
-                area_leader: a.area
-            }));
+            const areasFormatted = formatAreasForAPI(formData.areas);
 
             const payload = {
+                institution_id: initialProps.institution_id,
+                researcher_id: initialProps.researcher_id,
                 ...formData,
-                area: areasFormatted
+                area: JSON.stringify(areasFormatted),
+                areas: undefined,
             };
 
             const urlProgram = urlGeralAdm + "/ResearcherRest/Update";
@@ -90,10 +144,6 @@ export function EditResearcherModal(initialProps: Props) {
                 mode: "cors",
                 method: "PUT",
                 headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "PUT",
-                    "Access-Control-Allow-Headers": "Content-Type",
-                    "Access-Control-Max-Age": "3600",
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify([payload])
@@ -117,8 +167,12 @@ export function EditResearcherModal(initialProps: Props) {
             }
         } catch (err) {
             console.log(err);
+            toast("Erro inesperado", {
+                description: "Ocorreu um erro ao tentar enviar os dados.",
+                action: { label: "Fechar", onClick: () => { } }
+            });
         }
-    }
+    };
 
     return (
         <Popover>
@@ -139,7 +193,7 @@ export function EditResearcherModal(initialProps: Props) {
                             <Label>Nome</Label>
                             <Input
                                 value={formData.name}
-                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                onChange={(e) => handleFieldChange("name", e.target.value)}
                                 className="col-span-2 h-8"
                             />
                         </div>
@@ -148,66 +202,77 @@ export function EditResearcherModal(initialProps: Props) {
                             <Label>Lattes Id</Label>
                             <Input
                                 value={formData.lattes_id}
-                                onChange={(e) => setFormData(prev => ({ ...prev, lattes_id: e.target.value }))}
+                                onChange={(e) => handleFieldChange("lattes_id", e.target.value)}
                                 className="col-span-2 h-8"
                             />
                         </div>
 
                         <div className="grid gap-2">
                             <Label>Áreas</Label>
-                            {formData.areas.map((a, index) => (
-                                <div key={index} className="grid grid-cols-3 items-center gap-2">
-                                    <Select
-                                        value={
-                                            formData.uniqueAreas?.includes(a.area)
-                                                ? a.area
-                                                : "outra"
-                                        }
-                                        onValueChange={(val) => {
-                                            if (val === "outra") handleAreaChange(index, "area", "")
-                                            else handleAreaChange(index, "area", val)
-                                        }}
-                                    >
-                                        <SelectTrigger className="h-8 col-span-2">
-                                            <SelectValue placeholder="Selecione a área" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {formData.uniqueAreas.map((area) => (
-                                                <SelectItem key={area} value={area}>
-                                                    {area}
-                                                </SelectItem>
-                                            ))}
-                                            <SelectItem value="outra">Outra...</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                            {formData.areas.map((a, index) => {
+                                // 3. Usar o array limpo 'parsedUniqueAreas' na lógica
+                                const areaValue = a.area || "";
+                                const selectValue = parsedUniqueAreas.includes(areaValue)
+                                    ? areaValue
+                                    : (areaValue === "" ? "" : "outra"); // Se for "" fica "", senão "outra"
 
-                                    {(!a.area || !formData.uniqueAreas.includes(a.area)) && (
-                                        <Input
-                                            placeholder="Digite a área"
-                                            value={a.area}
-                                            onChange={(e) => handleAreaChange(index, "area", e.target.value)}
-                                            className="col-span-2 h-8"
-                                        />
-                                    )}
+                                return (
+                                    <div key={index} className="grid grid-cols-3 items-center gap-2 border-t pt-2 mt-2">
+                                        <Select
+                                            value={selectValue} // Se value for "", o placeholder aparece
+                                            onValueChange={(val) => {
+                                                const newValue = (val === "outra") ? "" : val;
+                                                handleAreaChange(index, "area", newValue);
+                                            }}
+                                        >
+                                            <SelectTrigger className="h-8 col-span-3">
+                                                <SelectValue placeholder="Selecione a área" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {/* 3. Usar o array limpo 'parsedUniqueAreas' para renderizar */}
+                                                {parsedUniqueAreas.map((area) => (
+                                                    <SelectItem key={area} value={area}>
+                                                        {area}
+                                                    </SelectItem>
+                                                ))}
+                                                <SelectItem value="outra">Outra...</SelectItem>
+                                            </SelectContent>
+                                        </Select>
 
-                                    <Select
-                                        value={a.focal_point ? "sim" : "nao"}
-                                        onValueChange={(val) => handleAreaChange(index, "focal_point", val === "sim")}
-                                    >
-                                        <SelectTrigger className="h-8">
-                                            <SelectValue placeholder="Ponto focal?" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="sim">Sim</SelectItem>
-                                            <SelectItem value="nao">Não</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                        {/* 3. A condição de exibição do Input agora é 'selectValue === "outra"' */}
+                                        {selectValue === "outra" && (
+                                            <Input
+                                                placeholder="Digite a área"
+                                                value={areaValue}
+                                                onChange={(e) => handleAreaChange(index, "area", e.target.value)}
+                                                className="col-span-3 h-8"
+                                            />
+                                        )}
 
-                                    <Button variant="destructive" size="sm" onClick={() => removeArea(index)}>
-                                        Remover
-                                    </Button>
-                                </div>
-                            ))}
+                                        <Select
+                                            value={a.focal_point ? "sim" : "nao"}
+                                            onValueChange={(val) => handleAreaChange(index, "focal_point", val === "sim")}
+                                        >
+                                            <SelectTrigger className="h-8 col-span-2">
+                                                <SelectValue placeholder="Ponto focal?" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="sim">Sim</SelectItem>
+                                                <SelectItem value="nao">Não</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => removeArea(index)}
+                                            className="col-span-1"
+                                        >
+                                            Remover
+                                        </Button>
+                                    </div>
+                                )
+                            })}
                             <Button variant="secondary" onClick={addNewArea}>Adicionar área</Button>
                         </div>
 
@@ -215,7 +280,7 @@ export function EditResearcherModal(initialProps: Props) {
                             <Label>Status</Label>
                             <Select
                                 value={formData.status ? "ativo" : "inativo"}
-                                onValueChange={(val) => setFormData(prev => ({ ...prev, status: val === "ativo" }))}
+                                onValueChange={(val) => handleFieldChange("status", val === "ativo")}
                             >
                                 <SelectTrigger className="h-8 col-span-2">
                                     <SelectValue />
@@ -234,5 +299,5 @@ export function EditResearcherModal(initialProps: Props) {
                 </div>
             </PopoverContent>
         </Popover>
-    )
+    );
 }
