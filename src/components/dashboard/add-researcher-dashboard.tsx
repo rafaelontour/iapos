@@ -544,20 +544,6 @@ export function AddResearcherDashboard() {
                                             <Label htmlFor="cpf">CPF</Label>
                                             <Input disabled={lattesID.length > 0} value={cpf} onChange={handleCpfChange} type="text" />
                                         </div>
-
-                                        <div className="flex flex-col space-y-1.5 w-full flex-1 max-w-[200px]">
-                                            <Label htmlFor="area">Área</Label>
-                                            <Input
-                                                value={area}
-                                                onChange={(e) => setArea(e.target.value)}
-                                                type="text"
-                                                placeholder="Digite a área"
-                                            />
-                                        </div>
-
-
-
-
                                         <div className="flex flex-col max-w-[250px] space-y-1.5 w-full flex-1">
                                             <Label htmlFor="status">Situação</Label>
                                             <Select value={status} onValueChange={setStatus}>
@@ -570,23 +556,6 @@ export function AddResearcherDashboard() {
                                                 </SelectContent>
                                             </Select>
                                         </div>
-
-                                        <div className="flex flex-col space-y-1.5 w-full flex-1 max-w-[200px]">
-                                            <Label htmlFor="focal_point">Ponto Focal</Label>
-                                            <Select
-                                                value={focalPoint ? "sim" : "nao"}
-                                                onValueChange={(value) => setFocalPoint(value === "sim")}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Selecione" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="sim">Sim</SelectItem>
-                                                    <SelectItem value="nao">Não</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
                                         <Button onClick={() => handleSubmitPesquisador()} className="text-white dark:text-white">
                                             <Plus size={16} /> Adicionar
                                         </Button>

@@ -71,8 +71,12 @@ export function EditResearcherModal(initialProps: Props) {
 
     const handleSubmitPesquisador = async () => {
         try {
-            const areaString = stringifyAreas(formData.areas)
-            const data = [{ ...formData, area: areaString }]
+            const areasFormatted = formData.areas.map(a => ({
+                focal_point: String(a.focal_point),
+                area_leader: a.area
+            }))
+
+            const data = [{ ...formData, areas: JSON.stringify(areasFormatted) }]
             const urlProgram = urlGeralAdm + "/ResearcherRest/Update"
 
             const response = await fetch(urlProgram, {
