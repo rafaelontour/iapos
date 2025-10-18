@@ -559,6 +559,7 @@ export function AddResearcherDashboard() {
                                         <Button onClick={() => handleSubmitPesquisador()} className="text-white dark:text-white">
                                             <Plus size={16} /> Adicionar
                                         </Button>
+
                                         <Button size={'icon'} onClick={() => onOpen('add-researcher-csv')} className="text-white dark:text-white">
                                             <FileXls size={16} />
                                         </Button>

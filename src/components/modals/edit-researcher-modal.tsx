@@ -27,18 +27,21 @@ interface AreaEntry {
 export function EditResearcherModal(initialProps: Props) {
     const parseAreas = (areaString: string): AreaEntry[] => {
         if (!areaString) return []
-        return areaString.split(";").map(item => {
-            const [areaPart, focalPart] = item.trim().split("|ponto focal:")
-            if (!areaPart) return null
-            return {
-                area: areaPart.trim(),
-                focal_point: focalPart?.trim() === "true"
-            } as AreaEntry
-        }).filter(Boolean) as AreaEntry[]
+
+        try {
+            const fixedJson = areaString.replace(/'/g, '"')
+            const parsed = JSON.parse(fixedJson) as { focal_point: string, area_leader: string }[]
+
+            return parsed.map(item => ({
+                area: item.area_leader,
+                focal_point: item.focal_point === "true"
+            }))
+        } catch (err) {
+            console.error("Erro ao parsear áreas:", err)
+            return []
+        }
     }
 
-    const stringifyAreas = (areasArray: AreaEntry[]) =>
-        areasArray.map(a => `${a.area}|ponto focal: ${a.focal_point}`).join("; ")
 
     const [formData, setFormData] = useState({
         ...initialProps,
@@ -74,10 +77,14 @@ export function EditResearcherModal(initialProps: Props) {
             const areasFormatted = formData.areas.map(a => ({
                 focal_point: String(a.focal_point),
                 area_leader: a.area
-            }))
+            }));
 
-            const data = [{ ...formData, areas: JSON.stringify(areasFormatted) }]
-            const urlProgram = urlGeralAdm + "/ResearcherRest/Update"
+            const payload = {
+                ...formData,
+                area: areasFormatted
+            };
+
+            const urlProgram = urlGeralAdm + "/ResearcherRest/Update";
 
             const response = await fetch(urlProgram, {
                 mode: "cors",
@@ -89,27 +96,27 @@ export function EditResearcherModal(initialProps: Props) {
                     "Access-Control-Max-Age": "3600",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data)
-            })
+                body: JSON.stringify([payload])
+            });
 
             if (response.ok) {
                 toast("Dados enviados com sucesso", {
                     description: "Pesquisador atualizado na instituição",
                     action: { label: "Fechar", onClick: () => { } }
-                })
+                });
             } else if (response.status === 400) {
                 toast("Pesquisador já existe", {
                     description: "Tente novamente",
                     action: { label: "Fechar", onClick: () => { } }
-                })
+                });
             } else {
                 toast("Erro ao enviar os dados ao servidor", {
                     description: "Tente novamente",
                     action: { label: "Fechar", onClick: () => { } }
-                })
+                });
             }
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
 
@@ -120,10 +127,7 @@ export function EditResearcherModal(initialProps: Props) {
                     <Pencil size={8} className="h-4 w-4" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent
-                className="w-96"
-                onClick={(event) => event.stopPropagation()}
-            >
+            <PopoverContent className="w-96" onClick={(event) => event.stopPropagation()}>
                 <div className="grid gap-4">
                     <div className="space-y-2">
                         <h4 className="font-medium leading-none">Editar pesquisador</h4>
