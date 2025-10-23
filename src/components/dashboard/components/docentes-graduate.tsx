@@ -1150,7 +1150,7 @@ export function DocentesGraduate(props: Props) {
                                       </label>
 
                                       <select
-                                        className="w-full min-w-fit border-[3px] ml-3 py-2 px-4 rounded-md"
+                                        className="w-fullmin-w-fit border-[3px] ml-3 py-2 px-4 rounded-md"
                                         defaultValue="" // evita ficar com um valor preso
                                         onChange={(event) => {
                                           const obj = JSON.parse(event.target.value);
@@ -1178,12 +1178,12 @@ export function DocentesGraduate(props: Props) {
 
                                       {tagsSelecionadas.length > 0 && (
                                         <div className="flex items-center w-1/2 gap-2">
-                                          <p className="font-bold text-xl whitespace-nowrap">{tagsSelecionadas.length > 1 ? "Tags selecionadas" : "Tag selecionada"}:</p>
+                                          <p className="font-bold text-xl whitespace-nowrap">Tags selecionadas:</p>
                                           <div className="flex border border-gray-300 rounded-md p-3 overflow-x-auto gap-2">
                                             {tagsSelecionadas.map((tag) => (
                                               <div
                                                 key={tag.id}
-                                                className="flex items-center rounded-[4px] border overflow-hidden border-gray-300 flex-shrink-0 min-w-max"
+                                                className="flex items-center rounded-sm border overflow-hidden border-gray-300 flex-shrink-0 min-w-max"
                                               >
                                                 <span className="bg-red-400 p-1 h-full flex items-center gap-2 w-fit">
                                                   <X
