@@ -32,6 +32,7 @@ import {
     SlidersHorizontal,
     Sparkles,
     SquareTerminal,
+    Tag,
     TextSearch,
     UserPlus,
     Users,
@@ -164,9 +165,14 @@ export function AppSidebarAdmin({ ...props }: React.ComponentProps<typeof Sideba
                         : []),
 
                     {
-                        title: "Pós graduação",
-                        url: "/dashboard/dados-pos-graduacao",
+                        title: "Config. de datas",
+                        url: "/dashboard/datas",
                         icon: Sheet
+                    },
+                    {
+                        title: "Tags",
+                        url: "/dashboard/tags",
+                        icon: Tag
                     }
                 ],
             },

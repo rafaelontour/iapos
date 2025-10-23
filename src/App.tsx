@@ -462,7 +462,12 @@ function App() {
                                     />
 
                                     <Route
-                                        path='/dashboard/dados-pos-graduacao'
+                                        path='/dashboard/datas'
+                                        element={<Dashboard />}
+                                    />
+
+                                    <Route
+                                        path='/dashboard/tags'
                                         element={<Dashboard />}
                                     />
 

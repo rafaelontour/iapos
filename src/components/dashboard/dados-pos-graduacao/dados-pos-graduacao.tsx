@@ -34,7 +34,7 @@ export default function DadosPosGraduacao() {
         setTimeout(() => {
             setConfiguracoes(configs);
             setCarregando(false);
-        }, 2000);
+        }, 1000);
 
     }
 
@@ -63,7 +63,7 @@ export default function DadosPosGraduacao() {
                     <CriarAtualizarConfiguracao isAtualizar={false} atualizar={buscarConfiguracoes} />
                 </div>
 
-                <div className="relative mt-8 mx-5 grid sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+                <div className="relative mt-8 grid sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
                     {
                         carregando ? (
                             <div className="flex items-center absolute -translate-x-1/2 left-1/2 top-1/2 justify-center gap-2 text-2xl mt-20 text-center animate-pulse">

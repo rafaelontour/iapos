@@ -22,6 +22,7 @@ import { Instituicoes } from "../dashboard/instituicoes/instituicoes";
 import { CargosFuncoes } from "../dashboard/cargos-permissoes/cargos-funcoes";
 import { ProgramaDashboard } from "../dashboard/pos-graduacao/programa";
 import DadosPosGraduacao from "../dashboard/dados-pos-graduacao/dados-pos-graduacao";
+import Tags from "../dashboard/dados-pos-graduacao/Tags";
 
 
 const ModalContent = () => {
@@ -68,6 +69,10 @@ const ModalContent = () => {
       return <DadosPosGraduacao />
     case 'programa':
       return <ProgramaDashboard />
+    case 'datas':
+      return <DadosPosGraduacao />
+    case 'tags':
+      return <Tags />
     default:
       return null;
   }

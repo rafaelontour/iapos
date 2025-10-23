@@ -3,18 +3,18 @@ import { toast } from "sonner";
 async function getConfiguracoes() {
 
     try {
-        const responsta = await fetch('https://iapos-api.senaicimatec.com.br/adm/guidance_config/', {
+        const resposta = await fetch('https://iapos-api.senaicimatec.com.br/adm/guidance_config/', {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
             }
         })
 
-        if (!responsta.ok) {
+        if (!resposta.ok) {
             return
         }
 
-        const dados = await responsta.json();
+        const dados = await resposta.json();
 
         return dados
     } catch (error) {

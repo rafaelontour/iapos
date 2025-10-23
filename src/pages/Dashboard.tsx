@@ -14,7 +14,6 @@ export function Dashboard() {
 
     const location = useLocation();
 
-
     useEffect(() => {
         if (location.pathname == '/dashboard') {
             onOpen('home-dashboard')
@@ -56,10 +55,12 @@ export function Dashboard() {
             onOpen('cargos-permissoes')
         } else if (location.pathname == '/dashboard/instituicoes') {
             onOpen('instituicoes')
-        } else if (location.pathname == '/dashboard/dados-pos-graduacao') {
-            onOpen('dados-pos-graduacao')
+        } else if (location.pathname == '/dashboard/datas') {
+            onOpen('datas')
         } else if (location.pathname == '/dashboard/programa') {
             onOpen('programa')
+        } else if (location.pathname == '/dashboard/tags') {
+            onOpen('tags')
         }
     }, [location]);
 

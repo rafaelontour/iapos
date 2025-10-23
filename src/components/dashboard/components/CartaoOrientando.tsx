@@ -2,8 +2,12 @@ import { getDiscentesPorPrograma, getInfoPesquisadorPorId } from "../../../servi
 import { useEffect, useState } from "react";
 import { Button } from "../../ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
-import { X } from "lucide-react";
+import { Info, X } from "lucide-react";
 import { atualizarOrientacao, excluirOrientacao, getDocentesPorPrograma, getOrientacoesPorDocente } from "../../../service/docentes";
+import { Configuracao } from "../dados-pos-graduacao/dados-pos-graduacao";
+import { getConfiguracoes } from "../../../service/configuracaoDataPosGraduacao";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
+import { Tag } from "../dados-pos-graduacao/Tags";
 
 interface OrientacaoProps {
     co_supervisor_researcher_id: string,
@@ -24,6 +28,7 @@ interface OrientacaoProps {
     supervisor_researcher_id: string,
     type: string,
     updated_at: string,
+    tags: Tag[],
 }
 
 interface InfoOrientacaoProps {
@@ -36,6 +41,8 @@ interface InfoOrientacaoProps {
 
 export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [nomeDiscente, setNomeDiscente] = useState<string>("");
+
+    const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
 
     const tipo = () => {
         if (o.orientacaoC.type === 'PROJETO') {
@@ -126,25 +133,35 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     const [openDialogExcluir, setOpenDialogExcluir] = useState<boolean>(false);
 
+    const [configDataSelecionada, setConfigDataSelecionada] = useState<Configuracao | null>(null)
+
     useEffect(() => {
         if (dataEntrada !== null) {
-            gerarDatas(dataEntrada, "DEFESA_DO_PROJETO");
-            gerarDatas(dataEntrada, "QUALIFICACAO");
-            gerarDatas(dataEntrada, "DEFESA_FINAL");
+            gerarDatas()
         }
-    }, [dataEntrada])
+    }, [configDatas])
 
     useEffect(() => {
         const docentes = getDocentesPorPrograma(o.pesquisador.graduate_program_id);
+        buscarDatas();
 
         docentes.then((response) => {
             setDocentesPosGraduacao(response)
         })
     }, [])
 
-    function gerarDatas(d: string, tipo?: string): void {
+    function buscarDatas() {
+        const datas = getConfiguracoes();
 
-        const [anoStr, mesStr, diaStr] = d.split("-");
+        datas.then((response) => {
+            setConfigDatas(response)
+        })
+
+    }
+
+    function gerarDatas(): void {
+
+        const [anoStr, mesStr, diaStr] = (dataEntrada || "").split("-");
         const ano = parseInt(anoStr);
         const mes = parseInt(mesStr) - 1;
         const dia = parseInt(diaStr);
@@ -152,51 +169,50 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         const data = new Date(ano, mes, dia);
         let mesesAdicionais: number;
 
-        if (tipo) {
-            if (tipo === "DEFESA_DO_PROJETO") {
-                o.tipoPrograma[0].type === "Mestrado" ? mesesAdicionais = 3 : mesesAdicionais = 5;
-                console.log("meses adicionais", mesesAdicionais)
 
-                data.setMonth(data.getMonth() + mesesAdicionais);
-                data.setDate(dia);
+        // Definindo data de previsão da defesa do projeto
 
-                const novoAno = data.getFullYear();
-                const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
+        data.setMonth(data.getMonth() + (configDataSelecionada && configDataSelecionada?.duration_project_months || 0));
+        data.setDate(dia);
 
-                const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
+        const novoAno = data.getFullYear();
+        const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
 
-                setDataPrevisaoDefesa(dataFormadaPrevisao);
-            }
+        const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`
 
-            if (tipo === "QUALIFICACAO") {
-                o.tipoPrograma[0].type === "Mestrado" ? mesesAdicionais = 12 : mesesAdicionais = 24;
+        setDataPrevisaoDefesa(dataFormadaPrevisao);
 
-                data.setMonth(data.getMonth() + mesesAdicionais);
-                data.setDate(dia);
 
-                const novoAno = data.getFullYear();
-                const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
 
-                const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
+        // Definindo data de previsão da qualificação
+        data.setMonth(data.getMonth() +
+            (configDataSelecionada && configDataSelecionada?.duration_project_months || 0) +
+            (configDataSelecionada && configDataSelecionada?.duration_qualification_months || 0));
+        data.setDate(dia);
 
-                setDataPrevisaoQualificacao(dataFormadaPrevisao);
-            }
+        const novoAno2 = data.getFullYear();
+        const novoMesPrevisao2 = String(data.getMonth() + 1).padStart(2, "0");
 
-            if (tipo === "DEFESA_FINAL") {
-                setDataPrevisaoDefesaFinal(d);
-                o.tipoPrograma[0].type === "Mestrado" ? mesesAdicionais = 24 : mesesAdicionais = 48;
+        const dataFormadaPrevisao2 = `${novoAno2}-${novoMesPrevisao2}-${diaStr}`;
 
-                data.setMonth(data.getMonth() + mesesAdicionais);
-                data.setDate(dia);
+        setDataPrevisaoQualificacao(dataFormadaPrevisao2);
 
-                const novoAno = data.getFullYear();
-                const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
 
-                const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
 
-                setDataPrevisaoDefesaFinal(dataFormadaPrevisao);
-            }
-        }
+        // Definindo data de previsão da defesa final
+
+        data.setMonth(data.getMonth() +
+            (configDataSelecionada && configDataSelecionada?.duration_project_months || 0) +
+            (configDataSelecionada && configDataSelecionada?.duration_qualification_months || 0) +
+            (configDataSelecionada && configDataSelecionada?.duration_conclusion_months || 0));
+        data.setDate(dia);
+
+        const novoAno3 = data.getFullYear();
+        const novoMesPrevisao3 = String(data.getMonth() + 1).padStart(2, "0");
+
+        const dataFormadaPrevisao3 = `${novoAno3}-${novoMesPrevisao3}-${diaStr}`;
+
+        setDataPrevisaoDefesaFinal(dataFormadaPrevisao3);
     }
 
     async function salvarOrientando(evento: any) {
@@ -255,6 +271,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         setDataRealizadaQualificacao(null)
         setDataPrevisaoDefesaFinal(null)
         setDataRealizadaDefesaFinal(null)
+        setConfigDataSelecionada(null)
     }
 
     function data() {
@@ -273,26 +290,56 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     }
 
     return (
-        <div className="flex flex-col items-center gap-5 border rounded-md shadow-md p-5 h-fit">
-            <div className="flex w-full gap-6">
-                <div
-                    className={`flex items-center w-[120px] full rounded-md bg-contain bg-no-repeat bg-center`}
-                    style={{
-                        backgroundImage: nomeDiscente ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?name=${encodeURIComponent(nomeDiscente)})` : "",
-                        boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-                    }}
-                >
-                </div>
+        <div className="flex flex-col items-center gap-5 border rounded-md shadow-md p-5 h-fit relative overflow-hidden">
+            <div className="flex flex-col w-full gap-6">
+                <div className="flex items-center gap-1">
 
-                <div className="flex flex-col justify-center gap-2 h-[150px]">
-                    <p className="font-bold text-[17px]">{nomeDiscente}</p>
-                    <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
                     {
-                        o.orientacaoC.peding && (
-                            <p>Status: <span className={`bg-${corSpanPrevisao()} text-white px-2 py-1 rounded-md shadow-sm`}>{o.orientacaoC.peding}</span></p>
+                        o.orientacaoC.tags.length > 0 && (
+                            <span className="flex items-center gap-2 p-2 bg-slate-300 w-full absolute top-0 left-0">
+                                <p className="font-semibold text-md ml-2">Tags: </p>
+                                <div className="flex items-center gap-1">
+                                    {
+                                        o.orientacaoC.tags.map((tag: Tag) => (
+                                            <div
+                                                className={`
+                                                px-2 py-1 rounded-md text-white text-xs h-fit-w-fit
+                                            `}
+                                                style={{
+                                                    boxShadow: "-2px 2px 2px rgba(0, 0, 00, .3)",
+                                                    backgroundColor: `${tag.color_code}`,
+                                                }}>
+                                                <p>{tag.name}</p>
+                                            </div>
+                                        ))
+
+                                    }
+
+                                </div>
+                            </span>
                         )
                     }
-                    <p>{data()}<span className="font-bold">{Math.abs(parseInt(o.orientacaoC.peding_days))} dias</span></p>
+                </div>
+
+                <div className="flex gap-2 mt-4">
+                    <div
+                        className={`flex items-center w-[120px] full rounded-md bg-contain bg-no-repeat bg-center`}
+                        style={{
+                            backgroundImage: nomeDiscente ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?name=${encodeURIComponent(nomeDiscente)})` : "",
+                            boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                        }}
+                    >
+                    </div>
+                    <div className="flex flex-col justify-center gap-2 h-[150px]">
+                        <p className="font-bold text-[17px]">{nomeDiscente}</p>
+                        <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
+                        {
+                            o.orientacaoC.peding && (
+                                <p>Status: <span className={`bg-${corSpanPrevisao()} text-white px-2 py-1 rounded-md shadow-sm`}>{o.orientacaoC.peding}</span></p>
+                            )
+                        }
+                        <p>{data()}<span className="font-bold">{Math.abs(parseInt(o.orientacaoC.peding_days))} {Math.abs(parseInt(o.orientacaoC.peding_days)) === 1 ? "dia" : "dias"}</span></p>
+                    </div>
                 </div>
             </div>
 
@@ -354,20 +401,44 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                             </div>
 
                             <div className="flex items-center gap-1 flex-grow border border-gray-300 rounded-md p-3">
-                                <p className="text-lg font-bold min-w-fit">Selecione uma data de entrada: </p>
-                                <label className="flex w-full items-center gap-2 hover:cursor-pointer" htmlFor="dataEntrada">
-                                    <input
-                                        defaultValue={new Date(o.orientacaoC.start_date).toISOString().split("T")[0]}
-                                        className="hover:cursor-pointer w-full border-[3px] ml-5 py-1 px-4 rounded-md"
-                                        type="date"
-                                        name="dataEntrada"
-                                        id="dataEntrada"
-                                        onChange={(e) => {
-                                            setDataEntrada(e.target.value);
-                                        }}
-                                    />
 
-                                </label>
+                                <p className="text-lg font-bold min-w-fit">Selecione uma configuração de data: </p>
+
+                                <select
+                                    className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
+                                    onChange={(event) => {
+                                        const obj = JSON.parse(event.target.value)
+                                        setConfigDataSelecionada(obj)
+                                    }}
+                                >
+                                    <option disabled selected>Selecione uma configuração</option>
+                                    {
+                                        configDatas && configDatas
+                                            .slice()
+                                            .sort((a, b) => a.config_name.localeCompare(b.config_name))
+                                            .map((data) => (
+                                                <option key={data.id} value={JSON.stringify(data)}>{data.config_name}</option>
+                                            ))
+                                    }
+                                </select>
+
+                                {
+                                    configDataSelecionada && (
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Info className="ml-2" size={28} color="black" />
+                                            </TooltipTrigger>
+
+                                            <TooltipContent>
+                                                <h4 className="text-lg font-semibold">Configuração selecionada</h4>
+                                                <p><strong>Defesa de projeto: </strong> {configDataSelecionada.duration_project_months} meses</p>
+                                                <p><strong>Qualificação: </strong> {configDataSelecionada.duration_qualification_months} meses</p>
+                                                <p><strong>Conclusão: </strong> {configDataSelecionada.duration_conclusion_months} meses</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    )
+                                }
+
                             </div>
 
                             <div

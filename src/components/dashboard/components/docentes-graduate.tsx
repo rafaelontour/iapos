@@ -1,4 +1,4 @@
-import { ChevronsUpDown, Maximize2, Plus, RefreshCcw, User, UserIcon, X } from "lucide-react";
+import { ChevronsUpDown, Info, Maximize2, Plus, RefreshCcw, User, UserIcon, X } from "lucide-react";
 import { Button } from "../../ui/button";
 
 import { CardContent, CardHeader, CardTitle } from "../../ui/card";
@@ -25,7 +25,11 @@ import { Separator } from "../../ui/separator";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { getDiscentesPorPrograma } from "../../../service/discentes";
 import { adicionarOrientacao, getDocentesPorPrograma, getOrientacoesPorDocente } from "../../../service/docentes";
-import { set } from "date-fns";
+import { Configuracao } from "../dados-pos-graduacao/dados-pos-graduacao";
+import { getConfiguracoes } from "../../../service/configuracaoDataPosGraduacao";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
+import { Tag } from "../dados-pos-graduacao/Tags";
+import { getTagsService } from "../../../service/tags";
 
 
 
@@ -257,10 +261,7 @@ export function DocentesGraduate(props: Props) {
         }
       ]
 
-      console.log(data)
-
       let urlProgram = urlGeralAdm + 'GraduateProgramResearcherRest/Update'
-
 
       const fetchData = async () => {
 
@@ -552,6 +553,8 @@ export function DocentesGraduate(props: Props) {
   }) : [];
 
   // Rafael
+  const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
+  const [configDataSelecionada, setConfigDataSelecionada] = useState<Configuracao | null>(null)
 
   const [tipoOrientacao, setTipoOrientacao] = useState<any>(null)
   const [orientacoes, setOrientacoes] = useState<any>([])
@@ -575,13 +578,31 @@ export function DocentesGraduate(props: Props) {
 
   const [openDialogAdicionar, setOpenDialogAdicionar] = useState<boolean>(false);
 
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [tagsSelecionadas, setTagsSelecionadas] = useState<Tag[]>([]);
+
   useEffect(() => {
     if (dataEntrada !== null) {
-      gerarDatas(dataEntrada, "DEFESA_DO_PROJETO");
-      gerarDatas(dataEntrada, "QUALIFICACAO");
-      gerarDatas(dataEntrada, "DEFESA_FINAL");
+      gerarDatas();
     }
-  }, [dataEntrada])
+  }, [configDatas])
+
+  useEffect(() => {
+    buscarDatas();
+  }, [configDataSelecionada])
+
+  function buscarDatas() {
+    const datas = getConfiguracoes();
+
+    datas.then((response) => {
+      setConfigDatas(response)
+    })
+  }
+
+  async function buscarTags() {
+    const t = await getTagsService();
+    setTags(t);
+  }
 
   function buscarDiscentes() {
     const discentes = getDiscentesPorPrograma(props.graduate_program_id);
@@ -594,6 +615,7 @@ export function DocentesGraduate(props: Props) {
   useEffect(() => {
     infoPrograma();
     buscarDiscentes();
+    buscarTags();
     const docentes = getDocentesPorPrograma(props.graduate_program_id);
 
     docentes.then((response) => {
@@ -601,9 +623,9 @@ export function DocentesGraduate(props: Props) {
     })
   }, [])
 
-  function gerarDatas(d: string, tipo?: string): void {
+  function gerarDatas(): void {
 
-    const [anoStr, mesStr, diaStr] = d.split("-");
+    const [anoStr, mesStr, diaStr] = (dataEntrada || "").split("-");
     const ano = parseInt(anoStr);
     const mes = parseInt(mesStr) - 1;
     const dia = parseInt(diaStr);
@@ -611,52 +633,43 @@ export function DocentesGraduate(props: Props) {
     const data = new Date(ano, mes, dia);
     let mesesAdicionais: number;
 
-    console.log("tipo", tipoOrientacao)
 
-    if (tipo) {
-      if (tipo === "DEFESA_DO_PROJETO") {
-        tipoOrientacao === "Mestrado" ? mesesAdicionais = 3 : mesesAdicionais = 18;
+    // Definindo data de previsão da defesa do projeto
+    data.setMonth(data.getMonth() + (configDataSelecionada && configDataSelecionada?.duration_project_months || 0));
+    data.setDate(dia);
 
-        data.setMonth(data.getMonth() + mesesAdicionais);
-        data.setDate(dia);
+    const novoAno = data.getFullYear();
+    const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
 
-        const novoAno = data.getFullYear();
-        const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
+    const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
+    setDataPrevisaoDefesa(dataFormadaPrevisao);
 
-        const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
 
-        setDataPrevisaoDefesa(dataFormadaPrevisao);
-      }
+    // Definindo data de previsão da qualificação
+    data.setMonth(data.getMonth() +
+      (configDataSelecionada && configDataSelecionada?.duration_qualification_months || 0));
+    data.setDate(dia);
 
-      if (tipo === "QUALIFICACAO") {
-        tipoOrientacao === "Mestrado" ? mesesAdicionais = 21 : mesesAdicionais = 30;
+    const novoAno2 = data.getFullYear();
+    const novoMesPrevisao2 = String(data.getMonth() + 1).padStart(2, "0");
 
-        data.setMonth(data.getMonth() + mesesAdicionais);
-        data.setDate(dia);
+    const dataFormadaPrevisao2 = `${novoAno2}-${novoMesPrevisao2}-${diaStr}`;
 
-        const novoAno = data.getFullYear();
-        const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
+    setDataPrevisaoQualificacao(dataFormadaPrevisao2);
 
-        const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
 
-        setDataPrevisaoQualificacao(dataFormadaPrevisao);
-      }
+    // Definindo data de previsão da defesa final
 
-      if (tipo === "DEFESA_FINAL") {
-        setDataPrevisaoDefesaFinal(d);
-        tipoOrientacao === "Mestrado" ? mesesAdicionais = 24 : mesesAdicionais = 48;
+    data.setMonth(data.getMonth() +
+      (configDataSelecionada && configDataSelecionada?.duration_conclusion_months || 0));
+    data.setDate(dia);
 
-        data.setMonth(data.getMonth() + mesesAdicionais);
-        data.setDate(dia);
+    const novoAno3 = data.getFullYear();
+    const novoMesPrevisao3 = String(data.getMonth() + 1).padStart(2, "0");
 
-        const novoAno = data.getFullYear();
-        const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
+    const dataFormadaPrevisao3 = `${novoAno3}-${novoMesPrevisao3}-${diaStr}`;
 
-        const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
-
-        setDataPrevisaoDefesaFinal(dataFormadaPrevisao);
-      }
-    }
+    setDataPrevisaoDefesaFinal(dataFormadaPrevisao3);
   }
 
   async function buscarOrientacoesPorDocente(idDocente: string, idPrograma: string) {
@@ -669,7 +682,7 @@ export function DocentesGraduate(props: Props) {
   async function salvarOrientando(evento: any) {
     evento.preventDefault();
     if (dataEntrada == null || idOrientador == null || idOrientando == null || dataPrevisaoDefesa == null || dataPrevisaoQualificacao == null || dataPrevisaoDefesaFinal == null) {
-      alert("Preencha todos os campos!\n\nDados OBRIGATÓRIOS:\n- Orientando\n- Data de Entrada\n- Data da previsão da defesa\n- Data de previsão da qualificação\n- Data de previsão da defesa final");
+      alert("Preencha todos os campos!\n\nDados OBRIGATÓRIOS:\n- Orientando\n- Data de Entrada\n- Configuração de data");
       return
     }
 
@@ -684,7 +697,8 @@ export function DocentesGraduate(props: Props) {
       done_date_conclusion: dataRealizadaDefesaFinal,
       supervisor_researcher_id: idOrientador,
       student_researcher_id: idOrientando,
-      co_supervisor_researcher_id: idCoorientador
+      co_supervisor_researcher_id: idCoorientador,
+      tag_ids: tags.map(tag => tag.id)
     }
 
     const response = await adicionarOrientacao(orientacao)
@@ -692,9 +706,9 @@ export function DocentesGraduate(props: Props) {
     if (response.status == 201) {
       buscarOrientacoesPorDocente(idOrientador, props.graduate_program_id);
       limparCampos();
-      alert("Orientação adicionada com sucesso!");
+      toast.success("Orientação adicionada com sucesso!");
     } else {
-      alert("Não foi possível adicionar a orientação!");
+      toast.error("Não foi possível adicionar a orientação!");
     }
   }
 
@@ -710,6 +724,8 @@ export function DocentesGraduate(props: Props) {
     setDataRealizadaQualificacao(null)
     setDataPrevisaoDefesaFinal(null)
     setDataRealizadaDefesaFinal(null)
+    setConfigDataSelecionada(null)
+    setTagsSelecionadas([])
   }
 
   const infoPrograma = async () => {
@@ -986,6 +1002,7 @@ export function DocentesGraduate(props: Props) {
                               <TabsTrigger value="projetos_defendidos">Projetos Defendidos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
                               <TabsTrigger value="qualificados">Qualificados &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
                               <TabsTrigger value="concluidos">Concluídos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
+                              <TabsTrigger value="trancado">Trancado &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-red-500 text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
                             </TabsList>
 
                             <Dialog open={openDialogAdicionar} onOpenChange={setOpenDialogAdicionar}>
@@ -1053,10 +1070,7 @@ export function DocentesGraduate(props: Props) {
                                                 props.researcher_id !== docente.researcher_id ?
                                                   <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
                                                   :
-                                                  <p>
-                                                    <option disabled key={docente.researcher_id} value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
-
-                                                  </p>
+                                                  <option disabled key={docente.researcher_id} value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
                                               ))
                                           }
                                         </select>
@@ -1065,7 +1079,9 @@ export function DocentesGraduate(props: Props) {
                                   </div>
 
                                   <div className="flex items-center gap-1 flex-grow border border-gray-300 rounded-md p-3">
-                                    <p className="text-lg font-bold min-w-fit">Selecione uma data de entrada: </p>
+
+                                    <p className="text-lg font-bold min-w-fit">Selecione a data de entrada: </p>
+
                                     <label className="flex w-full items-center gap-2 hover:cursor-pointer" htmlFor="dataEntrada">
                                       <input
                                         className="hover:cursor-pointer w-full border-[3px] ml-5 py-1 px-4 rounded-md"
@@ -1076,8 +1092,117 @@ export function DocentesGraduate(props: Props) {
                                           setDataEntrada(e.target.value);
                                         }}
                                       />
-
                                     </label>
+                                  </div>
+
+                                  <div className="flex items-center gap-1 flex-grow border border-gray-300 rounded-md p-3">
+
+                                    <p className="text-lg font-bold min-w-fit">Selecione uma configuração de data: </p>
+
+                                    <select
+                                      className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
+                                      onClick={() => {
+                                        if (dataEntrada == null) {
+                                          alert("Selecione uma data de entrada antes de aplicar a configuração de data!")
+                                        }
+                                      }}
+                                      onChange={(event) => {
+                                        const obj = JSON.parse(event.target.value);
+                                        setConfigDataSelecionada(obj)
+                                      }}
+                                    >
+                                      <option disabled selected>Selecione uma configuração</option>
+                                      {
+                                        configDatas && configDatas
+                                          .slice()
+                                          .sort((a, b) => a.config_name.localeCompare(b.config_name))
+                                          .map((data) => (
+                                            <option key={data.id} value={JSON.stringify(data)}>
+                                              {data.config_name}
+                                            </option>
+                                          ))
+                                      }
+
+                                    </select>
+
+                                    {
+                                      configDataSelecionada && (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Info className="ml-2" size={28} color="black" />
+                                          </TooltipTrigger>
+
+                                          <TooltipContent>
+                                            <h4 className="text-lg font-semibold">Configuração selecionada</h4>
+                                            <p><strong>Defesa de projeto: </strong> {configDataSelecionada.duration_project_months} meses</p>
+                                            <p><strong>Qualificação: </strong> {configDataSelecionada.duration_qualification_months} meses</p>
+                                            <p><strong>Conclusão: </strong> {configDataSelecionada.duration_conclusion_months} meses</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      )
+                                    }
+                                  </div>
+
+                                  <div className="flex gap-3 w-full border border-gray-300 rounded-md p-3">
+                                    <div className="flex w-full items-center justify-between gap-2">
+                                      <label className="text-lg font-bold whitespace-nowrap" htmlFor="Tag">
+                                        Tag (opcional):
+                                      </label>
+
+                                      <select
+                                        className="w-full min-w-fit border-[3px] ml-3 py-2 px-4 rounded-md"
+                                        defaultValue="" // evita ficar com um valor preso
+                                        onChange={(event) => {
+                                          const obj = JSON.parse(event.target.value);
+                                          setTagsSelecionadas((tagsSelecionadas) => [...tagsSelecionadas, obj]);
+                                          event.target.value = ""; // reseta o select após selecionar
+                                        }}
+                                      >
+                                        <option value="" disabled>
+                                          Selecione uma tag
+                                        </option>
+
+                                        {
+                                          tags &&
+                                          tags
+                                            // 🚫 não mostra tags que já foram selecionadas
+                                            .filter((tag) => !tagsSelecionadas.some((t) => t.id === tag.id))
+                                            .sort((a, b) => a.name.localeCompare(b.name))
+                                            .map((tag) => (
+                                              <option key={tag.id} value={JSON.stringify(tag)}>
+                                                {tag.name}
+                                              </option>
+                                            ))
+                                        }
+                                      </select>
+
+                                      {tagsSelecionadas.length > 0 && (
+                                        <div className="flex items-center w-1/2 gap-2">
+                                          <p className="font-bold text-xl whitespace-nowrap">{tagsSelecionadas.length > 1 ? "Tags selecionadas" : "Tag selecionada"}:</p>
+                                          <div className="flex border border-gray-300 rounded-md p-3 overflow-x-auto gap-2">
+                                            {tagsSelecionadas.map((tag) => (
+                                              <div
+                                                key={tag.id}
+                                                className="flex items-center rounded-[4px] border overflow-hidden border-gray-300 flex-shrink-0 min-w-max"
+                                              >
+                                                <span className="bg-red-400 p-1 h-full flex items-center gap-2 w-fit">
+                                                  <X
+                                                    onClick={() =>
+                                                      setTagsSelecionadas((tagsSelecionadas) =>
+                                                        tagsSelecionadas.filter((t) => t.id !== tag.id)
+                                                      )
+                                                    }
+                                                    className="text-black hover:cursor-pointer"
+                                                    size={17}
+                                                  />
+                                                </span>
+                                                <p className="p-1 whitespace-nowrap w-fit">{tag.name}</p>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
 
 
@@ -1100,7 +1225,7 @@ export function DocentesGraduate(props: Props) {
                                               className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
                                               onClick={() => {
                                                 if (dataEntrada == null) {
-                                                  alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa do projeto serão geradas automaticamente!");
+                                                  alert("Selecione a DATA DE ENTRADA e a CONFIGURAÇÃO DE DATA. Após isso, você poderá modificar as datas previstas caso queira!");
                                                   return;
                                                 }
                                               }}
@@ -1124,8 +1249,7 @@ export function DocentesGraduate(props: Props) {
                                               className="w-full border-[2px] px-2 py-1 rounded-md"
                                               onClick={() => {
                                                 if (dataPrevisaoDefesa == null) {
-                                                  alert("Para modificar a data de realização da defesa, primeiro selecione uma DATA DE ENTRADA!");
-                                                  return;
+                                                  alert("Não é possível definir a data de realização do projeto sem a data de entrada!");
                                                 }
                                               }}
                                               onChange={(e) => {
@@ -1148,7 +1272,7 @@ export function DocentesGraduate(props: Props) {
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
                                             onClick={() => {
                                               if (dataPrevisaoQualificacao == null) {
-                                                alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da qualificação do projeto serão geradas automaticamente!");
+                                                alert("Selecione a DATA DE ENTRADA e a CONFIGURAÇÃO DE DATA. Após isso, você poderá modificar as datas previstas caso queira!");
                                                 return;
                                               }
                                             }}
@@ -1169,7 +1293,7 @@ export function DocentesGraduate(props: Props) {
                                             type="date"
                                             onClick={() => {
                                               if (dataEntrada == null) {
-                                                alert("Para modificar a data de realização da qualificação, primeiro selecione uma DATA DE ENTRADA!");
+                                                alert("Não é possível definir a data de realização de qualificação sem a data de entrada!");
                                                 return;
                                               } else {
                                                 if (dataRealizadaDefesa == null) {
@@ -1195,7 +1319,7 @@ export function DocentesGraduate(props: Props) {
                                             className="w-full border-[2px] px-2 py-1 rounded-md"
                                             onClick={() => {
                                               if (dataPrevisaoDefesaFinal == null) {
-                                                alert("Selecione uma DATA DE ENTRADA. As datas de PREVISÃO e REALIZAÇÃO da defesa final do projeto serão geradas automaticamente!");
+                                                alert("Selecione a DATA DE ENTRADA e a CONFIGURAÇÃO DE DATA. Após isso, você poderá modificar as datas previstas caso queira!");
                                                 return;
                                               }
 
@@ -1205,7 +1329,6 @@ export function DocentesGraduate(props: Props) {
                                             }}
                                             onChange={(e) => {
                                               setDataPrevisaoDefesaFinal(e.target.value);
-                                              //gerarDatas(e.target.value, "DEFESA_FINAL");
                                             }}
                                             type="date"
                                             id="dataPrevista"
@@ -1315,6 +1438,20 @@ export function DocentesGraduate(props: Props) {
                             ) : (
                               <p className="p-3 animate-pulse">
                                 Sem orientações concluídas para este docente.
+                              </p>
+                            )}
+                          </TabsContent>
+
+                          <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="trancado">
+                            {orientacoes?.filter((o: any) => o.type === "FINALIZADO").length > 0 ? (
+                              orientacoes
+                                .filter((o: any) => o.type === "FINALIZADO")
+                                .map((o: any) => (
+                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                ))
+                            ) : (
+                              <p className="p-3 animate-pulse">
+                                Nenhum orientando com atividade pausada.
                               </p>
                             )}
                           </TabsContent>
