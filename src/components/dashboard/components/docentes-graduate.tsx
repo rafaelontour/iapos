@@ -212,11 +212,9 @@ export function DocentesGraduate(props: Props) {
       })
 
       if (!resposta.ok) {
-        console.log("resposta: ", resposta.status)
         toast.error("Tente novamente", { description: "Falha ao remover os registros antigos do pesquisador." })
         return
       }
-      console.log("resposta exclusão: ", resposta.status)
     }
 
 
@@ -371,8 +369,6 @@ export function DocentesGraduate(props: Props) {
       }
       dadosEnvio.push(dado)
     })
-
-    console.log("dadosEnvio: ", dadosEnvio)
 
     const atualizarParticipacao = async () => {
 
@@ -632,7 +628,6 @@ export function DocentesGraduate(props: Props) {
       setAnosComoColaborador([...anosComoColaborador, { tipo: 'COLABORADOR', ano }]);
     }
 
-    console.log("anosComoColaborador: ", anosComoColaborador)
   }
 
   function adicionarAnoComoPermanente(ano: string) {
@@ -802,8 +797,8 @@ export function DocentesGraduate(props: Props) {
                       <div className="flex flex-col gap-4 w-full mt-4 bg-zinc-300 border border-gray-300 p-5 rounded-md">
                         <div className="flex items-center justify-between gap-2">
                           <p className="text-[22px]">Anos de participação</p>
-                          <span title="Fechar" className="bg-red-500 rounded-md p-2">
-                            <X color="white" className="hover:cursor-pointer" size={19} onClick={() => { setAnosComoColaborador([]); setAnosComoPermanente([]); setPesquisadorSelecionado(undefined); }} />
+                          <span title="Fechar" className="bg-red-500 rounded-md p-2 hover:cursor-pointer">
+                            <X color="white" size={19} onClick={() => { setAnosComoColaborador([]); setAnosComoPermanente([]); setPesquisadorSelecionado(undefined); }} />
                           </span>
                         </div>
 
@@ -1274,8 +1269,6 @@ export function DocentesGraduate(props: Props) {
                                               }}
                                               onChange={(e) => {
                                                 setDataPrevisaoDefesa(e.target.value);
-                                                console.log("data: ", dataPrevisaoDefesa)
-                                                // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
                                               }}
                                               type="date"
                                               id="dataPrevista"
