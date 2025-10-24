@@ -620,6 +620,11 @@ export function DocentesGraduate(props: Props) {
 
     const existe = anosComoColaborador.some(a => a.tipo === 'COLABORADOR' && a.ano === ano);
 
+    if (anosComoPermanente.some(a => a.tipo === 'PERMANENTE' && a.ano === ano)) {
+      toast.warning("Não é permitido ter a mesma participação no mesmo ano!", { description: "Caso queira substituir, desmarque o ano como PERMANTENTE." });
+      return
+    }
+
     if (existe) {
       // remove o que for igual
       setAnosComoColaborador(anosComoColaborador.filter(a => !(a.tipo === 'COLABORADOR' && a.ano === ano)));
@@ -627,11 +632,15 @@ export function DocentesGraduate(props: Props) {
       // adiciona se não existir
       setAnosComoColaborador([...anosComoColaborador, { tipo: 'COLABORADOR', ano }]);
     }
-
   }
 
   function adicionarAnoComoPermanente(ano: string) {
     const existe = anosComoPermanente.some(a => a.tipo === 'PERMANENTE' && a.ano === ano);
+
+    if (anosComoColaborador.some(a => a.tipo === 'COLABORADOR' && a.ano === ano)) {
+      toast.warning("Não é permitido ter a mesma participação no mesmo ano!", { description: "Caso queira substituir, desmarque o ano como COLABORADOR." });
+      return
+    }
 
     if (existe) {
       // remove o que for igual
