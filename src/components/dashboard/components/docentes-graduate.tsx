@@ -973,7 +973,7 @@ export function DocentesGraduate(props: Props) {
                               <AlertCircle size={17} />
                             </span>
                             <p className="p-2 pr-3 text-md">
-                              Marque os anos nos quais o pesquisador participou como COLABORADOR ou PERMANENTE. Após completar, clique em atualizar dados para salvar as alterações.
+                              Marque os anos nos quais o pesquisador participou como COLABORADOR ou PERMANENTE. Após completar, clique em <strong>atualizar dados</strong> para salvar as alterações.
                               <br />
                               O ano estará selecionado quando o fundo do botão mudar de cor. Clique novamente para remover o ano.
                             </p>
