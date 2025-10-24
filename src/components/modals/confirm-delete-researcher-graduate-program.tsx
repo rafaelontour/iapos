@@ -16,20 +16,17 @@ export function ConfirmDeleteResearcherGraduateProgram() {
     const { onOpen, onClose, isOpen, type: typeModal, data: dataModal } = useModal();
     const isModalOpen = isOpen && typeModal === "confirm-delete-researcher-graduate-program";
     const { urlGeralAdm } = useContext(UserContext)
-    const [id_program, setIdProgram] = useState(dataModal && dataModal.graduate_program_id)
-    const [lattes_id, setLattesId] = useState(dataModal && dataModal.lattes_id)
-    useEffect(() => {
-        setIdProgram(dataModal.graduate_program_id || '')
-        setLattesId(dataModal?.lattes_id || '')
-    }, [dataModal]);
-    const handleSubmitDelete = async (researcher_id: string, id_programaa: string) => {
+
+    const handleSubmitDelete = async (id_programa: string | undefined, researcher_id: string | undefined) => {
+
         try {
             const data = [
                 {
-                    graduate_program_id: id_programaa,
+                    graduate_program_id: id_programa,
                     lattes_id: researcher_id,
                 }
             ]
+
             let urlProgram = urlGeralAdm + 'GraduateProgramResearcherRest/Delete'
             const fetchData = async () => {
                 try {
@@ -37,11 +34,7 @@ export function ConfirmDeleteResearcherGraduateProgram() {
                         mode: 'cors',
                         method: 'DELETE',
                         headers: {
-                            'Access-Control-Allow-Origin': '*',
-                            'Access-Control-Allow-Methods': 'POST',
-                            'Access-Control-Allow-Headers': 'Content-Type',
-                            'Access-Control-Max-Age': '3600',
-                            'Content-Type': 'application/json'
+                            "Content-Type": "application/json"
                         },
                         body: JSON.stringify(data),
                     });
@@ -58,11 +51,6 @@ export function ConfirmDeleteResearcherGraduateProgram() {
 
                         onOpen('add-researcher-graduation')
 
-                        const { urlGeralAdm } = useContext(UserContext)
-                        const [researcher, setResearcher] = useState<PesquisadorProps[]>([]);
-
-
-
                     } else {
                         console.error('Erro ao enviar dados para o servidor.');
                         toast("Tente novamente!", {
@@ -73,16 +61,11 @@ export function ConfirmDeleteResearcherGraduateProgram() {
                             },
                         })
                     }
-
                 } catch (err) {
                     console.log(err);
                 }
             };
             fetchData();
-
-
-
-
 
         } catch (error) {
             toast("Erro ao processar requisição", {
@@ -114,8 +97,8 @@ export function ConfirmDeleteResearcherGraduateProgram() {
                     </Button>
 
                     <Button variant={'destructive'} onClick={() => {
-                        if (lattes_id && id_program) {
-                            handleSubmitDelete(lattes_id, id_program);
+                        if (dataModal) {
+                            handleSubmitDelete(dataModal.graduate_program_id, dataModal.researcher_id);
                         }
                     }}>
                         <Trash size={16} className="" />Deletar

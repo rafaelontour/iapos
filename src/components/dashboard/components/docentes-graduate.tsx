@@ -1,4 +1,4 @@
-import { ChevronsUpDown, Info, Maximize2, Plus, RefreshCcw, User, UserIcon, X } from "lucide-react";
+import { AlertCircle, ChevronsUpDown, Info, Maximize2, Plus, RefreshCcw, User, UserIcon, X } from "lucide-react";
 import { Button } from "../../ui/button";
 
 import { CardContent, CardHeader, CardTitle } from "../../ui/card";
@@ -11,7 +11,6 @@ import { useModal } from "../../hooks/use-modal-store";
 
 import { Alert } from "../../ui/alert";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Label } from "../../ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { Input } from "../../ui/input";
@@ -42,6 +41,14 @@ export interface PesquisadorProps {
   years: Array<number>
 }
 
+interface Participacao {
+  graduate_program_id: string,
+  researcher_id: string,
+  year: string,
+  type_: string
+  tag: string | null
+}
+
 export interface PesquisadorProps2 {
   name: string
   lattes_id: string
@@ -53,15 +60,31 @@ interface Props {
   graduate_program_id: string
 }
 
+
 export function DocentesGraduate(props: Props) {
   const [type, setType] = useState('COLABORADOR');
   const { urlGeralAdm, user, urlGeral } = useContext(UserContext);
   const [input, setInput] = useState('')
-  const { onOpen, isOpen, type: typeModal } = useModal();
+  const { onOpen, isOpen, type: typeModal, data: dataModal } = useModal();
   const [researcher, setResearcher] = useState<PesquisadorProps[]>([]);
 
+
+  // Rafael
+
+  const [contColaboradores, setContColaboradores] = useState(0);
+  const [contPermanentes, setContPermanentes] = useState(0);
+
+  // Final Rafael
+
   const urlGetResearcher = `${urlGeralAdm}GraduateProgramResearcherRest/Query?graduate_program_id=${props.graduate_program_id}`;
-  console.log(urlGetResearcher)
+
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Função para buscar todos os pesquisadores de um programa de pós-graduação.
+   * 
+   * @returns {Promise<void>} - Uma promessa que resolve com o estado de sucesso ou falha.
+   */
+  /*******  8453ee06-4689-4b24-84d9-e9ad9f9156a2  *******/
   const fetchDataAll = async () => {
     try {
       const response = await fetch(urlGetResearcher, {
@@ -82,7 +105,26 @@ export function DocentesGraduate(props: Props) {
           ...researcher,
           graduate_program_id: props.graduate_program_id,
         }));
+
         setResearcher(researchersWithGraduateProgramId);
+
+        // Cria uma nova lista ordenando a participation de cada pesquisador
+        const researchersOrdenados = researchersWithGraduateProgramId.map((r) => ({
+          ...r,
+          participation: [...r.participation].sort((a, b) => b.year - a.year) // do maior para o menor
+        }));
+
+        // Usa a posição 0 para contar
+        const colaboradores = researchersOrdenados.filter(
+          (r: any) => r.participation[0]?.type_ === "COLABORADOR"
+        ).length;
+
+        const permanentes = researchersOrdenados.filter(
+          (r: any) => r.participation[0]?.type_ === "PERMANENTE"
+        ).length;
+
+        setContColaboradores(colaboradores);
+        setContPermanentes(permanentes);
       }
     } catch (err) {
       console.log(err);
@@ -113,7 +155,6 @@ export function DocentesGraduate(props: Props) {
 
   const urlGetResearcherSearch = urlGeralAdm + `ResearcherRest/Query?institution_id=&name=&count= `;
 
-  console.log(urlGetResearcherSearch)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -149,24 +190,62 @@ export function DocentesGraduate(props: Props) {
       .toLowerCase();
   };
 
-  const filteredList = researcherSearch.filter((framework) =>
-    normalizeString(framework.name).includes(normalizeString(input))
+  const filteredList = researcherSearch.filter(r => !researcher.some(p => p.researcher_id === r.researcher_id)).filter((r) =>
+    normalizeString(r.name).includes(normalizeString(input))
   );
-  const handleSubmit = async () => {
-    const currentYear = new Date().getFullYear();
 
+  const handleSubmit = async (idPrograma: string, idPesquisador: string) => {
+
+    const existe = researcher.some((r: any) => r.lattes_id === idPesquisador && r.graduate_program_id === idPrograma);
+
+    if (existe) {
+      const urlDelete = urlGeral + "GraduateProgramResearcherRest/Delete"
+      const resposta = await fetch(urlDelete, {
+        mode: 'cors',
+        method: 'DELETE',
+        body: JSON.stringify([
+          {
+            graduate_program_id: idPrograma,
+            lattes_id: idPesquisador
+          }
+        ])
+      })
+
+      if (!resposta.ok) {
+        console.log("resposta: ", resposta.status)
+        toast.error("Tente novamente", { description: "Falha ao remover os registros antigos do pesquisador." })
+        return
+      }
+      console.log("resposta exclusão: ", resposta.status)
+    }
+
+
+    let urlProgram = urlGeralAdm + 'GraduateProgramResearcherRest/Insert'
     try {
-      const data = [
-        {
-          graduate_program_id: props.graduate_program_id,
-          researcher_id: pesquisadoreSelecionado?.researcher_id,
-          year: `${currentYear}`,
-          type_: 'COLABORADOR',
 
+      const dadosEnvio: Participacao[] = []
+
+      anosComoColaborador.forEach((ano) => {
+        const dado: Participacao = {
+          graduate_program_id: idPrograma,
+          researcher_id: idPesquisador,
+          year: ano.ano,
+          type_: "COLABORADOR",
+          tag: null,
         }
-      ]
+        dadosEnvio.push(dado)
+      })
 
-      let urlProgram = urlGeralAdm + 'GraduateProgramResearcherRest/Insert'
+      anosComoPermanente.forEach((ano) => {
+        const dado: Participacao = {
+          graduate_program_id: idPrograma,
+          researcher_id: idPesquisador,
+          year: ano.ano,
+          type_: "PERMANENTE",
+          tag: null,
+        }
+        dadosEnvio.push(dado)
+      })
 
       const fetchData = async () => {
 
@@ -181,7 +260,7 @@ export function DocentesGraduate(props: Props) {
               'Access-Control-Max-Age': '3600',
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(dadosEnvio),
           });
 
           if (response.ok) {
@@ -196,9 +275,10 @@ export function DocentesGraduate(props: Props) {
 
             fetchDataAll()
             setPesquisadorSelecionado(undefined);
+            setAnosComoColaborador([]);
+            setAnosComoPermanente([]);
 
           } else {
-            console.error('Erro ao enviar dados para o servidor.');
             toast("Tente novamente!", {
               description: "Erro ao cadastrar pesquisador ao programa",
               action: {
@@ -234,8 +314,7 @@ export function DocentesGraduate(props: Props) {
   const [types, setTypes] = useState(researcher.map((props) => props.type_));
   const [selectedYears, setSelectedYears] = useState(
     researcher.map((props) => props.years ?? []) // Garantir um array vazio caso 'props.years' seja undefined
-  );
-
+  )
 
   useEffect(() => {
 
@@ -244,296 +323,82 @@ export function DocentesGraduate(props: Props) {
 
   }, [researcher]);
 
-  const handleUpdateData = (index: number, id_r: string) => {
-    const yearsString = ''
-    console.log(`Atualizar dados: Tipo: ${types[index]}, Researcher ID: ${researcher[index].graduate_program_id}, Anos: ${yearsString}`);
-    // Implemente aqui a lógica para atualizar os dados com base no tipo, graduate_program_id e anos selecionados
-
-
-    try {
-      const data = [
-        {
-          graduate_program_id: props.graduate_program_id,
-          lattes_id: id_r,
-          year: selectedYears[index].join(';'),
-          type_: types[index],
-
-        }
-      ]
-
-      let urlProgram = urlGeralAdm + 'GraduateProgramResearcherRest/Update'
-
-      const fetchData = async () => {
-
-        try {
-          const response = await fetch(urlProgram, {
-            mode: 'cors',
-            method: 'PUT',
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'PUT',
-              'Access-Control-Allow-Headers': 'Content-Type',
-              'Access-Control-Max-Age': '3600',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data),
-          });
-
-          if (response.ok) {
-
-            toast("Dados enviados com sucesso", {
-              description: "Pesquisador atualizado no programa de pós-graduação",
-              action: {
-                label: "Fechar",
-                onClick: () => console.log("Undo"),
-              },
-            })
-
-            fetchDataAll()
-            setPesquisadorSelecionado(undefined);
-
-          } else {
-            console.error('Erro ao enviar dados para o servidor.');
-            toast("Tente novamente!", {
-              description: "Erro ao atualizar pesquisador no programa",
-              action: {
-                label: "Fechar",
-                onClick: () => console.log("Undo"),
-              },
-            })
-          }
-
-        } catch (err) {
-          console.log(err);
-        }
-      };
-      fetchData();
-
-    } catch (error) {
-      toast("Erro ao processar requisição", {
-        description: "Tente novamente!",
-        action: {
-          label: "Fechar",
-          onClick: () => console.log("Undo"),
-        },
-      })
-    }
-
-  };
-
-  const handleTypeChange = (index: number, value: string) => {
-    const newTypes = [...types];
-    newTypes[index] = value;
-    setTypes(newTypes);
-  };
-
-  const toggleYearSelection = (index: number, year: number) => {
-    const newSelectedYears = [...selectedYears];
-    if (newSelectedYears[index].includes(year)) {
-      newSelectedYears[index] = newSelectedYears[index].filter((y) => y !== year);
-    } else {
-      newSelectedYears[index].push(year);
-    }
-    setSelectedYears(newSelectedYears);
-  };
-
-  const handleYearsChange = (index: number, years: string[]) => {
-    const newSelectedYears = [...selectedYears];
-    // Converte o array de strings para números
-    newSelectedYears[index] = years.map((year) => parseInt(year));
-    setSelectedYears(newSelectedYears);
-  };
-
-
   const [nomePesquisador, setNomePesquisador] = useState('');
   const [lattesID, setLattesID] = useState('');
 
-  const handleSubmitPesquisador = async () => {
+  const handleSubmitPesquisador = async (idPrograma: string, idPesquisador: string) => {
 
-    const docId = uuidv4();
-
-    try {
-      const data = [
+    let urlDelete = urlGeralAdm + '/GraduateProgramResearcherRest/Delete'
+    const resposta = await fetch(urlDelete, {
+      mode: 'cors',
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([
         {
-          researcher_id: docId,
-          name: nomePesquisador,
-          lattes_id: lattesID,
-          institution_id: import.meta.env.VITE_EXTERNAL_INSTITUTION_ID,
+          graduate_program_id: idPrograma,
+          lattes_id: idPesquisador
         }
-      ]
+      ])
+    })
 
-      console.log(data)
-
-      let urlProgram = urlGeralAdm + '/ResearcherRest/Insert'
-
-      const fetchData = async () => {
-
-        if (nomePesquisador.length != 0 && lattesID.length > 13) {
-          try {
-            const response = await fetch(urlProgram, {
-              mode: 'cors',
-              method: 'POST',
-              headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Max-Age': '3600',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data),
-            });
-
-            if (response.ok) {
-
-
-              toast("Dados enviados com sucesso", {
-                description: "Pesquisador cadastrado na instituição",
-                action: {
-                  label: "Fechar",
-                  onClick: () => console.log("Undo"),
-                },
-              })
-
-              const currentYear = new Date().getFullYear();
-
-              try {
-                const data = [
-                  {
-                    graduate_program_id: props.graduate_program_id,
-                    lattes_id: lattesID,
-                    year: `${currentYear}`,
-                    type_: 'COLABORADOR',
-
-                  }
-                ]
-
-
-
-                let urlProgram = urlGeralAdm + 'GraduateProgramResearcherRest/Insert/Lattes'
-
-
-                const fetchData = async () => {
-
-                  try {
-                    const response = await fetch(urlProgram, {
-                      mode: 'cors',
-                      method: 'POST',
-                      headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'POST',
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Max-Age': '3600',
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify(data),
-                    });
-
-                    if (response.ok) {
-
-                      toast("Dados enviados com sucesso", {
-                        description: "Pesquisador adicionado no programa de pós-graduação",
-                        action: {
-                          label: "Fechar",
-                          onClick: () => console.log("Undo"),
-                        },
-                      })
-
-                      setLattesID('')
-
-                      setNomePesquisador('')
-
-                      fetchDataAll()
-                      setPesquisadorSelecionado(undefined);
-
-                    } else {
-                      console.error('Erro ao enviar dados para o servidor.');
-                      toast("Tente novamente!", {
-                        description: "Erro ao cadastrar pesquisador ao programa",
-                        action: {
-                          label: "Fechar",
-                          onClick: () => console.log("Undo"),
-                        },
-                      })
-                    }
-
-                  } catch (err) {
-                    console.log(err);
-                  }
-                };
-                fetchData();
-
-
-
-              } catch (error) {
-                toast("Erro ao processar requisição", {
-                  description: "Tente novamente!",
-                  action: {
-                    label: "Fechar",
-                    onClick: () => console.log("Undo"),
-                  },
-                })
-              }
-
-
-            } else {
-              if (response.status === 400) {
-                toast("Pesquisador já existe", {
-                  description: "Tente novamente",
-                  action: {
-                    label: "Fechar",
-                    onClick: () => console.log("Undo"),
-                  },
-                });
-              } else {
-                toast("Erro ao enviar os dados ao servidor", {
-                  description: "Tente novamente",
-                  action: {
-                    label: "Fechar",
-                    onClick: () => console.log("Undo"),
-                  },
-                });
-              }
-            }
-
-          } catch (err) {
-            console.log(err);
-          }
-        } else {
-          if (nomePesquisador.length == 0 && lattesID.length == 0) {
-            toast("Parece que os campos estão vazios", {
-              description: "Preencha os campos nome do pesquisador e Lattes Id",
-              action: {
-                label: "Fechar",
-                onClick: () => console.log("Undo"),
-              },
-            })
-          } else if (lattesID.length < 14) {
-            toast("Parece que o Lattes Id está incorreto ou não preenchido", {
-              description: "O Lattes ID teve conter 13 números",
-              action: {
-                label: "Fechar",
-                onClick: () => console.log("Undo"),
-              },
-            })
-          } else if (nomePesquisador.length == 0) {
-            toast("Preencha o nome do pesquisador", {
-              description: "Parece que o campo está vazio",
-              action: {
-                label: "Fechar",
-                onClick: () => console.log("Undo"),
-              },
-            })
-          }
-        }
-      };
-      fetchData();
-
-
-    } catch (error) {
-      console.error('Erro ao processar a requisição:', error);
+    if (resposta.status !== 204) {
+      toast.error("Tente novamente", { description: "Falha ao remover os registros antigos do pesquisador." })
+      return
     }
-  };
 
+    const dadosEnvio: Participacao[] = []
+
+    anosComoColaborador.forEach((ano) => {
+      const dado: Participacao = {
+        graduate_program_id: idPrograma,
+        researcher_id: idPesquisador,
+        year: ano.ano,
+        type_: "COLABORADOR",
+        tag: null,
+      }
+      dadosEnvio.push(dado)
+    })
+
+    anosComoPermanente.forEach((ano) => {
+      const dado: Participacao = {
+        graduate_program_id: idPrograma,
+        researcher_id: idPesquisador,
+        year: ano.ano,
+        type_: "PERMANENTE",
+        tag: null,
+      }
+      dadosEnvio.push(dado)
+    })
+
+    console.log("dadosEnvio: ", dadosEnvio)
+
+    const atualizarParticipacao = async () => {
+
+      let urlProgram = urlGeralAdm + '/GraduateProgramResearcherRest/Insert'
+
+      const resposta = await fetch(urlProgram, {
+        mode: 'cors',
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dadosEnvio),
+      })
+
+      if (!resposta.ok) {
+        toast.error("Erro ao atualizar dados")
+        return
+      }
+
+      toast.success("Dados atualizados com sucesso")
+
+      fetchDataAll()
+    }
+
+    atualizarParticipacao()
+  }
 
   const [tab, setTab] = useState('all')
 
@@ -747,6 +612,70 @@ export function DocentesGraduate(props: Props) {
     setTipoOrientacao(data[0].type);
   }
 
+  // Parte de colaborador e permanente
+
+  const [anosComoPermanente, setAnosComoPermanente] = useState<{ tipo: string, ano: string }[]>([]);
+  const [anosComoColaborador, setAnosComoColaborador] = useState<{ tipo: string, ano: string }[]>([]);
+
+  const anoAtual = new Date().getFullYear();
+  const anos = Array.from({ length: anoAtual - 2016 + 1 }, (_, i) => anoAtual - i);
+
+  function adicionarAnoComoColaborador(ano: string) {
+
+    const existe = anosComoColaborador.some(a => a.tipo === 'COLABORADOR' && a.ano === ano);
+
+    if (existe) {
+      // remove o que for igual
+      setAnosComoColaborador(anosComoColaborador.filter(a => !(a.tipo === 'COLABORADOR' && a.ano === ano)));
+    } else {
+      // adiciona se não existir
+      setAnosComoColaborador([...anosComoColaborador, { tipo: 'COLABORADOR', ano }]);
+    }
+
+    console.log("anosComoColaborador: ", anosComoColaborador)
+  }
+
+  function adicionarAnoComoPermanente(ano: string) {
+    const existe = anosComoPermanente.some(a => a.tipo === 'PERMANENTE' && a.ano === ano);
+
+    if (existe) {
+      // remove o que for igual
+      setAnosComoPermanente(anosComoPermanente.filter(a => !(a.tipo === 'PERMANENTE' && a.ano === ano)));
+    } else {
+      // adiciona se não existir
+      setAnosComoPermanente([...anosComoPermanente, { tipo: 'PERMANENTE', ano }]);
+    }
+  }
+
+  function preencherDatasParticipacao(pesquisador: any) {
+    if (!pesquisador || !Array.isArray(pesquisador.participation)) return;
+
+    const colaboradores: { tipo: string; ano: string }[] = [];
+    const permanentes: { tipo: string; ano: string }[] = [];
+
+    for (const p of pesquisador.participation) {
+      // ignora years nulos/undefined
+      if (p.year == null) continue;
+
+      const anoStr = String(p.year);
+
+      if (p.type_ === "COLABORADOR") {
+        colaboradores.push({ tipo: "COLABORADOR", ano: anoStr });
+      } else if (p.type_ === "PERMANENTE") {
+        permanentes.push({ tipo: "PERMANENTE", ano: anoStr });
+      }
+    }
+
+    // remover duplicatas (por ano) caso necessário
+    const dedupe = (arr: { tipo: string; ano: string }[]) =>
+      Array.from(
+        new Map(arr.map((item) => [item.ano, item])).values()
+      );
+
+    setAnosComoColaborador(dedupe(colaboradores));
+    setAnosComoPermanente(dedupe(permanentes));
+  }
+
   return (
     <div>
       <div>
@@ -761,7 +690,7 @@ export function DocentesGraduate(props: Props) {
               </CardHeader>
 
               <CardContent>
-                <div className="text-2xl font-bold">{permanenteCount}</div>
+                <div className="text-2xl font-bold">{contPermanentes}</div>
                 <p className="text-xs text-muted-foreground">
                   registrados
                 </p>
@@ -776,7 +705,7 @@ export function DocentesGraduate(props: Props) {
                 <User className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{colaboradorCount}</div>
+                <div className="text-2xl font-bold">{contColaboradores}</div>
                 <p className="text-xs text-muted-foreground">
                   registrados
                 </p>
@@ -795,7 +724,6 @@ export function DocentesGraduate(props: Props) {
                   <div className="flex gap-3 items-center ">
                     <TabsList>
                       <TabsTrigger value="all" onClick={() => setTab('all')}>Docentes da instituição</TabsTrigger>
-                      <TabsTrigger value="2" onClick={() => setTab('2')}>Docentes externos</TabsTrigger>
                     </TabsList>
                   </div>
                 </div>
@@ -804,8 +732,9 @@ export function DocentesGraduate(props: Props) {
               <CardContent className="mt-6">
                 <TabsContent value="all">
                   <div className="gap-6 flex  items-end">
-                    <div className="flex flex-col space-y-1.5 w-full flex-1">
-                      <Label htmlFor="name">Pesquisador da instituição</Label>
+                    <div className="flex flex-col gap-2 space-y-1.5 w-full flex-1">
+                      <Label htmlFor="name" className="text-lg">Pesquisador da instituição</Label>
+                      <p className="text-sm">Selecione um pesquisador para adicionar seus anos de participação</p>
 
                       <Dialog open={openPopo2} onOpenChange={setOpenPopo2}>
                         <DialogTrigger className="w-full">
@@ -866,25 +795,87 @@ export function DocentesGraduate(props: Props) {
                       </Dialog>
                     </div>
 
-                    <Button onClick={() => handleSubmit()}><Plus size={16} />Adicionar</Button>
-
                   </div>
-                </TabsContent>
 
-                <TabsContent value="2">
-                  <div className="flex gap-6 items-end">
-                    <div className="flex flex-col space-y-1.5 w-full flex-1">
-                      <Label htmlFor="name">Nome completo</Label>
-                      <Input value={nomePesquisador} onChange={(e) => setNomePesquisador(e.target.value)} type="text" />
-                    </div>
+                  {
+                    pesquisadoreSelecionado && (
+                      <div className="flex flex-col gap-4 w-full mt-4 bg-zinc-300 border border-gray-300 p-5 rounded-md">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-[22px]">Anos de participação</p>
+                          <span title="Fechar" className="bg-red-500 rounded-md p-2">
+                            <X color="white" className="hover:cursor-pointer" size={19} onClick={() => { setAnosComoColaborador([]); setAnosComoPermanente([]); setPesquisadorSelecionado(undefined); }} />
+                          </span>
+                        </div>
 
-                    <div className="flex flex-col space-y-1.5 w-full flex-1">
-                      <Label htmlFor="name">Lattes Id</Label>
-                      <Input value={lattesID} onChange={(e) => setLattesID(e.target.value)} type="text" />
-                    </div>
+                        <div className="flex items-stretch gap-2 w-fit -mt-1 rounded-md border bg-white border-gray-300 relative overflow-hidden">
+                          <span className="flex justify-center items-center text-white w-20 bg-eng-blue self-stretch">
+                            <AlertCircle size={20} />
+                          </span>
 
-                    <Button onClick={() => handleSubmitPesquisador()} className="text-white dark:text-white"><Plus size={16} className="" /> Adicionar</Button>
-                  </div>
+                          <p className="p-2 text-md">
+                            Marque os anos nos quais o pesquisador participou como COLABORADOR ou PERMANENTE. Após completar, clique em <strong>salvar participação</strong> para enviar os dados.
+                            O ano estará selecionado quando o fundo do botão mudar de cor. Clique novamente para remover o ano.
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col w-full gap-4 border border-gray-300 p-5 rounded-md">
+                          <div className="flex flex-col gap-3 mb-1">
+                            <p className="text-[17px]">Anos de participação de <span className="text-eng-dark-blue">{pesquisadoreSelecionado.name.split(' ')[0]}</span> como <span className="text-green-700">COLABORADOR</span></p>
+
+                            <div className="flex items-center gap-2">
+                              {
+                                anos.map((ano, index) => (
+                                  <div
+                                    key={index}
+                                    className={`
+                                        border border-gray-300 flex items-center
+                                        px-3 py-1 rounded-md hover:cursor-pointer
+                                        ${anosComoColaborador.some(a => a.ano === ano.toString()) ? 'bg-green-700 text-white' : 'bg-white text-black'}
+                                      `}
+                                    onClick={() => adicionarAnoComoColaborador(ano.toString())}
+                                  >
+                                    {ano}
+                                  </div>
+                                ))
+                              }
+                            </div>
+                          </div>
+
+                          <hr />
+
+                          <div className="flex flex-col gap-3">
+                            <p className="text-[17px]">Anos de participação de <span className="text-eng-dark-blue">{pesquisadoreSelecionado.name.split(' ')[0]}</span> como <span className="text-blue-700">PERMANENTE</span></p>
+
+                            <div className="flex items-center gap-2">
+                              {
+                                anos.map((ano, index) => (
+                                  <div
+                                    key={index}
+                                    className={`
+                                        border border-gray-300 flex items-center
+                                        px-3 py-1 rounded-md hover:cursor-pointer
+                                        ${anosComoPermanente.some(a => a.ano === ano.toString()) ? 'bg-blue-700 text-white' : 'bg-white text-black'}
+                                      `}
+                                    onClick={() => adicionarAnoComoPermanente(ano.toString())}
+                                  >
+                                    {ano}
+                                  </div>
+                                ))
+                              }
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => {
+                            if (pesquisadoreSelecionado) handleSubmit(props.graduate_program_id, pesquisadoreSelecionado?.researcher_id)
+                          }}
+                        >
+                          <Plus size={16} />Salvar Participação
+                        </Button>
+                      </div>
+                    )
+                  }
                 </TabsContent>
               </CardContent>
             </Alert>
@@ -893,7 +884,11 @@ export function DocentesGraduate(props: Props) {
         </CardContent>
 
         <div className="px-8 pb-8">
-          <Accordion type="single" collapsible className="flex flex-col gap-4">
+          <Accordion
+            type="single"
+            collapsible
+            className="flex flex-col gap-4"
+          >
             <div className="border bg-white dark:bg-neutral-950  rounded-md px-6 h-12 flex items-center gap-1 border-neutral-200 dark:border-neutral-800">
               <MagnifyingGlass size={16} />
               <Input
@@ -931,63 +926,108 @@ export function DocentesGraduate(props: Props) {
                           <Maximize2 size={16} />
                         </Button>
 
-                        <Button size={'icon'} onClick={() => onOpen('confirm-delete-researcher-graduate-program', { lattes_id: props.lattes_id, graduate_program_id: props.graduate_program_id, nome: props.name })} variant={'destructive'} className=" text-white h-10 w-10 dark:text-white">
+                        <Button
+                          size={'icon'}
+                          onClick={() => {
+                            dataModal.graduate_program_id = props.graduate_program_id
+                            dataModal.researcher_id = props.researcher_id
+                            onOpen('confirm-delete-researcher-graduate-program', {
+                              researcher_id: props.researcher_id, graduate_program_id: props.graduate_program_id
+                            })
+                          }}
+                          variant={'destructive'}
+                          className=" text-white h-10 w-10 dark:text-white"
+                        >
                           <Trash size={16} />
                         </Button>
                       </div>
 
-                      <AccordionTrigger onClick={() => { buscarOrientacoesPorDocente(props.researcher_id, props.graduate_program_id) }}></AccordionTrigger>
+                      <AccordionTrigger
+                        onClick={() => {
+                          buscarOrientacoesPorDocente(props.researcher_id, props.graduate_program_id)
+                          setAnosComoColaborador([]);
+                          setAnosComoPermanente([]);
+                          const pesquisadorAccordion = researcher.find((pesquisa) => pesquisa.researcher_id === props.researcher_id);
+                          preencherDatasParticipacao(pesquisadorAccordion);
+                        }}
+                      ></AccordionTrigger>
                     </div>
                   </div>
 
                   <AccordionContent className="p-0">
                     <div className="flex flex-col w-full gap-4 mt-4">
                       <div className="flex gap-3">
-                        <div className="grid gap-4 w-full">
-                          <Label htmlFor="name">Tipo</Label>
-                          <Select
-                            defaultValue={types[index]}
-                            value={types[index]}
-                            onValueChange={(value) => handleTypeChange(index, value)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue className="w-full" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="COLABORADOR">Colaborador</SelectItem>
-                              <SelectItem value="PERMANENTE">Permanente</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="grid gap-4 w-full">
-                          <Label htmlFor="years">Anos de participação</Label>
-                          {selectedYears[index] ? (
-                            <ToggleGroup
-                              type="multiple"
-                              className="gap-3 justify-start w-fit"
-                              value={selectedYears[index].map(String)}
-                              onValueChange={(years) => handleYearsChange(index, years)}
+                        <div className="flex flex-col gap-4 w-full">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-[22px]">Anos de participação</p>
+                            <Button
+                              onClick={() => handleSubmitPesquisador(props.graduate_program_id, props.researcher_id)}
                             >
-                              {years.map((year) => (
-                                <ToggleGroupItem
-                                  key={year}
-                                  variant={'outline'}
-                                  value={year.toString()}
-                                  aria-label={`Toggle ${year}`}
-                                >
-                                  {year}
-                                </ToggleGroupItem>
-                              ))}
-                            </ToggleGroup>
-                          ) : (
-                            <p className="text-gray-500">Nenhum ano disponível</p>
-                          )}
+                              <RefreshCcw size={16} /> Atualizar dados
+                            </Button>
+                          </div>
+
+
+                          <div className="flex items-center gap-2 w-fit -mt-1 rounded-md border border-gray-300 overflow-hidden">
+                            <span className="flex justify-center items-center text-white h-full w-10 bg-eng-blue">
+                              <AlertCircle size={17} />
+                            </span>
+                            <p className="p-2 pr-3 text-md">
+                              Marque os anos nos quais o pesquisador participou como COLABORADOR ou PERMANENTE. Após completar, clique em atualizar dados para salvar as alterações.
+                              <br />
+                              O ano estará selecionado quando o fundo do botão mudar de cor. Clique novamente para remover o ano.
+                            </p>
+                          </div>
+
+                          <div className="flex flex-col w-full gap-4 border border-gray-300 p-5 rounded-md">
+                            <div className="flex flex-col gap-3 mb-1">
+                              <p className="text-[17px]">Anos de participação de <span className="text-eng-dark-blue">{props.name.split(' ')[0]}</span> como <span className="text-green-700">COLABORADOR</span></p>
+
+                              <div className="flex items-center gap-2">
+                                {
+                                  anos.map((ano, index) => (
+                                    <div
+                                      key={index}
+                                      className={`
+                                        border border-gray-300 flex items-center
+                                        px-3 py-1 rounded-md hover:cursor-pointer
+                                        ${anosComoColaborador.some(a => a.ano === ano.toString()) ? 'bg-green-700 text-white' : 'bg-white text-black'}
+                                      `}
+                                      onClick={() => adicionarAnoComoColaborador(ano.toString())}
+                                    >
+                                      {ano}
+                                    </div>
+                                  ))
+                                }
+                              </div>
+                            </div>
+
+                            <hr />
+
+                            <div className="flex flex-col gap-3">
+                              <p className="text-[17px]">Anos de participação de <span className="text-eng-dark-blue">{props.name.split(' ')[0]}</span> como <span className="text-blue-700">PERMANENTE</span></p>
+
+                              <div className="flex items-center gap-2">
+                                {
+                                  anos.map((ano, index) => (
+                                    <div
+                                      key={index}
+                                      className={`
+                                        border border-gray-300 flex items-center
+                                        px-3 py-1 rounded-md hover:cursor-pointer
+                                        ${anosComoPermanente.some(a => a.ano === ano.toString()) ? 'bg-blue-700 text-white' : 'bg-white text-black'}
+                                      `}
+                                      onClick={() => adicionarAnoComoPermanente(ano.toString())}
+                                    >
+                                      {ano}
+                                    </div>
+                                  ))
+                                }
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <Button
-                          onClick={() => handleUpdateData(index, props.lattes_id)}
-                        >
-                          <RefreshCcw size={16} /> Atualizar dados
-                        </Button>
+
                       </div>
 
                       <hr />

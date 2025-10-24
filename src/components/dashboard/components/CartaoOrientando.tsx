@@ -300,8 +300,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 <p className="font-semibold text-md ml-2">Tags: </p>
                                 <div className="flex items-center gap-1">
                                     {
-                                        o.orientacaoC.tags.map((tag: Tag) => (
+                                        o.orientacaoC.tags.map((tag: Tag, index) => (
                                             <div
+                                                key={index}
                                                 className={`
                                                 px-2 py-1 rounded-md text-white text-xs h-fit-w-fit
                                             `}
@@ -321,7 +322,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                     }
                 </div>
 
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-4 mt-4">
                     <div
                         className={`flex items-center w-[120px] full rounded-md bg-contain bg-no-repeat bg-center`}
                         style={{
