@@ -559,7 +559,7 @@ export function DocentesGraduate(props: Props) {
       supervisor_researcher_id: idOrientador,
       student_researcher_id: idOrientando,
       co_supervisor_researcher_id: idCoorientador,
-      tag_ids: tags.map(tag => tag.id)
+      tag_ids: tagsSelecionadas.map(tag => tag.id)
     }
 
     const response = await adicionarOrientacao(orientacao)
