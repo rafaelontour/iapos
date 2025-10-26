@@ -12,7 +12,7 @@ import { getTagsService } from "../../../service/tags";
 import { toast } from "sonner";
 
 interface OrientacaoProps {
-    co_supervisor_researcher_id: string,
+    co_supervisor_ids: string[],
     created_at: string,
     deleted_at: string,
     done_date_conclusion: string,
@@ -83,7 +83,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
         return `${dia}/${mes}/${ano}`;
     }
-
 
     const calcularData = () => {
         if (o.orientacaoC.type === "PROJETO") {
@@ -157,7 +156,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     useEffect(() => {
         buscarTags();
-    }, [o])
+    }, [openDialog])
 
     function buscarTags() {
         const t = getTagsService();
@@ -255,20 +254,22 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
             supervisor_researcher_id: o.orientacaoC.supervisor_researcher_id,
             student_researcher_id: o.orientacaoC.student_researcher_id,
-            co_supervisor_researcher_id: idCoorientador ? idCoorientador : o.orientacaoC.co_supervisor_researcher_id,
+            co_supervisor_ids: idCoorientador ? [idCoorientador] : o.orientacaoC.co_supervisor_ids[0],
 
             tag_ids: tagsSelecionadas.map((tag: Tag) => tag.id)
         }
 
+        console.log("Orientação para salvar: ", orientacao)
+
         const resposta = await atualizarOrientacao(orientacao)
 
-        if (resposta == 200) {
+        if (resposta === 200) {
             limparCampos();
             o.buscarOrientacoes(o.pesquisador.researcher_id, o.orientacaoC.graduate_program_id);
-            alert("Orientação salva com sucesso!");
+            toast.success("Orientação salva com sucesso!");
             setOpenDialog(!openDialog);
         } else {
-            alert("Falha ao atualizar orientação!");
+            toast.error("Falha ao atualizar orientação!");
         }
     }
 
@@ -278,10 +279,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         if (resposta == 200) {
             limparCampos();
             o.buscarOrientacoes(o.pesquisador.researcher_id, o.orientacaoC.graduate_program_id);
+            toast.success("Orientação excluida com sucesso!");
         }
     }
 
     function limparCampos() {
+        setTagsSelecionadas([])
         setIdOrientando(null)
         setIdOrientador(null)
         setIdCoorientador(null)
@@ -398,7 +401,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                     <div className="flex items-center justify-between gap-0">
                                         <label className="text-lg font-bold" htmlFor="name">Coorientador: </label>
                                         <select
-                                            defaultValue={o.orientacaoC.co_supervisor_researcher_id}
+                                            defaultValue={o.orientacaoC.co_supervisor_ids[0]}
                                             className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
                                             onChange={(event) => {
                                                 setIdCoorientador(event.target.value)
@@ -654,9 +657,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 <button
                                     className="bg-[#559FB8] text-white px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
                                     onClick={(e) => {
-                                        console.log("dataRealizadaDefesaFinal: " + dataRealizadaDefesaFinal);
-                                        console.log("dataRealizadaQualificacao: " + dataRealizadaQualificacao);
-                                        console.log("dataPrevisaoDefesa: " + dataPrevisaoDefesa);
+                                        // console.log("dataRealizadaDefesaFinal: " + dataRealizadaDefesaFinal);
+                                        // console.log("dataRealizadaQualificacao: " + dataRealizadaQualificacao);
+                                        // console.log("dataPrevisaoDefesa: " + dataPrevisaoDefesa);
                                         if (dataRealizadaDefesaFinal != null && (dataRealizadaQualificacao == "" || dataRealizadaDefesa == "")) {
                                             alert("Corrija os dados e tente novamente!");
                                             return;

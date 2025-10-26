@@ -536,6 +536,8 @@ export function DocentesGraduate(props: Props) {
   async function buscarOrientacoesPorDocente(idDocente: string, idPrograma: string) {
     const o = await getOrientacoesPorDocente(idDocente, idPrograma);
 
+    console.log("Orientacoes: ", o)
+
     setOrientacoes(o)
   }
 
@@ -558,13 +560,15 @@ export function DocentesGraduate(props: Props) {
       done_date_conclusion: dataRealizadaDefesaFinal,
       supervisor_researcher_id: idOrientador,
       student_researcher_id: idOrientando,
-      co_supervisor_researcher_id: idCoorientador,
+      co_supervisor_ids: [idCoorientador],
       tag_ids: tagsSelecionadas.map(tag => tag.id)
     }
 
+    console.log("Orientaçao para salvar: ", orientacao)
+
     const response = await adicionarOrientacao(orientacao)
 
-    if (response.status == 201) {
+    if (response.status === 201) {
       buscarOrientacoesPorDocente(idOrientador, props.graduate_program_id);
       limparCampos();
       toast.success("Orientação adicionada com sucesso!");
@@ -735,7 +739,7 @@ export function DocentesGraduate(props: Props) {
 
               <CardContent className="mt-6">
                 <TabsContent value="all">
-                  <div className="gap-6 flex  items-end">
+                  <div className="gap-6 flex items-end">
                     <div className="flex flex-col gap-2 space-y-1.5 w-full flex-1">
                       <Label htmlFor="name" className="text-lg">Pesquisador da instituição</Label>
                       <p className="text-sm">Selecione um pesquisador para adicionar seus anos de participação</p>
@@ -803,7 +807,7 @@ export function DocentesGraduate(props: Props) {
 
                   {
                     pesquisadoreSelecionado && (
-                      <div className="flex flex-col gap-4 w-full mt-4 bg-zinc-300 border border-gray-300 p-5 rounded-md">
+                      <div className="flex flex-col gap-4 w-full mt-4 bg-zinc-300 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-200 p-5 rounded-md">
                         <div className="flex items-center justify-between gap-2">
                           <p className="text-[22px]">Anos de participação</p>
                           <span title="Fechar" className="bg-red-500 rounded-md p-2 hover:cursor-pointer">
@@ -816,7 +820,7 @@ export function DocentesGraduate(props: Props) {
                             <AlertCircle size={20} />
                           </span>
 
-                          <p className="p-2 text-md">
+                          <p className="p-2 text-md dark:text-black">
                             Marque os anos nos quais o pesquisador participou como COLABORADOR ou PERMANENTE. Após completar, clique em <strong>salvar participação</strong> para enviar os dados.
                             O ano estará selecionado quando o fundo do botão mudar de cor. Clique novamente para remover o ano.
                           </p>
