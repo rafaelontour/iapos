@@ -1046,7 +1046,6 @@ export function DocentesGraduate(props: Props) {
                               <TabsTrigger value="projetos_defendidos">Projetos Defendidos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
                               <TabsTrigger value="qualificados">Qualificados &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
                               <TabsTrigger value="concluidos">Concluídos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
-                              <TabsTrigger value="trancado">Trancado &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-red-500 text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
                             </TabsList>
 
                             <Dialog open={openDialogAdicionar} onOpenChange={setOpenDialogAdicionar}>
@@ -1194,7 +1193,7 @@ export function DocentesGraduate(props: Props) {
                                       </label>
 
                                       <select
-                                        className="w-fullmin-w-fit border-[3px] ml-3 py-2 px-4 rounded-md"
+                                        className="w-full min-w-fit border-[3px] ml-3 py-2 px-4 rounded-md"
                                         defaultValue="" // evita ficar com um valor preso
                                         onChange={(event) => {
                                           const obj = JSON.parse(event.target.value);
@@ -1222,14 +1221,14 @@ export function DocentesGraduate(props: Props) {
 
                                       {tagsSelecionadas.length > 0 && (
                                         <div className="flex items-center w-1/2 gap-2">
-                                          <p className="font-bold text-xl whitespace-nowrap">Tags selecionadas:</p>
+                                          <p className="font-bold text-lg whitespace-nowrap">Tags selecionadas:</p>
                                           <div className="flex border border-gray-300 rounded-md p-3 overflow-x-auto gap-2">
                                             {tagsSelecionadas.map((tag) => (
                                               <div
                                                 key={tag.id}
                                                 className="flex items-center rounded-sm border overflow-hidden border-gray-300 flex-shrink-0 min-w-max"
                                               >
-                                                <span className="bg-red-400 p-1 h-full flex items-center gap-2 w-fit">
+                                                <span title="Remover tag" className="bg-red-400 p-1 h-full flex items-center gap-2 w-fit">
                                                   <X
                                                     onClick={() =>
                                                       setTagsSelecionadas((tagsSelecionadas) =>
@@ -1484,19 +1483,6 @@ export function DocentesGraduate(props: Props) {
                             )}
                           </TabsContent>
 
-                          <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="trancado">
-                            {orientacoes?.filter((o: any) => o.type === "FINALIZADO").length > 0 ? (
-                              orientacoes
-                                .filter((o: any) => o.type === "FINALIZADO")
-                                .map((o: any) => (
-                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
-                                ))
-                            ) : (
-                              <p className="p-3 animate-pulse">
-                                Nenhum orientando com atividade pausada.
-                              </p>
-                            )}
-                          </TabsContent>
 
                         </Tabs>
 

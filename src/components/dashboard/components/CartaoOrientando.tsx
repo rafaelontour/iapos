@@ -8,6 +8,8 @@ import { Configuracao } from "../dados-pos-graduacao/dados-pos-graduacao";
 import { getConfiguracoes } from "../../../service/configuracaoDataPosGraduacao";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import { Tag } from "../dados-pos-graduacao/Tags";
+import { getTagsService } from "../../../service/tags";
+import { toast } from "sonner";
 
 interface OrientacaoProps {
     co_supervisor_researcher_id: string,
@@ -135,6 +137,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     const [configDataSelecionada, setConfigDataSelecionada] = useState<Configuracao | null>(null)
 
+    const [tags, setTags] = useState<Tag[]>([])
+    const [tagsSelecionadas, setTagsSelecionadas] = useState<Tag[]>([])
+
     useEffect(() => {
         if (dataEntrada !== null) {
             gerarDatas()
@@ -149,6 +154,21 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             setDocentesPosGraduacao(response)
         })
     }, [])
+
+    useEffect(() => {
+        buscarTags();
+    }, [o])
+
+    function buscarTags() {
+        const t = getTagsService();
+
+        t.then((response) => {
+            setTags(response)
+        })
+
+        const tagsDaOrientacao = tags.filter((tag: Tag) => o.orientacaoC.tags.some((tagOrientacao: Tag) => tagOrientacao.id === tag.id));
+        setTagsSelecionadas(tagsDaOrientacao);
+    }
 
     function buscarDatas() {
         const datas = getConfiguracoes();
@@ -235,7 +255,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
             supervisor_researcher_id: o.orientacaoC.supervisor_researcher_id,
             student_researcher_id: o.orientacaoC.student_researcher_id,
-            co_supervisor_researcher_id: idCoorientador ? idCoorientador : o.orientacaoC.co_supervisor_researcher_id
+            co_supervisor_researcher_id: idCoorientador ? idCoorientador : o.orientacaoC.co_supervisor_researcher_id,
+
+            tag_ids: tagsSelecionadas.map((tag: Tag) => tag.id)
         }
 
         const resposta = await atualizarOrientacao(orientacao)
@@ -290,7 +312,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     }
 
     return (
-        <div className="flex flex-col items-center gap-5 border rounded-md shadow-md p-5 h-fit relative overflow-hidden">
+        <div className={`flex flex-col items-center ${o.orientacaoC.tags.length > 0 ? "gap-5" : "gap-9"} border rounded-md shadow-md p-5 h-fit relative overflow-hidden`}>
             <div className="flex flex-col w-full gap-6">
                 <div className="flex items-center gap-1">
 
@@ -322,15 +344,15 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                     }
                 </div>
 
-                <div className="flex gap-4 mt-4">
+                <div className={`flex gap-5 ${o.orientacaoC.tags.length > 0 ? "mt-4" : "mt-0 gap-8"} `}>
                     <div
                         className={`flex items-center w-[120px] full rounded-md bg-contain bg-no-repeat bg-center`}
                         style={{
                             backgroundImage: nomeDiscente ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?name=${encodeURIComponent(nomeDiscente)})` : "",
                             boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
                         }}
-                    >
-                    </div>
+                    />
+
                     <div className="flex flex-col justify-center gap-2 h-[150px]">
                         <p className="font-bold text-[17px]">{nomeDiscente}</p>
                         <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
@@ -401,45 +423,66 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-1 flex-grow border border-gray-300 rounded-md p-3">
+                            <div className="flex gap-3 w-full border border-gray-300 rounded-md p-3">
+                                <div className="flex w-full items-center justify-between gap-2">
+                                    <label className="text-lg font-bold whitespace-nowrap" htmlFor="Tag">
+                                        Tag (opcional):
+                                    </label>
 
-                                <p className="text-lg font-bold min-w-fit">Selecione uma configuração de data: </p>
+                                    <select
+                                        className="w-full min-w-fit border-[3px] ml-3 py-2 px-4 rounded-md"
+                                        defaultValue="" // evita ficar com um valor preso
+                                        onChange={(event) => {
+                                            const obj = JSON.parse(event.target.value);
+                                            setTagsSelecionadas((tagsSelecionadas) => [...tagsSelecionadas, obj]);
+                                            event.target.value = ""; // reseta o select após selecionar
+                                        }}
+                                    >
+                                        <option value="" disabled>
+                                            Selecione uma tag
+                                        </option>
 
-                                <select
-                                    className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
-                                    onChange={(event) => {
-                                        const obj = JSON.parse(event.target.value)
-                                        setConfigDataSelecionada(obj)
-                                    }}
-                                >
-                                    <option disabled selected>Selecione uma configuração</option>
-                                    {
-                                        configDatas && configDatas
-                                            .slice()
-                                            .sort((a, b) => a.config_name.localeCompare(b.config_name))
-                                            .map((data) => (
-                                                <option key={data.id} value={JSON.stringify(data)}>{data.config_name}</option>
-                                            ))
-                                    }
-                                </select>
+                                        {
+                                            tags &&
+                                            tags
+                                                // 🚫 não mostra tags que já foram selecionadas
+                                                .filter((tag) => !tagsSelecionadas.some((t) => t.id === tag.id))
+                                                .sort((a, b) => a.name.localeCompare(b.name))
+                                                .map((tag) => (
+                                                    <option key={tag.id} value={JSON.stringify(tag)}>
+                                                        {tag.name}
+                                                    </option>
+                                                ))
+                                        }
+                                    </select>
 
-                                {
-                                    configDataSelecionada && (
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <Info className="ml-2" size={28} color="black" />
-                                            </TooltipTrigger>
-
-                                            <TooltipContent>
-                                                <h4 className="text-lg font-semibold">Configuração selecionada</h4>
-                                                <p><strong>Defesa de projeto: </strong> {configDataSelecionada.duration_project_months} meses</p>
-                                                <p><strong>Qualificação: </strong> {configDataSelecionada.duration_qualification_months} meses</p>
-                                                <p><strong>Conclusão: </strong> {configDataSelecionada.duration_conclusion_months} meses</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    )
-                                }
-
+                                    {tagsSelecionadas.length > 0 && (
+                                        <div className="flex items-center w-1/2 gap-2">
+                                            <p className="font-bold text-lg whitespace-nowrap">Tags selecionadas:</p>
+                                            <div className="flex border border-gray-300 rounded-md p-3 overflow-x-auto gap-2">
+                                                {tagsSelecionadas.map((tag) => (
+                                                    <div
+                                                        key={tag.id}
+                                                        className="flex items-center rounded-sm border overflow-hidden border-gray-300 flex-shrink-0 min-w-max"
+                                                    >
+                                                        <span title="Remover tag" className="bg-red-400 p-1 h-full flex items-center gap-2 w-fit">
+                                                            <X
+                                                                onClick={() =>
+                                                                    setTagsSelecionadas((tagsSelecionadas) =>
+                                                                        tagsSelecionadas.filter((t) => t.id !== tag.id)
+                                                                    )
+                                                                }
+                                                                className="text-black hover:cursor-pointer"
+                                                                size={17}
+                                                            />
+                                                        </span>
+                                                        <p className="p-1 whitespace-nowrap w-fit">{tag.name}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div
@@ -455,6 +498,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
                                                 onChange={(e) => {
+                                                    toast.info("Você não pode alterar as datas de previsão após adicionar a orientação!");
+                                                    return
                                                     setDataPrevisaoDefesa(e.target.value);
                                                     // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
                                                 }}
@@ -504,6 +549,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
+                                                    toast.info("Você não pode alterar as datas de previsão após adicionar a orientação!");
+                                                    return
                                                     setDataPrevisaoQualificacao(e.target.value);
                                                     // gerarDatas(e.target.value, "QUALIFICACAO");
                                                 }}
@@ -556,6 +603,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
+                                                    toast.info("Você não pode alterar as datas de previsão após adicionar a orientação!");
+                                                    return
                                                     setDataPrevisaoDefesaFinal(e.target.value);
                                                     // gerarDatas(e.target.value, "DEFESA_FINAL");
                                                 }}
