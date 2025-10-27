@@ -544,7 +544,7 @@ export function DocentesGraduate(props: Props) {
 
   async function salvarOrientando(evento: any) {
     evento.preventDefault();
-    if (dataEntrada == null || idOrientador == null || idOrientando == null || dataPrevisaoDefesa == null || dataPrevisaoQualificacao == null || dataPrevisaoDefesaFinal == null) {
+    if (dataEntrada == null || idOrientador == null || idOrientando == null || dataPrevisaoDefesa == null || dataPrevisaoQualificacao == null || dataPrevisaoDefesaFinal == null || idCoorientador == null) {
       alert("Preencha todos os campos!\n\nDados OBRIGATÓRIOS:\n- Orientando\n- Data de Entrada\n- Configuração de data");
       return
     }
