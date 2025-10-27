@@ -3,15 +3,15 @@ import { Button } from "../../ui/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "../../ui/dialog";
 import { excluirTagService } from "../../../service/tags";
 import { toast } from "sonner";
-import { Tag } from "./Tags";
-import CriarAtualizarTag from "./CriarAtualizarTag";
+import CriarAtualizarArea from "./CriarAtualizarArea";
+import { Area } from "./Areas";
 
 interface Props {
     atualizar: () => void
-    tag: Tag
+    area: Area
 }
 
-export default function CartaoArea({ tag, atualizar }: Props) {
+export default function CartaoArea({ area, atualizar }: Props) {
 
     async function excluirTag(id: string) {
         const resposta = await excluirTagService(id)
@@ -52,30 +52,12 @@ export default function CartaoArea({ tag, atualizar }: Props) {
             "
             style={{ boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.25)' }}
         >
-            <p className="font-bold text-xl">{tag.name}</p>
-
-            <div className={`flex justify-center items-center  w-full h-[150px] border border-gray-300 rounded-md`}>
-                <div
-                    className={`
-                                    flex justify-center items-center
-                                    px-4 py-1 rounded-xl w-fit h-[50px]
-                                    ${tag.color_code === "" ? "text-black" : "text-white"}
-                                `}
-                    style={{
-                        backgroundColor: tag.color_code || "#ffffff",
-                        boxShadow: '-2px 4px 2px rgba(0,0,0,.3)'
-                    }}
-                >
-                    {
-                        tag.name ? tag.name : "Tag sem nome"
-                    }
-                </div>
-            </div>
+            <p className="font-bold text-xl">{area.name}</p>
 
             <div className="flex justify-between">
                 <div className="flex min-w-[200px] gap-2 items-center mt-2 ml-1">
 
-                    <CriarAtualizarTag tag={tag} isAtualizar={true} atualizar={atualizar} />
+                    <CriarAtualizarArea area={area} isAtualizar={true} atualizar={atualizar} />
 
                     <Dialog>
                         <DialogTrigger asChild>
@@ -104,7 +86,7 @@ export default function CartaoArea({ tag, atualizar }: Props) {
                                             px-4 py-2 rounded-md font-semibold ml-4
                                             right-0 relative
                                         "
-                                        onClick={() => excluirTag(tag.id)}
+                                        onClick={() => excluirTag(area.id)}
                                     >
                                         Excluir
                                     </Button>
@@ -125,7 +107,7 @@ export default function CartaoArea({ tag, atualizar }: Props) {
                     <Calendar size={24} />
                     <div className="flex flex-col">
                         <span className="font-bold text-[10px] -mb-1">Criado em</span>
-                        <p className="font-bold text-[10px]">{formatarData(tag.created_at)}</p>
+                        <p className="font-bold text-[10px]">{formatarData(area.created_at)}</p>
                     </div>
                 </div>
             </div>

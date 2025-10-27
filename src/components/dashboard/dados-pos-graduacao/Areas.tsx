@@ -4,30 +4,30 @@ import { toast } from "sonner";
 import CriarAtualizarArea from "./CriarAtualizarArea";
 import { getTagsService } from "../../../service/tags";
 import CartaoArea from "./CartaoArea";
+import { getAreaService } from "../../../service/area";
 
-export interface Tag {
+export interface Area {
     id: string
     name: string
-    color_code: string
     created_at?: string
 }
 
 export default function Areas() {
 
     const [carregando, setCarregando] = useState<boolean>(true);
-    const [tags, setTags] = useState<Tag[]>([]);
+    const [areas, setAreas] = useState<Area[]>([]);
 
-    async function buscarTags() {
+    async function buscarAreas() {
 
-        const tags = await getTagsService();
+        const areas = await getAreaService();
 
-        if (!tags) {
-            toast.error("Erro ao buscar as tags!");
+        if (!areas) {
+            toast.error("Erro ao buscar as áreass!");
             setCarregando(false);
             return;
         }
 
-        setTags(tags);
+        setAreas(areas);
 
         setTimeout(() => {
             setCarregando(false);
@@ -36,7 +36,7 @@ export default function Areas() {
     }
 
     useEffect(() => {
-        buscarTags();
+        buscarAreas();
     }, [])
 
     return (
@@ -48,7 +48,7 @@ export default function Areas() {
             <div className="flex flex-col gap-3 w-full">
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-semibold">Áreas</h1>
-                    <CriarAtualizarArea atualizar={buscarTags} isAtualizar={false} />
+                    <CriarAtualizarArea atualizar={buscarAreas} isAtualizar={false} />
                 </div>
 
                 <p>Cria áreas para associar aos pesquisadores</p>
@@ -61,14 +61,14 @@ export default function Areas() {
                                 <IconLoader size={30} className="animate-spin" />
                             </div>
                         ) : (
-                            tags.length === 0 ? (
+                            areas.length === 0 ? (
                                 <p className="animate-pulse absolute -translate-x-1/2 left-1/2 top-1/2">Nenhuma área encontrada</p>
                             ) : (
-                                tags.map((tag) => (
+                                areas.map((area) => (
                                     <CartaoArea
-                                        key={tag.id}
-                                        atualizar={buscarTags}
-                                        tag={tag}
+                                        key={area.id}
+                                        atualizar={buscarAreas}
+                                        area={area}
                                     />
                                 ))
                             )

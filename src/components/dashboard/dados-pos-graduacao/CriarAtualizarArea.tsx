@@ -5,50 +5,50 @@ import { Input } from "../../ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Tag } from "./Tags";
-import { atualizarTagService, salvarTagService } from "../../../service/tags";
+import { atualizarAreaService, salvarAreaService } from "../../../service/area";
+import { Area } from "./Areas";
+
 
 interface Props {
     isAtualizar: boolean
     atualizar: () => void
-    tag?: Tag
+    area?: Area
 }
 
-export default function CriarAtualizaArea({ atualizar, isAtualizar, tag }: Props) {
+export default function CriarAtualizarArea({ atualizar, isAtualizar, area }: Props) {
 
     const [openDialog, setOpenDialog] = useState<boolean>(false);
 
     const [dados, setDados] = useState({
-        name: tag ? tag.name : "",
-        color_code: tag ? tag.color_code : "",
+        name: area ? area.name : ""
     })
 
-    async function salvarTag() {
-        if (!isAtualizar && (dados.name === "" || dados.color_code === "")) {
-            alert("Preencha todos os campos para salvar a tag!")
+    async function salvarArea() {
+        if (!isAtualizar && (dados.name === "")) {
+            alert("É obrigatório o nome da tag!")
             return
         }
 
         if (!isAtualizar) {
-            const resposta = await salvarTagService(dados)
+            const resposta = await salvarAreaService(dados)
             if (resposta !== 200) {
-                toast.error("Erro ao criar tag!")
+                toast.error("Erro ao criar área!")
                 return
             }
             limparCampos()
-            toast.success("Tag criada com sucesso!")
+            toast.success("Área criada com sucesso!")
         }
 
         if (isAtualizar) {
 
-            const resposta = await atualizarTagService(tag?.id, dados)
+            const resposta = await atualizarAreaService(area?.id, dados)
 
             if (resposta !== 200) {
-                toast.error("Erro ao atualizar tag!")
+                toast.error("Erro ao atualizar área!")
                 return
             }
             limparCampos()
-            toast.success("Tag atualizada com sucesso!")
+            toast.success("Área atualizada com sucesso!")
         }
 
 
@@ -58,8 +58,7 @@ export default function CriarAtualizaArea({ atualizar, isAtualizar, tag }: Props
 
     function limparCampos() {
         setDados({
-            name: "",
-            color_code: ""
+            name: ""
         })
     }
 
@@ -85,11 +84,11 @@ export default function CriarAtualizaArea({ atualizar, isAtualizar, tag }: Props
                 <DialogContent className="flex flex-col gap-4" onCloseAutoFocus={limparCampos}>
                     <DialogHeader>
                         <DialogTitle>
-                            {isAtualizar ? "Editar tag" : "Crie uma nova tag"}
+                            {isAtualizar ? "Editar área" : "Crie uma nova área"}
                         </DialogTitle>
 
                         <DialogDescription>
-                            {isAtualizar ? "Edite os campos abaixo para atualizar a tag" : "Preencha os campos abaixo para criar uma nova tag"}
+                            {isAtualizar ? "Edite o abaixo para atualizar a área" : "Preencha o campo abaixo para criar uma nova área"}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -97,53 +96,12 @@ export default function CriarAtualizaArea({ atualizar, isAtualizar, tag }: Props
                         <div className="flex flex-col gap-2">
                             <p>Nome:</p>
                             <Input
-                                defaultValue={isAtualizar ? tag?.name : dados.name}
+                                defaultValue={isAtualizar ? area?.name : dados.name}
                                 onChange={(novoNome) => { setDados(anterior => ({ ...anterior, name: novoNome.target.value })) }}
-                                placeholder="Rótulo da tag"
+                                placeholder="Rótulo da área"
                                 type="text"
                             />
                         </div>
-
-                        <div className="flex flex-col gap-2">
-                            <p>Cor da tag:</p>
-                            <div className="flex items-center gap-2 bg-eng-blue text-white w-fit px-4 py-2 rounded-md">
-                                <AlertCircle size={16} />
-                                <span className="text-sm">Clique na barra de cor abaixo para selecionar a cor</span>
-                            </div>
-
-                            <Input
-                                defaultValue={isAtualizar ? tag?.color_code : dados.color_code}
-                                onChange={(novaCor) => {
-                                    setDados(anterior => ({ ...anterior, color_code: novaCor.target.value })
-                                    )
-                                }}
-                                type="color"
-                                placeholder="Ex: 6"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                        <p>Pré-visualização da tag:</p>
-
-                        <div className={`flex justify-center items-center  w-full h-[150px] border border-gray-300 rounded-md`}>
-                            <div
-                                className={`
-                                    flex justify-center items-center
-                                    px-4 py-1 rounded-xl w-fit h-[50px]
-                                    ${dados.color_code === "" ? "text-black" : "text-white"}
-                                `}
-                                style={{
-                                    backgroundColor: dados.color_code || "#ffffff",
-                                    boxShadow: '-2px 4px 2px rgba(0,0,0,.3)'
-                                }}
-                            >
-                                {
-                                    dados.name ? dados.name : "Tag sem nome"
-                                }
-                            </div>
-                        </div>
-
                     </div>
 
                     <DialogFooter className="mt-7">
@@ -155,7 +113,7 @@ export default function CriarAtualizaArea({ atualizar, isAtualizar, tag }: Props
 
                         <Button
                             onClick={() => {
-                                salvarTag()
+                                salvarArea()
                             }}
                         >
                             {isAtualizar ? "Salvar alterações" : "Criar"}
