@@ -55,7 +55,7 @@ async function atualizarOrientacao(orientacao: any): Promise<number | undefined>
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(orientacao)
+            body: JSON.stringify({ orientacao })
         })
 
         console.log("status: ", resposta.status);

@@ -259,6 +259,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             tag_ids: tagsSelecionadas.map((tag: Tag) => tag.id)
         }
 
+        console.log("Orientação para salvar: ", orientacao)
+
         const resposta = await atualizarOrientacao(orientacao)
 
         if (resposta === 200) {
