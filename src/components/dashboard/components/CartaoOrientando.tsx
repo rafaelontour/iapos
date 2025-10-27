@@ -46,6 +46,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
 
+    console.log("Orientacao: ", o.orientacaoC)
+
     const tipo = () => {
         if (o.orientacaoC.type === 'PROJETO') {
             return 'Previsão de defesa do projeto:'
@@ -501,8 +503,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
                                                 onChange={(e) => {
-                                                    toast.info("Você não pode alterar as datas de previsão após adicionar a orientação!");
-                                                    return
+
                                                     setDataPrevisaoDefesa(e.target.value);
                                                     // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
                                                 }}
@@ -552,8 +553,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
-                                                    toast.info("Você não pode alterar as datas de previsão após adicionar a orientação!");
-                                                    return
+
                                                     setDataPrevisaoQualificacao(e.target.value);
                                                     // gerarDatas(e.target.value, "QUALIFICACAO");
                                                 }}
@@ -606,8 +606,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
-                                                    toast.info("Você não pode alterar as datas de previsão após adicionar a orientação!");
-                                                    return
+
                                                     setDataPrevisaoDefesaFinal(e.target.value);
                                                     // gerarDatas(e.target.value, "DEFESA_FINAL");
                                                 }}

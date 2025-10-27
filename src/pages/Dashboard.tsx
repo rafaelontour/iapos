@@ -61,6 +61,8 @@ export function Dashboard() {
             onOpen('programa')
         } else if (location.pathname == '/dashboard/tags') {
             onOpen('tags')
+        } else if (location.pathname == '/dashboard/areas') {
+            onOpen('areas')
         }
     }, [location]);
 

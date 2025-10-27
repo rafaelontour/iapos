@@ -23,6 +23,7 @@ import { CargosFuncoes } from "../dashboard/cargos-permissoes/cargos-funcoes";
 import { ProgramaDashboard } from "../dashboard/pos-graduacao/programa";
 import DadosPosGraduacao from "../dashboard/dados-pos-graduacao/dados-pos-graduacao";
 import Tags from "../dashboard/dados-pos-graduacao/Tags";
+import Areas from "../dashboard/dados-pos-graduacao/Areas";
 
 
 const ModalContent = () => {
@@ -73,6 +74,8 @@ const ModalContent = () => {
       return <DadosPosGraduacao />
     case 'tags':
       return <Tags />
+    case 'areas':
+      return <Areas />
     default:
       return null;
   }

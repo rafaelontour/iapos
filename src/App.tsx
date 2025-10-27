@@ -471,6 +471,11 @@ function App() {
                                         element={<Dashboard />}
                                     />
 
+                                    <Route
+                                        path='/dashboard/areas'
+                                        element={<Dashboard />}
+                                    />
+
                                     <Route path='/dashboard/relatar-problema' element={<Dashboard />} />
                                     <Route path='/dashboard/pesquisadores-selecionados' element={<Dashboard />} />
 

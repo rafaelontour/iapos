@@ -16,6 +16,7 @@ import {
     Frame,
     GalleryVerticalEnd,
     GraduationCap,
+    Group,
     Home,
     Info,
     Landmark,
@@ -56,6 +57,7 @@ import { useContext } from "react";
 import { AccountSwitcher } from "./navigation/user-list"
 import { DotsThree } from "phosphor-react"
 import { useModal } from "./hooks/use-modal-store"
+import { title } from "process"
 // This is sample data.
 
 export function AppSidebarAdmin({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -173,6 +175,11 @@ export function AppSidebarAdmin({ ...props }: React.ComponentProps<typeof Sideba
                         title: "Tags",
                         url: "/dashboard/tags",
                         icon: Tag
+                    },
+                    {
+                        title: "Áreas",
+                        url: "/dashboard/areas",
+                        icon: Group
                     }
                 ],
             },
