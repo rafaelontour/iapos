@@ -21,10 +21,7 @@ import { Skeleton } from "../ui/skeleton";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { HeaderResultTypeHome } from "../homepage/categorias/header-result-type-home";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Separator } from "../ui/separator";
 import { EditResearcherModal } from "../modals/edit-researcher-modal";
-import { HeaderInstitution } from "./components/header-institutuion";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { Badge } from "../ui/badge";
@@ -56,6 +53,8 @@ export function AddResearcherDashboard() {
     const has_importar_bolsistas_cnpq = permission.some(
         (perm) => perm.permission === 'importar_bolsistas_cnpq'
     );
+
+    console.log("PESQUISADOR: ", researcher);
 
     const areas = researcher
         .map(r => r.area)
@@ -102,8 +101,6 @@ export function AddResearcherDashboard() {
                     status: status == "ativo" ? true : false,
                 },
             ];
-
-            console.log(data);
 
             let urlProgram = urlGeralAdm + "/ResearcherRest/Insert";
 
@@ -660,7 +657,6 @@ export function AddResearcherDashboard() {
                                                                                                 }} variant={'outline'} className="h-8 w-8 p-0  hidden group-hover:flex">
                                                                                                     <Copy size={16} />
                                                                                                 </Button>
-
 
                                                                                                 <EditResearcherModal
                                                                                                     uniqueAreas={uniqueAreas}

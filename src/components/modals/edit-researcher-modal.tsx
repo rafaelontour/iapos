@@ -3,15 +3,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useContext, useState, useMemo } from "react"; // 1. Importar useMemo
+import { useContext, useState, useMemo } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { toast } from "sonner";
 import { UserContext } from "../../context/context";
 
-// --- Interfaces ---
-
 export interface Props {
-    uniqueAreas: string[] // A prop está vindo como string[] (de JSONs)
+    uniqueAreas: string[]
     area: string | any
     focal_point: boolean
     institution_id: string
@@ -33,26 +31,20 @@ interface FormState {
     areas: AreaEntry[]
 }
 
-// --- Funções Auxiliares (Lógica Pura) ---
-
 const parseAreas = (areaValue: string | any): AreaEntry[] => {
     if (!areaValue) return [];
-
     try {
         let dataToParse = areaValue;
-
         if (typeof areaValue === 'string') {
             const fixedJson = areaValue.replace(/'/g, '"');
             dataToParse = JSON.parse(fixedJson);
         }
-
         if (Array.isArray(dataToParse)) {
             return dataToParse.map(item => ({
                 area: item.area_leader || "",
                 focal_point: Boolean(item.focal_point)
             }));
         }
-
         return [];
     } catch (err) {
         console.error("Erro ao parsear áreas:", err);
@@ -67,31 +59,25 @@ const formatAreasForAPI = (areas: AreaEntry[]) => {
     }));
 };
 
-// --- Componente React ---
-
 export function EditResearcherModal(initialProps: Props) {
     const { urlGeralAdm } = useContext(UserContext);
 
-    // 2. Criar um array limpo de 'uniqueAreas'
     const parsedUniqueAreas = useMemo(() => {
         try {
             return initialProps.uniqueAreas
                 .map(areaJsonString => {
-                    // Parseia a string JSON (ex: '[{"area_leader": "Nome"}]')
                     const parsedArray = JSON.parse(areaJsonString);
-                    // Pega o nome da area_leader do primeiro objeto do array
                     if (Array.isArray(parsedArray) && parsedArray.length > 0 && parsedArray[0].area_leader) {
                         return parsedArray[0].area_leader;
                     }
-                    return null; // Retorna null se a estrutura for inesperada
+                    return null;
                 })
-                .filter(Boolean) as string[]; // Filtra os nulos e garante o tipo string[]
+                .filter(Boolean) as string[];
         } catch (e) {
             console.error("Erro ao parsear uniqueAreas:", e, initialProps.uniqueAreas);
-            return []; // Retorna um array vazio em caso de erro
+            return [];
         }
     }, [initialProps.uniqueAreas]);
-
 
     const [formData, setFormData] = useState<FormState>(() => ({
         name: initialProps.name,
@@ -129,7 +115,6 @@ export function EditResearcherModal(initialProps: Props) {
     const handleSubmitPesquisador = async () => {
         try {
             const areasFormatted = formatAreasForAPI(formData.areas);
-
             const payload = {
                 institution_id: initialProps.institution_id,
                 researcher_id: initialProps.researcher_id,
@@ -137,9 +122,7 @@ export function EditResearcherModal(initialProps: Props) {
                 area: JSON.stringify(areasFormatted),
                 areas: undefined,
             };
-
             const urlProgram = urlGeralAdm + "/ResearcherRest/Update";
-
             const response = await fetch(urlProgram, {
                 mode: "cors",
                 method: "PUT",
@@ -148,7 +131,6 @@ export function EditResearcherModal(initialProps: Props) {
                 },
                 body: JSON.stringify([payload])
             });
-
             if (response.ok) {
                 toast("Dados enviados com sucesso", {
                     description: "Pesquisador atualizado na instituição",
@@ -172,6 +154,14 @@ export function EditResearcherModal(initialProps: Props) {
                 action: { label: "Fechar", onClick: () => { } }
             });
         }
+    };
+
+    // 🔹 Filtra áreas disponíveis com base nas já selecionadas
+    const getAvailableAreas = (currentIndex: number) => {
+        const selectedAreas = formData.areas
+            .map((a, i) => (i !== currentIndex ? a.area : null))
+            .filter(Boolean);
+        return parsedUniqueAreas.filter(area => !selectedAreas.includes(area));
     };
 
     return (
@@ -207,19 +197,26 @@ export function EditResearcherModal(initialProps: Props) {
                             />
                         </div>
 
-                        <div className="grid gap-2">
+                        <div className="grid gap-2 max-h-72 overflow-y-auto">
                             <Label>Áreas</Label>
                             {formData.areas.map((a, index) => {
-                                // 3. Usar o array limpo 'parsedUniqueAreas' na lógica
                                 const areaValue = a.area || "";
                                 const selectValue = parsedUniqueAreas.includes(areaValue)
                                     ? areaValue
-                                    : (areaValue === "" ? "" : "outra"); // Se for "" fica "", senão "outra"
+                                    : (areaValue === "" ? "" : "outra");
+
+                                // Garante que a área atual apareça no select, mesmo se já estiver usada
+                                const availableAreas = Array.from(
+                                    new Set([
+                                        ...(a.area ? [a.area] : []),
+                                        ...getAvailableAreas(index)
+                                    ])
+                                );
 
                                 return (
                                     <div key={index} className="grid grid-cols-3 items-center gap-2 border-t pt-2 mt-2">
                                         <Select
-                                            value={selectValue} // Se value for "", o placeholder aparece
+                                            value={selectValue || ""}
                                             onValueChange={(val) => {
                                                 const newValue = (val === "outra") ? "" : val;
                                                 handleAreaChange(index, "area", newValue);
@@ -228,9 +225,9 @@ export function EditResearcherModal(initialProps: Props) {
                                             <SelectTrigger className="h-8 col-span-3">
                                                 <SelectValue placeholder="Selecione a área" />
                                             </SelectTrigger>
+
                                             <SelectContent>
-                                                {/* 3. Usar o array limpo 'parsedUniqueAreas' para renderizar */}
-                                                {parsedUniqueAreas.map((area) => (
+                                                {availableAreas.map((area) => (
                                                     <SelectItem key={area} value={area}>
                                                         {area}
                                                     </SelectItem>
@@ -239,7 +236,6 @@ export function EditResearcherModal(initialProps: Props) {
                                             </SelectContent>
                                         </Select>
 
-                                        {/* 3. A condição de exibição do Input agora é 'selectValue === "outra"' */}
                                         {selectValue === "outra" && (
                                             <Input
                                                 placeholder="Digite a área"

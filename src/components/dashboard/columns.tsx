@@ -1,23 +1,12 @@
-
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "../../components/ui/button"
 import { toast } from "sonner"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu"
-import { Copy, Trash, ArrowUpDown, Maximize2, MoreHorizontal, Pencil, User } from "lucide-react"
-import { Eye } from "phosphor-react"
+
+import { Copy, ArrowUpDown, Maximize2, User } from "lucide-react"
 import { useModal } from "../hooks/use-modal-store"
 import { useContext, useState } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { EditResearcherModal } from "../modals/edit-researcher-modal"
 import { UserContext } from "../../context/context"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
-
 
 export interface PesquisadorProps {
     name: string
@@ -29,7 +18,6 @@ export interface PesquisadorProps {
     status: boolean
     create_at: string
 }
-
 
 export const columns: ColumnDef<PesquisadorProps>[] = [
     {
