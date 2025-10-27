@@ -254,7 +254,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
             supervisor_researcher_id: o.orientacaoC.supervisor_researcher_id,
             student_researcher_id: o.orientacaoC.student_researcher_id,
-            co_supervisor_ids: idCoorientador ? [idCoorientador] : o.orientacaoC.co_supervisor_ids[0],
+            co_supervisor_ids: idCoorientador ? [idCoorientador] : [o.orientacaoC.co_supervisor_ids[0]],
 
             tag_ids: tagsSelecionadas.map((tag: Tag) => tag.id)
         }
