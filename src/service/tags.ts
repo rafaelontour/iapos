@@ -72,7 +72,7 @@ async function atualizarTagService(id: string | undefined, tag: any) {
 
 async function excluirTagService(id: string) {
     try {
-        const resposta = await fetch(`https://iapos-api.senaicimatec.com.br/adm/tag/${id}`, {
+        const resposta = await fetch(`https://iapos-api.senaicimatec.com.br/adm/area/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
