@@ -27,6 +27,13 @@ export function EditResearcherModal({ pesquisador, areas }: Props) {
     const [lattesId, setLattesId] = useState(pesquisador.lattes_id);
     const [popoverOpen, setPopoverOpen] = useState(false);
 
+    const [statusAtivo, setStatusAtivo] = useState(pesquisador.status);
+
+    useEffect(() => {
+        // atualiza quando pesquisador muda
+        setStatusAtivo(pesquisador.status);
+    }, [pesquisador]);
+
     // Função para buscar os dados atualizados do pesquisador
     const fetchPesquisadorAtualizado = async () => {
         try {
@@ -73,7 +80,7 @@ export function EditResearcherModal({ pesquisador, areas }: Props) {
                 researcher_id: pesquisador.researcher_id,
                 name: nome || pesquisador.name,
                 lattes_id: lattesId || pesquisador.lattes_id,
-                status: pesquisador.status,
+                status: statusAtivo,
                 areas: areasCriadas,
             };
 
@@ -155,7 +162,7 @@ export function EditResearcherModal({ pesquisador, areas }: Props) {
 
                                         <Select
                                             value={a.focal_point ? "sim" : "nao"}
-                                            onValueChange={val => atualizarArea(index, "focal_point", val === "sim")}
+                                            onValueChange={(val) => atualizarArea(index, "focal_point", val === "sim")}
                                         >
                                             <SelectTrigger className="h-8 col-span-2">
                                                 <SelectValue placeholder="Ponto focal?" />
@@ -176,9 +183,32 @@ export function EditResearcherModal({ pesquisador, areas }: Props) {
                             )}
                         </div>
 
-                        <Button variant="secondary" onClick={adicionarNovaArea}>Adicionar área</Button>
+                        <Button variant="default" onClick={adicionarNovaArea}>Adicionar área</Button>
 
                         <hr />
+
+                        <div className="grid grid-cols-3 items-center gap-4">
+                            <Label>Status</Label>
+                            <Select
+                                value={statusAtivo ? "ativo" : "inativo"}
+                                onValueChange={(val) => {
+                                    if (val === "ativo") {
+                                        setStatusAtivo(true);
+                                    } else {
+                                        setStatusAtivo(false);
+                                    }
+                                }}
+                            >
+                                <SelectTrigger className="h-8 col-span-2">
+                                    <SelectValue placeholder="Selecione o status" />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                    <SelectItem value="ativo">Ativo</SelectItem>
+                                    <SelectItem value="inativo">Inativo</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
 
                         <Button onClick={handleSubmitPesquisador}>
                             <Check size={16} /> Atualizar dados
