@@ -9,7 +9,7 @@ import { toast } from "sonner"
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid library
 import { UserContext } from "../../context/context";
 import { FileXls, MagnifyingGlass, Rows, SquaresFour, UserList } from "phosphor-react";
-import { PesquisadorProps, columns } from "./columns";
+import { columns, Pesquisador } from "./columns";
 import { useModal } from "../hooks/use-modal-store";
 import { useModalDashboard } from "../hooks/use-modal-dashboard";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,10 +21,12 @@ import { Skeleton } from "../ui/skeleton";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { HeaderResultTypeHome } from "../homepage/categorias/header-result-type-home";
-import { EditResearcherModal } from "../modals/edit-researcher-modal";
+import { AreaEntry, EditResearcherModal } from "../modals/edit-researcher-modal";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { Badge } from "../ui/badge";
+import { getAreaService } from "../../service/area";
+import { Area } from "./dados-pos-graduacao/Areas";
 
 export function AddResearcherDashboard() {
     const [nomePesquisador, setNomePesquisador] = useState('');
@@ -40,10 +42,23 @@ export function AddResearcherDashboard() {
     const { user, urlGeralAdm, permission } = useContext(UserContext);
     const { isOpen, type } = useModalDashboard();
     const isModalOpen = isOpen && type === 'researcher';
-    const [researcher, setResearcher] = useState<PesquisadorProps[]>([]);
+    const [researcher, setResearcher] = useState<Pesquisador[]>([]);
     const [status, setStatus] = useState('ativo')
     const [area, setArea] = useState("")
     const [focalPoint, setFocalPoint] = useState(false)
+
+    const [areas, setAreas] = useState<Area[]>([]);
+    const [areasSelecionadas, setAreasSelecionadas] = useState<AreaEntry[]>([]);
+
+    const buscarAreas = async () => {
+        const resposta = await getAreaService();
+        console.log("AREAS: ", resposta);
+        setAreas(resposta);
+    }
+
+    useEffect(() => {
+        buscarAreas();
+    }, [])
 
     const has_editar_pesquisadores = permission.some(
         (perm) => perm.permission === 'editar_pesquisadores'
@@ -53,14 +68,6 @@ export function AddResearcherDashboard() {
     const has_importar_bolsistas_cnpq = permission.some(
         (perm) => perm.permission === 'importar_bolsistas_cnpq'
     );
-
-    console.log("PESQUISADOR: ", researcher);
-
-    const areas = researcher
-        .map(r => r.area)
-        .filter((area): area is string => Boolean(area));
-
-    const uniqueAreas = Array.from(new Set(areas)).sort();
 
 
     const handleVoltar = () => {
@@ -283,7 +290,6 @@ export function AddResearcherDashboard() {
 
         return (
             searchString.includes(normalizedSearch)
-
         );
     }) : [];
 
@@ -659,14 +665,9 @@ export function AddResearcherDashboard() {
                                                                                                 </Button>
 
                                                                                                 <EditResearcherModal
-                                                                                                    uniqueAreas={uniqueAreas}
-                                                                                                    researcher_id={props.researcher_id}
-                                                                                                    name={props.name}
-                                                                                                    lattes_id={props.lattes_id}
-                                                                                                    institution_id={props.institution_id}
-                                                                                                    status={props.status}
-                                                                                                    area={props.area}
-                                                                                                    focal_point={props.focal_point} />
+                                                                                                    pesquisador={props}
+                                                                                                    areas={areas}
+                                                                                                />
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>

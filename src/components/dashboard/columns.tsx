@@ -7,19 +7,21 @@ import { useModal } from "../hooks/use-modal-store"
 import { useContext, useState } from "react"
 import { UserContext } from "../../context/context"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Area } from "./dados-pos-graduacao/Areas"
+import { AreaEntry } from "../modals/edit-researcher-modal"
 
-export interface PesquisadorProps {
+export interface Pesquisador {
     name: string
     lattes_id: string
     researcher_id: string
     institution_id: string
-    last_update: string
-    area?: string
+    last_update?: string
+    areas: AreaEntry[]
     status: boolean
-    create_at: string
+    create_at?: string
 }
 
-export const columns: ColumnDef<PesquisadorProps>[] = [
+export const columns: ColumnDef<Pesquisador>[] = [
     {
         accessorKey: "name",
         header: ({ column }) => {
