@@ -276,12 +276,14 @@ export function ResearcherPage() {
 
     if (researcher_name) {
         urlTermPesquisadores = `${urlGeral}researcherName?name=${researcher_name}`;
-    } else if (lattes_id) {
+    } else {
         urlTermPesquisadores = `${urlGeral}researcherName?lattes_id=${lattes_id}`;
     }
 
-    useMemo(() => {
+    useEffect(() => {
         const fetchData = async () => {
+            if (!urlTermPesquisadores) return;
+
             try {
                 isLoading(true)
                 const response = await fetch(urlTermPesquisadores, {
@@ -295,14 +297,15 @@ export function ResearcherPage() {
                     },
                 });
                 const data = await response.json();
+
                 if (data) {
                     setResearcher(data);
-                    isLoading(false)
-                    console.log(researcher)
+                    isLoading(false);
                 }
-                if (data.length == 0 && isOpen) {
-                    onClose()
-                    toast("Pesquisador(a) ainda não cerregado na base", {
+
+                if (data.length === 0 && isOpen) {
+                    onClose();
+                    toast("Pesquisador(a) ainda não carregado na base", {
                         description: "Tente novamente mais tarde",
                         action: {
                             label: "Fechar",
@@ -312,10 +315,12 @@ export function ResearcherPage() {
                 }
             } catch (err) {
                 console.log(err);
+            } finally {
             }
         };
+
         fetchData();
-    }, [urlTermPesquisadores]);
+    }, [urlTermPesquisadores, isOpen]);
 
     useEffect(() => {
         if (searchType == 'article' || searchType == 'name' || searchType == 'abstract' || searchType == 'area') {
