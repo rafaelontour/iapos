@@ -28,6 +28,8 @@ async function getDiscentesPorPrograma(idPrograma: string): Promise<any> {
 }
 
 async function getInfoPesquisadorPorId(id: string): Promise<string | undefined> {
+
+    console.log("ID pesquisador: ", id)
     try {
         const url = `https://iapos-api.senaicimatec.com.br/adm/ResearcherRest/Query?researcher_id=${id}`;
 

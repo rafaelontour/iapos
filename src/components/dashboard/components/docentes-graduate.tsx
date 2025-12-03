@@ -544,8 +544,8 @@ export function DocentesGraduate(props: Props) {
 
   async function salvarOrientando(evento: any) {
     evento.preventDefault();
-    if (dataEntrada == null || idOrientador == null || idOrientando == null || dataPrevisaoDefesa == null || dataPrevisaoQualificacao == null || dataPrevisaoDefesaFinal == null || idCoorientador == null) {
-      alert("Preencha todos os campos!\n\nDados OBRIGATÓRIOS:\n- Orientando\n- Data de Entrada\n- Configuração de data\n- Orientador\n- Coorientador");
+    if (dataEntrada == null || idOrientador == null || idOrientando == null || dataPrevisaoDefesa == null || dataPrevisaoQualificacao == null || dataPrevisaoDefesaFinal == null) {
+      alert("Preencha todos os campos!\n\nDados OBRIGATÓRIOS:\n- Orientando\n- Data de Entrada\n- Configuração de data\n- Orientador");
       return
     }
 
@@ -560,7 +560,7 @@ export function DocentesGraduate(props: Props) {
       done_date_conclusion: dataRealizadaDefesaFinal,
       supervisor_researcher_id: idOrientador,
       student_researcher_id: idOrientando,
-      co_supervisor_ids: [idCoorientador],
+      co_supervisor_ids: idCoorientador ? [idCoorientador] : [],
       tag_ids: tagsSelecionadas.map(tag => tag.id)
     }
 
@@ -1101,7 +1101,7 @@ export function DocentesGraduate(props: Props) {
                                       </div>
 
                                       <div className="flex items-center justify-between gap-0">
-                                        <label className="text-lg font-bold" htmlFor="name">Coorientador: </label>
+                                        <label className="text-lg font-bold min-w-fit" htmlFor="name">Coorientador (opcional): </label>
                                         <select
                                           className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
                                           onChange={(event) => {
@@ -1181,7 +1181,8 @@ export function DocentesGraduate(props: Props) {
 
                                           <TooltipContent>
                                             <h4 className="text-lg font-semibold">Configuração selecionada</h4>
-                                            <p><strong>Defesa de projeto: </strong> {configDataSelecionada.duration_project_months} meses</p>
+                                            {configDataSelecionada.duration_project_months !== 0 && <p><strong>Defesa de projeto: </strong> {configDataSelecionada.duration_project_months} meses</p>}
+
                                             <p><strong>Qualificação: </strong> {configDataSelecionada.duration_qualification_months} meses</p>
                                             <p><strong>Conclusão: </strong> {configDataSelecionada.duration_conclusion_months} meses</p>
                                           </TooltipContent>
@@ -1257,7 +1258,7 @@ export function DocentesGraduate(props: Props) {
                                     className={`flex flex-col gap-3 border rounded-md h-[400px] p-3 ${tipoOrientacao === "Mestrado" && "h-fit"}`}
                                     style={{ boxShadow: '3px 3px 3px rgba(0, 0, 0, 0.25)' }}
                                   >
-                                    {tipoOrientacao === "Doutorado" &&
+                                    {configDataSelecionada?.duration_project_months !== 0 &&
 
                                       <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
                                         <p className="text-lg font-bold">Defesa do Projeto</p>

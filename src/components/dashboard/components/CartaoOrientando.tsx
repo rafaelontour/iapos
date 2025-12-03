@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import { Tag } from "../dados-pos-graduacao/Tags";
 import { getTagsService } from "../../../service/tags";
 import { toast } from "sonner";
+import { dataFormatada } from "../../../lib";
 
 interface OrientacaoProps {
     co_supervisor_ids: string[],
@@ -428,6 +429,11 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 </div>
                             </div>
 
+                            <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
+                                <p className="text-lg font-bold whitespace-nowrap">Data de entrada: </p>
+                                <p>{dataFormatada(o.orientacaoC.start_date)}</p>
+                            </div>
+
                             <div className="flex gap-3 w-full border border-gray-300 rounded-md p-3">
                                 <div className="flex w-full items-center justify-between gap-2">
                                     <label className="text-lg font-bold whitespace-nowrap" htmlFor="Tag">
@@ -491,59 +497,63 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                             </div>
 
                             <div
-                                className="flex flex-col gap-3 border rounded-md h-[400px] p-3"
+                                className="flex flex-col gap-3 border rounded-md h-fit p-3"
                                 style={{ boxShadow: '3px 3px 3px rgba(0, 0, 0, 0.25)' }}
                             >
-                                <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
-                                    <p className="text-lg font-bold">Defesa do Projeto</p>
-                                    <div className="flex items-center gap-3">
+                                {
+                                    o.orientacaoC.planned_date_project !== o.orientacaoC.start_date && (
+                                        <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
+                                            <p className="text-lg font-bold">Defesa do Projeto</p>
+                                            <div className="flex items-center gap-3">
 
-                                        <div className="flex gap-2 items-center w-1/2">
-                                            <label htmlFor="dataPrevista">Prevista: </label>
-                                            <input
-                                                className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
-                                                onChange={(e) => {
+                                                <div className="flex gap-2 items-center w-1/2">
+                                                    <label htmlFor="dataPrevista">Prevista: </label>
+                                                    <input
+                                                        className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
+                                                        onChange={(e) => {
 
-                                                    setDataPrevisaoDefesa(e.target.value);
-                                                    // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
-                                                }}
-                                                type="date"
-                                                id="dataPrevista"
-                                                value={
-                                                    dataPrevisaoDefesa != null
-                                                        ? dataPrevisaoDefesa
-                                                        : o.orientacaoC.planned_date_project
-                                                            ? new Date(o.orientacaoC.planned_date_project).toISOString().split("T")[0]
-                                                            : ""
-                                                }
-                                            />
+                                                            setDataPrevisaoDefesa(e.target.value);
+                                                            // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
+                                                        }}
+                                                        type="date"
+                                                        id="dataPrevista"
+                                                        value={
+                                                            dataPrevisaoDefesa != null
+                                                                ? dataPrevisaoDefesa
+                                                                : o.orientacaoC.planned_date_project
+                                                                    ? new Date(o.orientacaoC.planned_date_project).toISOString().split("T")[0]
+                                                                    : ""
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="flex gap-2 items-center w-1/2">
+                                                    <label htmlFor="dataRealizada">Realizada: </label>
+                                                    <input
+                                                        defaultValue={new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0]}
+                                                        className="w-full border-[2px] px-2 py-1 rounded-md"
+                                                        onChange={(e) => {
+                                                            setDataRealizadaDefesa(e.target.value);
+
+                                                            if (e.target.value === "") {
+                                                                setDataRealizadaDefesa("1");
+                                                            }
+                                                        }}
+                                                        type="date"
+                                                        value={
+                                                            dataRealizadaDefesa != null
+                                                                ? dataRealizadaDefesa
+                                                                : o.orientacaoC.done_date_project
+                                                                    ? new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0]
+                                                                    : ""
+
+                                                        }
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
-
-                                        <div className="flex gap-2 items-center w-1/2">
-                                            <label htmlFor="dataRealizada">Realizada: </label>
-                                            <input
-                                                defaultValue={new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0]}
-                                                className="w-full border-[2px] px-2 py-1 rounded-md"
-                                                onChange={(e) => {
-                                                    setDataRealizadaDefesa(e.target.value);
-
-                                                    if (e.target.value === "") {
-                                                        setDataRealizadaDefesa("1");
-                                                    }
-                                                }}
-                                                type="date"
-                                                value={
-                                                    dataRealizadaDefesa != null
-                                                        ? dataRealizadaDefesa
-                                                        : o.orientacaoC.done_date_project
-                                                            ? new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0]
-                                                            : ""
-
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                    )
+                                }
 
                                 <div className="flex flex-col gap-3 p-3 border-dashed border-[2px] border-black rounded-md">
                                     <p className="text-lg font-bold">Qualificação </p>
