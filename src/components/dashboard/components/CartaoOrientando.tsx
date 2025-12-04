@@ -47,8 +47,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
 
-    console.log("Orientacao: ", o.orientacaoC)
-
     const tipo = () => {
         if (o.orientacaoC.type === 'PROJETO') {
             return 'Previsão de defesa do projeto:'
@@ -121,7 +119,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     const [idOrientador, setIdOrientador] = useState<string | null>(null)
     const [idOrientando, setIdOrientando] = useState<string | null>(null)
-    const [idCoorientador, setIdCoorientador] = useState<string | null>(null)
+    const [idCoorientador, setIdCoorientador] = useState<string | null>(o.orientacaoC.co_supervisor_ids[0] ? o.orientacaoC.co_supervisor_ids[0] : null)
 
     const [tipoOrientacao, setTipoOrientacao] = useState<string | null>(null)
     const [dataEntrada, setDataEntrada] = useState<string | null>(null)
@@ -257,12 +255,10 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
             supervisor_researcher_id: o.orientacaoC.supervisor_researcher_id,
             student_researcher_id: o.orientacaoC.student_researcher_id,
-            co_supervisor_ids: idCoorientador ? [idCoorientador] : [o.orientacaoC.co_supervisor_ids[0]],
+            co_supervisor_ids: idCoorientador ? [idCoorientador] : [],
 
             tag_ids: tagsSelecionadas.map((tag: Tag) => tag.id)
         }
-
-        console.log("Orientação para salvar: ", orientacao)
 
         const resposta = await atualizarOrientacao(orientacao)
 
@@ -379,6 +375,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                             className="w-1/2"
                             onClick={() => {
                                 setOpenDialog(!openDialog)
+                                setIdCoorientador(o.orientacaoC.co_supervisor_ids[0] ? o.orientacaoC.co_supervisor_ids[0] : null)
                             }}
                         >
                             Editar orientação
@@ -404,13 +401,14 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                     <div className="flex items-center justify-between gap-0">
                                         <label className="text-lg font-bold" htmlFor="name">Coorientador: </label>
                                         <select
-                                            defaultValue={o.orientacaoC.co_supervisor_ids[0]}
+                                            value={idCoorientador ? idCoorientador : ""}
+                                            defaultValue={o.orientacaoC.co_supervisor_ids[0] ? o.orientacaoC.co_supervisor_ids[0] : idCoorientador ? idCoorientador : ""}
                                             className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
                                             onChange={(event) => {
                                                 setIdCoorientador(event.target.value)
                                             }}
                                         >
-                                            <option disabled selected>Selecione um coorientador</option>
+                                            <option value="" disabled >Selecione um coorientador</option>
                                             {
                                                 docentesPosGraduacao && docentesPosGraduacao
                                                     .slice()
@@ -425,6 +423,20 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                     ))
                                             }
                                         </select>
+
+                                        {
+                                            (o.orientacaoC.co_supervisor_ids.length != 0 && idCoorientador) && (
+                                                <Button
+                                                    type="button"
+                                                    className="ml-2"
+                                                    onClick={() => {
+                                                        setIdCoorientador(null)
+                                                    }}
+                                                >
+                                                    Limpar seleção
+                                                </Button>
+                                            )
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -666,9 +678,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 <button
                                     className="bg-[#559FB8] text-white px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
                                     onClick={(e) => {
-                                        // console.log("dataRealizadaDefesaFinal: " + dataRealizadaDefesaFinal);
-                                        // console.log("dataRealizadaQualificacao: " + dataRealizadaQualificacao);
-                                        // console.log("dataPrevisaoDefesa: " + dataPrevisaoDefesa);
                                         if (dataRealizadaDefesaFinal != null && (dataRealizadaQualificacao == "" || dataRealizadaDefesa == "")) {
                                             alert("Corrija os dados e tente novamente!");
                                             return;

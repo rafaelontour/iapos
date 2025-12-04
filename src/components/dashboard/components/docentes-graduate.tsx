@@ -1103,12 +1103,13 @@ export function DocentesGraduate(props: Props) {
                                       <div className="flex items-center justify-between gap-0">
                                         <label className="text-lg font-bold min-w-fit" htmlFor="name">Coorientador (opcional): </label>
                                         <select
+                                          value={idCoorientador ? idCoorientador : ""}
                                           className="w-full border-[3px] ml-3 py-2 px-4 rounded-md"
                                           onChange={(event) => {
                                             setIdCoorientador(event.target.value)
                                           }}
                                         >
-                                          <option disabled selected>Selecione um coorientador</option>
+                                          <option value="" disabled>Selecione um coorientador</option>
                                           {
                                             docentesPosGraduacao && docentesPosGraduacao
                                               .slice()
@@ -1121,6 +1122,22 @@ export function DocentesGraduate(props: Props) {
                                               ))
                                           }
                                         </select>
+
+                                        {
+                                          idCoorientador && (
+                                            <Button
+                                              className="ml-2"
+                                              onClick={() => {
+                                                setIdCoorientador(null)
+                                              }}
+                                            >
+                                              Limpar seleção
+                                            </Button>
+                                          )
+                                        }
+
+
+
                                       </div>
                                     </div>
                                   </div>
