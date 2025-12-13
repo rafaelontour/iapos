@@ -188,8 +188,8 @@ export function DiscentesGraduate(props: Props) {
     );
 
 
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 4 }, (_, i) => currentYear - (3 - i)); // Ordenando os anos em ordem crescente
+    const currentYear = new Date().getFullYear() + 1;
+    const years = Array.from({ length: 12 }, (_, index) => currentYear - index); // Ordenando os anos em ordem crescente
 
     const handleYearsChange = (index: number, years: string[]) => {
         const newSelectedYears = [...selectedYears];

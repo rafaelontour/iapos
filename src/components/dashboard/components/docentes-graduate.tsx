@@ -401,6 +401,8 @@ export function DocentesGraduate(props: Props) {
   const [input2, setInput2] = useState('')
 
   const filteredTotal: any = Array.isArray(researcher) ? researcher.filter(item => {
+    
+    console.log("researcher: ", item)
     // Normaliza a string do item e da busca para comparação
     const normalizeString = (str: any) => str
       .normalize("NFD") // Decompõe os caracteres acentuados
@@ -617,8 +619,8 @@ export function DocentesGraduate(props: Props) {
   const [anosComoPermanente, setAnosComoPermanente] = useState<{ tipo: string, ano: string }[]>([]);
   const [anosComoColaborador, setAnosComoColaborador] = useState<{ tipo: string, ano: string }[]>([]);
 
-  const anoAtual = new Date().getFullYear();
-  const anos = Array.from({ length: anoAtual - 2016 + 1 }, (_, i) => anoAtual - i);
+  const anoAtual = new Date().getFullYear() + 1;
+  const anos = Array.from({ length: 12 }, (_, i) => anoAtual - i);
 
   function adicionarAnoComoColaborador(ano: string) {
 
@@ -968,12 +970,17 @@ export function DocentesGraduate(props: Props) {
                         <div className="flex flex-col gap-4 w-full">
                           <div className="flex items-center justify-between gap-2">
                             <p className="text-[22px]">Anos de participação</p>
+
                             <Button
                               onClick={() => handleSubmitPesquisador(props.graduate_program_id, props.researcher_id)}
                             >
                               <RefreshCcw size={16} /> Atualizar dados
                             </Button>
                           </div>
+
+                          {
+                            
+                          }
 
 
                           <div className="flex items-center gap-2 w-fit -mt-1 rounded-md border border-gray-300 overflow-hidden">
