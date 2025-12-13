@@ -19,7 +19,6 @@ import { GraficoQtdCitacoesAno } from "./gráficos/grafico-qtd-citacoes-ano";
 import { GraficoQtdOrientacoes } from "./gráficos/grafico-qtd-orientacoes";
 import { GraficoQtdProducaoTecnica } from "./gráficos/grafico-qtd-producao-tecnica";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import { Research } from "./researcher-page";
 
 type Dados = {
   count_article: number
@@ -77,7 +76,7 @@ type PesosProducao = {
 
 
 
-export function ResearcherIndicators(props: Research) {
+export function ResearcherIndicators(props: any) {
 
   type Filter = {
     year: number[]

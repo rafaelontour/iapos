@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { CalendarBlank, PuzzlePiece, Rows, SquaresFour } from "phosphor-react"
 import { useContext, useMemo, useState } from "react"
 import { UserContext } from "../../context/context"
-import { Research } from "../researcher/researcher-page"
 import { toast } from "sonner"
 import { Alert } from "../ui/alert"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
@@ -42,7 +41,7 @@ export function InfoPavimentoCargo(props:Props) {
     const [mestrado, setMestrado] = useState('')
     const [doutorado, setDoutorado] = useState('')
     const [loading, isLoading] = useState(true)
-    const [researcher, setResearcher] = useState<Research[]>([]); 
+    const [researcher, setResearcher] = useState<any[]>([]); 
    
     let urlTermPesquisadores = urlGeral + `researcherName?name=${props.name}`;
 

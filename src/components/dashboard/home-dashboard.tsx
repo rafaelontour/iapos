@@ -8,7 +8,6 @@ import { Helmet } from "react-helmet";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList } from "../ui/tabs";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import { Research } from "../researcher/researcher-page";
 
 import { useQuery } from "./builder-page/tabelas/tabela-artigos";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -26,7 +25,6 @@ export function HomeDashboard() {
 
 
   const queryUrl = useQuery();
-  const [researcher, setResearcher] = useState<Research[]>([]);
 
 
 
@@ -84,7 +82,7 @@ export function HomeDashboard() {
 
         const data = await response.json();
         if (data) {
-          setResearcher(data);
+          
           isLoading(false)
         }
 

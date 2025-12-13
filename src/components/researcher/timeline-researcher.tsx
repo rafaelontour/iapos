@@ -8,7 +8,6 @@ import { MapPin } from "lucide-react"
 
 import dt from '../../assets/dt.png'
 import pq from '../../assets/pq.png'
-import { Research } from "./researcher-page"
 
 
 type Dados = {
@@ -39,7 +38,7 @@ type Dados = {
     SQ: number
 }
 
-export function TimeLineResearcher(props: Research) {
+export function TimeLineResearcher(props: any) {
     const [, isLoading] = useState(false)
 
     const [dados, setDados] = useState<Dados[]>([]);
