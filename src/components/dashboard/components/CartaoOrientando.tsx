@@ -313,6 +313,19 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     }
 
+   function formatarDataPtBR_semFuso(dataIso) {
+        const data = new Date(dataIso);
+
+        const dia = data.getUTCDate();
+        const mes = new Intl.DateTimeFormat('pt-BR', {
+            month: 'long',
+            timeZone: 'UTC'
+        }).format(data);
+        const ano = data.getUTCFullYear();
+
+        return `${dia} de ${mes} de ${ano}`;
+    }
+
     return (
         <div className={`flex flex-col items-center ${o.orientacaoC.tags.length > 0 ? "gap-5" : "gap-9"} border rounded-md shadow-md p-5 h-fit relative overflow-hidden`}>
             <div className="flex flex-col w-full gap-6">
@@ -443,7 +456,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
                             <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
                                 <p className="text-lg font-bold whitespace-nowrap">Data de entrada: </p>
-                                <p>{dataFormatada(o.orientacaoC.start_date)}</p>
+                                <p>{formatarDataPtBR_semFuso(o.orientacaoC.start_date)}</p>
                             </div>
 
                             <div className="flex gap-3 w-full border border-gray-300 rounded-md p-3">
