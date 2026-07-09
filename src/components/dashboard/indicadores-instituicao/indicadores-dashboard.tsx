@@ -281,7 +281,7 @@ export function IndicadoresDashboard() {
         const data = await response.json();
         if (data) {
           setTotal(data)
-         
+
         }
       } catch (err) {
         console.log(err);
@@ -294,14 +294,14 @@ export function IndicadoresDashboard() {
 
   console.log(urlPatrimonioInsert)
 
-  
+
   const [profile, setProfile] = useState({
     img_perfil: '',
     img_background: '',
     institution_id: '',
-    color:'',
-    site:'',
-    name:''
+    color: '',
+    site: '',
+    name: ''
   });
 
   useEffect(() => {
@@ -309,13 +309,13 @@ export function IndicadoresDashboard() {
       setProfile((prevProfile) => ({
         ...prevProfile,
         institution_id: total[0]?.institution_id || '', // Se não for array, pega direto
-        name: total[0]?.name || '' 
+        name: total[0]?.name || ''
       }));
     }
   }, [total]); // Atualiza sempre que `total` mudar
-  
 
-  console.log('total',total)
+
+  console.log('total', total)
 
 
 
@@ -414,26 +414,26 @@ export function IndicadoresDashboard() {
   const db = getFirestore();
   const storage = getStorage();
   const isDataLoaded = useRef(false); // Evita loops de salvamento
-  
+
   // Carregar dados ao montar a página
   useEffect(() => {
     if (profile.institution_id) {
       const fetchInstitutionData = async () => {
         const docRef = doc(db, "institutions", profile.institution_id);
         const docSnap = await getDoc(docRef);
-  
+
         if (docSnap.exists()) {
           const data = docSnap.data();
-  
+
           setProfile({
-            institution_id:data?.institution_id || '',
+            institution_id: data?.institution_id || '',
             img_background: data?.img_background || "",
             img_perfil: data?.img_perfil || "",
             color: data?.color || "",
             site: data?.site || "",
             name: data?.name || "",
           });
-  
+
           isDataLoaded.current = true; // Marca que os dados foram carregados
         } else {
           console.log("Instituição não encontrada. Criando novo registro...");
@@ -447,13 +447,13 @@ export function IndicadoresDashboard() {
           isDataLoaded.current = true;
         }
       };
-  
+
       fetchInstitutionData();
     }
   }, [profile.institution_id]);
 
-  console.log('profile',profile)
-  
+  console.log('profile', profile)
+
   // Salvar automaticamente no Firebase quando os dados mudam
   useEffect(() => {
     if (profile.institution_id && isDataLoaded.current) {
@@ -463,39 +463,39 @@ export function IndicadoresDashboard() {
       saveData();
     }
   }, [profile]);
-  
+
   // Função para upload de imagem
   const handleUpload = async (folder: "perfil" | "background") => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
     fileInput.click();
-  
+
     fileInput.onchange = async (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (!file || !profile.institution_id) return;
-  
+
       const storagePath = `institutions/${profile.institution_id}/${folder}/${file.name}`;
       const storageRef = ref(storage, storagePath);
-      
+
       toast.info("Enviando imagem...");
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
-  
+
       setProfile((prev) => ({
         ...prev,
         img_background: folder === "background" ? downloadURL : prev.img_background,
         img_perfil: folder === "perfil" ? downloadURL : prev.img_perfil,
       }));
-  
+
       await setDoc(doc(db, "institutions", profile.institution_id), { [`img_${folder}`]: downloadURL }, { merge: true });
-  
+
       toast.success("Upload concluído!");
     };
   };
 
 
-  
+
   return (
     <>
       <Helmet>
@@ -523,20 +523,20 @@ export function IndicadoresDashboard() {
 
                     <TabsTrigger value="all" className="text-zinc-600 dark:text-zinc-200">Visão geral</TabsTrigger>
 
-                   
+
 
                   </TabsList>
                   {version && (
-             <Button size={'sm'}
-             onClick={() => onOpen('import-docentes')}><FileXls size={16} />Importar dados dos docentes</Button>
-         )}
+                    <Button size={'sm'}
+                      onClick={() => onOpen('import-docentes')}><FileXls size={16} />Importar dados dos docentes</Button>
+                  )}
 
-{version && (
-             <Button size={'sm'}
-             onClick={() => onOpen('import-taes')}><FileXls size={16} />Importar dados dos técnicos</Button>
-         )}
+                  {version && (
+                    <Button size={'sm'}
+                      onClick={() => onOpen('import-taes')}><FileXls size={16} />Importar dados dos técnicos</Button>
+                  )}
 
-               
+
                 </div>
               </div>
 
@@ -545,90 +545,90 @@ export function IndicadoresDashboard() {
             <TabsContent value="all" className="h-auto flex flex-col gap-4 md:gap-8  mt-2">
               <div className="flex flex-col items-center md:flex-row gap-6 w-full">
 
-              <div className="w-full">
-      {/* 🔹 Seção de Background */}
-      <Alert
-        className="h-[200px] flex justify-end bg-no-repeat bg-center bg-cover"
-        style={{ backgroundImage: `url(${profile.img_background})` }}
-      >
-        <Button variant="outline" size="sm" onClick={() => handleUpload("background")}>
-          <Upload size={16} /> Alterar imagem
-        </Button>
-      </Alert>
+                <div className="w-full">
+                  {/* 🔹 Seção de Background */}
+                  <Alert
+                    className="h-[200px] flex justify-end bg-no-repeat bg-center bg-cover"
+                    style={{ backgroundImage: `url(${profile.img_background})` }}
+                  >
+                    <Button variant="outline" size="sm" onClick={() => handleUpload("background")}>
+                      <Upload size={16} /> Alterar imagem
+                    </Button>
+                  </Alert>
 
-      {/* 🔹 Avatar do usuário */}
-      <div className="relative group w-fit -top-16 px-16">
-        <Alert
-          className="aspect-square bg-no-repeat bg-center bg-contain rounded-md h-28 bg-white dark:bg-white"
-          style={{ backgroundImage: `url(${profile.img_perfil})` }}
-        ></Alert>
-        {/* 🔹 Overlay de Upload */}
-        <div
-          className="aspect-square rounded-md h-28 group-hover:flex bg-black/20 items-center justify-center absolute hidden top-0 z-[1] cursor-pointer"
-          onClick={() => handleUpload('perfil')}
-        >
-          <Upload size={20} />
-        </div>
-      </div>
+                  {/* 🔹 Avatar do usuário */}
+                  <div className="relative group w-fit -top-16 px-16">
+                    <Alert
+                      className="aspect-square bg-no-repeat bg-center bg-contain rounded-md h-28 bg-white dark:bg-white"
+                      style={{ backgroundImage: `url(${profile.img_perfil})` }}
+                    ></Alert>
+                    {/* 🔹 Overlay de Upload */}
+                    <div
+                      className="aspect-square rounded-md h-28 group-hover:flex bg-black/20 items-center justify-center absolute hidden top-0 z-[1] cursor-pointer"
+                      onClick={() => handleUpload('perfil')}
+                    >
+                      <Upload size={20} />
+                    </div>
+                  </div>
 
-      {/* 🔹 Accordion com detalhes */}
-      <Accordion type="single" collapsible>
-        <AccordionItem value="item-1">
-          <div className="md:px-16 -top-8 relative flex justify-between">
-            <div>
-            <h1 className="text-2xl max-w-[800px] font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] md:block">
-                      {total.map((props) => props.name)}
-                    </h1>
-                    <div className="text-sm text-gray-500 dark:text-gray-300 font-normal flex gap-1 items-center capitalize"><Hash size={12} />{total.map((props) => props.institution_id)}</div>
-            </div>
-            <AccordionTrigger />
-          </div>
+                  {/* 🔹 Accordion com detalhes */}
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="item-1">
+                      <div className="md:px-16 -top-8 relative flex justify-between">
+                        <div>
+                          <h1 className="text-2xl max-w-[800px] font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] md:block">
+                            {total.map((props) => props.name)}
+                          </h1>
+                          <div className="text-sm text-gray-500 dark:text-gray-300 font-normal flex gap-1 items-center capitalize"><Hash size={12} />{total.map((props) => props.institution_id)}</div>
+                        </div>
+                        <AccordionTrigger />
+                      </div>
 
-          <AccordionContent className="md:px-16 flex gap-4 w-full">
-            {/* 🔹 Campo Site */}
-            <div className="flex flex-col gap-2 w-full">
-              <LabelUi>Site da instituição</LabelUi>
-              <Input
-                type="text"
-                value={profile.site}
-                onChange={(e) => {
-                  setProfile((prev) => ({ ...prev, site: e.target.value }));
-                  
-                }}
-              />
-            </div>
+                      <AccordionContent className="md:px-16 flex gap-4 w-full">
+                        {/* 🔹 Campo Site */}
+                        <div className="flex flex-col gap-2 w-full">
+                          <LabelUi>Site da instituição</LabelUi>
+                          <Input
+                            type="text"
+                            value={profile.site}
+                            onChange={(e) => {
+                              setProfile((prev) => ({ ...prev, site: e.target.value }));
 
-            {/* 🔹 Campo Cor Base */}
-            <div className="flex flex-col gap-2 w-full">
-              <LabelUi>Cor base</LabelUi>
-              <div className="flex gap-4">
-                <Input
-                  type="text"
-                  value={profile.color}
-                  onChange={(e) => {
-                    setProfile((prev) => ({ ...prev, color: e.target.value }));
-                  
-                  }}
-                />
-                <ColorPicker
-                  value={profile.color}
-                  onChange={(v) => {
-                    setProfile((prev) => ({ ...prev, color: v }));
-                   
-                  }}
-                />
+                            }}
+                          />
+                        </div>
+
+                        {/* 🔹 Campo Cor Base */}
+                        <div className="flex flex-col gap-2 w-full">
+                          <LabelUi>Cor base</LabelUi>
+                          <div className="flex gap-4">
+                            <Input
+                              type="text"
+                              value={profile.color}
+                              onChange={(e) => {
+                                setProfile((prev) => ({ ...prev, color: e.target.value }));
+
+                              }}
+                            />
+                            <ColorPicker
+                              value={profile.color}
+                              onChange={(v) => {
+                                setProfile((prev) => ({ ...prev, color: v }));
+
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+
+
               </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
 
-
-
-              </div>
-
-              <div className={`grid gap-4 md:grid-cols-2 md:gap-8  ${version ? ('lg:grid-cols-4'):('lg:grid-cols-3')}`}>
+              <div className={`grid gap-4 md:grid-cols-2 md:gap-8  ${version ? ('lg:grid-cols-4') : ('lg:grid-cols-3')}`}>
                 <Alert className="p-0">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
@@ -661,22 +661,22 @@ export function IndicadoresDashboard() {
                   </Alert>
                 )}
 
-               
-                  <Alert className="p-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Total de discentes
-                      </CardTitle>
-                      <Student className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{total.map((props) => props.count_gps)}</div>
-                      <p className="text-xs text-muted-foreground">
-                        cadastrados
-                      </p>
-                    </CardContent>
-                  </Alert>
-               
+
+                <Alert className="p-0">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Total de discentes
+                    </CardTitle>
+                    <Student className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{total.map((props) => props.count_gps)}</div>
+                    <p className="text-xs text-muted-foreground">
+                      cadastrados
+                    </p>
+                  </CardContent>
+                </Alert>
+
 
                 <Alert className="p-0">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -718,59 +718,59 @@ export function IndicadoresDashboard() {
 
               <h3 className="text-2xl font-medium ">Atualização de dados</h3>
 
-           {version && (   <h3 className="text-2xl font-medium ">Atualização de dados</h3>)}
-              
-           {version && (
-  <div className="gap-8 grid lg:grid-cols-2">
-    <Alert className="bg-eng-blue dark:bg-eng-blue text-white">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Importação de Dados</CardTitle>
-        <Users className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <div className="flex gap-6 justify-between">
-        <CardContent>
-          <div className="text-2xl font-bold">
-            Mantenha os dados sempre atualizados! Faça o upload do arquivo <strong>.xls</strong> com as informações dos docentes.
-          </div>
-          <div className="flex gap-3 mt-3">
-            <Button onClick={() => onOpenModal('import-docentes')}  size="sm" variant="link" className="text-white">
-              <FileXls size={16} />
-              Enviar arquivo
-            </Button>
-          </div>
-        </CardContent>
-      </div>
-    </Alert>
+              {version && (<h3 className="text-2xl font-medium ">Atualização de dados</h3>)}
 
-    <Alert className="bg-eng-dark-blue text-white">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Importação de Dados</CardTitle>
-        <UserCog className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <div className="flex gap-6 justify-between">
-        <CardContent>
-          <div className="text-2xl font-bold">
-            Padronize suas informações! Faça upload do arquivo <strong>.xls</strong> para importar os dados dos TAEs.
-          </div>
-          <div className="flex gap-3 mt-3">
-            <Button onClick={() => onOpenModal('import-taes')} size="sm" variant="link" className="text-white">
-              <FileXls size={16} />
-              Enviar arquivo
-            </Button>
-          </div>
-        </CardContent>
-      </div>
-    </Alert>
-  </div>
-)}
+              {version && (
+                <div className="gap-8 grid lg:grid-cols-2">
+                  <Alert className="bg-eng-blue dark:bg-eng-blue text-white">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Importação de Dados</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <div className="flex gap-6 justify-between">
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          Mantenha os dados sempre atualizados! Faça o upload do arquivo <strong>.xls</strong> com as informações dos docentes.
+                        </div>
+                        <div className="flex gap-3 mt-3">
+                          <Button onClick={() => onOpenModal('import-docentes')} size="sm" variant="link" className="text-white">
+                            <FileXls size={16} />
+                            Enviar arquivo
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </div>
+                  </Alert>
+
+                  <Alert className="bg-eng-dark-blue text-white">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Importação de Dados</CardTitle>
+                      <UserCog className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <div className="flex gap-6 justify-between">
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          Padronize suas informações! Faça upload do arquivo <strong>.xls</strong> para importar os dados dos TAEs.
+                        </div>
+                        <div className="flex gap-3 mt-3">
+                          <Button onClick={() => onOpenModal('import-taes')} size="sm" variant="link" className="text-white">
+                            <FileXls size={16} />
+                            Enviar arquivo
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </div>
+                  </Alert>
+                </div>
+              )}
 
 
-             
+
             </TabsContent>
 
-           
 
-           
+
+
           </Tabs>
         </main>
       )}

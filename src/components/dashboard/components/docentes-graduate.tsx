@@ -118,9 +118,10 @@ export function DocentesGraduate(props: Props) {
         const colaboradores = researchersOrdenados.filter(
           (r: any) => r.participation[0]?.type_ === "COLABORADOR"
         ).length;
+        const anoAtual = new Date().getFullYear();
 
-        const permanentes = researchersOrdenados.filter(
-          (r: any) => r.participation[0]?.type_ === "PERMANENTE"
+        const permanentes = researchersOrdenados.filter((r: any) =>
+          r.participation?.some((p: any) => p.type_ === "PERMANENTE" && p.year === anoAtual)
         ).length;
 
         setContColaboradores(colaboradores);
@@ -401,7 +402,7 @@ export function DocentesGraduate(props: Props) {
   const [input2, setInput2] = useState('')
 
   const filteredTotal: any = Array.isArray(researcher) ? researcher.filter(item => {
-    
+
     console.log("researcher: ", item)
     // Normaliza a string do item e da busca para comparação
     const normalizeString = (str: any) => str
@@ -979,7 +980,7 @@ export function DocentesGraduate(props: Props) {
                           </div>
 
                           {
-                            
+
                           }
 
 

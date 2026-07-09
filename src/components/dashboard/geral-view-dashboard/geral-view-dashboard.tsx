@@ -48,11 +48,11 @@ type Background = {
   id: string;
   imgURL: string;
   titulo: string
-  descricao:string
-  botao:string
-  link:string 
-  textColor:string 
-  color:string
+  descricao: string
+  botao: string
+  link: string
+  textColor: string
+  color: string
 };
 
 export function GeralViewDashboard() {
@@ -245,12 +245,12 @@ export function GeralViewDashboard() {
 
     try {
       // Cria uma query para buscar o documento com o campo 'id' igual ao id fornecido
-      const q = query(collection(db, (version ? ('background'):('background_iapos'))), where('id', '==', id));
+      const q = query(collection(db, (version ? ('background') : ('background_iapos'))), where('id', '==', id));
       const querySnapshot = await getDocs(q);
 
       querySnapshot.forEach(async (docSnapshot) => {
         // Referência do documento no Firestore
-        const docRef = doc(db, (version ? ('background'):('background_iapos')), docSnapshot.id);
+        const docRef = doc(db, (version ? ('background') : ('background_iapos')), docSnapshot.id);
         await deleteDoc(docRef);
 
         // Atualiza o estado para remover o item excluído
@@ -272,16 +272,16 @@ export function GeralViewDashboard() {
 
   useEffect(() => {
     const fetchEmails = async () => {
-      const querySnapshot = await getDocs(collection(db, (version ? ('background'):('background_iapos'))));
+      const querySnapshot = await getDocs(collection(db, (version ? ('background') : ('background_iapos'))));
       const emailsData = querySnapshot.docs.map(doc => ({
         id: doc.data().id,
         titulo: doc.data().titulo,
         imgURL: doc.data().imgURL,
         descricao: doc.data().descricao,
-        botao:doc.data().botao,
-        link:doc.data().link,
-        color:doc.data().color,
-        textColor:doc.data().textColor
+        botao: doc.data().botao,
+        link: doc.data().link,
+        color: doc.data().color,
+        textColor: doc.data().textColor
       }));
 
 
@@ -336,12 +336,12 @@ export function GeralViewDashboard() {
 
           </div>
 
-      
-      
+
+
 
           <TabsContent value="all" className=" ">
             <div className={`p-4 md:p-8 pt-0 md:pt-0 h-auto flex flex-col gap-4 md:gap-8`}>
-              <div className={`grid gap-4 md:grid-cols-2 md:gap-8 ${version ? ('lg:grid-cols-4'):('lg:grid-cols-3')}`}>
+              <div className={`grid gap-4 md:grid-cols-2 md:gap-8 ${version ? ('lg:grid-cols-4') : ('lg:grid-cols-3')}`}>
                 <Link to={"/dashboard/pesquisadores"}>
                   <Alert className="p-0">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -359,24 +359,24 @@ export function GeralViewDashboard() {
                   </Alert>
                 </Link>
 
-              {version && (
+                {version && (
                   <Link to={'/dashboard/indicadores'}>
-                  <Alert className="p-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Total de Técnicos
-                      </CardTitle>
-                      <UserCog className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{total.map((props) => props.count_t)}</div>
-                      <p className="text-xs text-muted-foreground">
-                        registrados
-                      </p>
-                    </CardContent>
-                  </Alert>
-                </Link>
-              )}
+                    <Alert className="p-0">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          Total de Técnicos
+                        </CardTitle>
+                        <UserCog className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">{total.map((props) => props.count_t)}</div>
+                        <p className="text-xs text-muted-foreground">
+                          registrados
+                        </p>
+                      </CardContent>
+                    </Alert>
+                  </Link>
+                )}
 
                 <Alert className="p-0">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -437,23 +437,24 @@ export function GeralViewDashboard() {
                                 <div className="w-8 h-8 rounded-md whitespace-nowrap bg-cover bg-center bg-no-repeat " style={{ backgroundImage: `url(${props.imgURL})` }} />
                                 <p className="max-w-[150px] truncate text-sm text-gray-500">{props.titulo}</p>
                               </div>
-                              
+
 
                               <div className="flex gap-2 items-center">
-                             {props.link && (
-                              <Link to={props.link} target="_blank"> <Button variant={'ghost'} className="h-8"><Link2 size={16}/> Acessar link</Button></Link>
-                             )}
+                                {props.link && (
+                                  <Link to={props.link} target="_blank"> <Button variant={'ghost'} className="h-8"><Link2 size={16} /> Acessar link</Button></Link>
+                                )}
 
-                              <Button onClick={() => onOpen('edit-background', {
-                                id:props.id,
-                                titulo:props.titulo,
-                                descricao:props.descricao,
-                                botao:props.botao,
-                                link:props.link,
-                                imgURL:props.imgURL,
-                                color:props.color,
-                                textColor:props.textColor                              })} variant={'ghost'} size={'icon'} className="h-8 w-8 transition-all group-hover:flex"><Pencil size={13} /></Button>
-                              <Button onClick={() => deleteItem(props.id)} variant={'destructive'} size={'icon'} className="h-8 w-8  transition-all group-hover:flex"><Trash size={13} /></Button>
+                                <Button onClick={() => onOpen('edit-background', {
+                                  id: props.id,
+                                  titulo: props.titulo,
+                                  descricao: props.descricao,
+                                  botao: props.botao,
+                                  link: props.link,
+                                  imgURL: props.imgURL,
+                                  color: props.color,
+                                  textColor: props.textColor
+                                })} variant={'ghost'} size={'icon'} className="h-8 w-8 transition-all group-hover:flex"><Pencil size={13} /></Button>
+                                <Button onClick={() => deleteItem(props.id)} variant={'destructive'} size={'icon'} className="h-8 w-8  transition-all group-hover:flex"><Trash size={13} /></Button>
                               </div>
                             </Alert>
                           )
@@ -480,120 +481,120 @@ export function GeralViewDashboard() {
 
                   </CardHeader>
                   <CardContent>
-                  <Feedbacks/>
-                   
+                    <Feedbacks />
+
                   </CardContent>
                 </Alert>
 
-                
 
-              
+
+
               </div>
 
               <div className="w-full ">
                 <Alert className="w-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div>
-                <CardTitle className="text-sm font-medium">
-                Evolução do número de usuários ativos 
-                </CardTitle>
-                <CardDescription>Últimos 30 dia</CardDescription>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <div>
+                      <CardTitle className="text-sm font-medium">
+                        Evolução do número de usuários ativos
+                      </CardTitle>
+                      <CardDescription>Últimos 30 dia</CardDescription>
+                    </div>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                        <TooltipContent>
+                          <p>Fonte: Google Analytics</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                  </CardHeader>
+
+                  <CardContent className="flex py-0 flex-1  items-center justify-center">
+                    <ContagemEventos30Dias />
+                  </CardContent>
+                </Alert>
               </div>
 
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                  <TooltipContent>
-                    <p>Fonte: Google Analytics</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
 
-            </CardHeader>
-
-            <CardContent className="flex py-0 flex-1  items-center justify-center">
-            <ContagemEventos30Dias />
-            </CardContent>
-          </Alert>
-                </div>
-
-
-                <div className="grid lg:grid-cols-2 gap-8">
+              <div className="grid lg:grid-cols-2 gap-8">
                 <Alert className="w-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div>
-                <CardTitle className="text-sm font-medium">
-                Distribuição percentual dos eventos
-                </CardTitle>
-                <CardDescription>Últimos 30 dia</CardDescription>
-              </div>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <div>
+                      <CardTitle className="text-sm font-medium">
+                        Distribuição percentual dos eventos
+                      </CardTitle>
+                      <CardDescription>Últimos 30 dia</CardDescription>
+                    </div>
 
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                  <TooltipContent>
-                    <p>Fonte: Google Analytics</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                        <TooltipContent>
+                          <p>Fonte: Google Analytics</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-            </CardHeader>
+                  </CardHeader>
 
-            <CardContent className="flex py-0 flex-1  items-center justify-center">
-            <PercentualEventos />
-            </CardContent>
-          </Alert>
-
-          <Alert className="w-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div>
-                <CardTitle className="text-sm font-medium">
-                Contagem de eventos por dia
-                </CardTitle>
-                <CardDescription>Últimos 30 dia</CardDescription>
-              </div>
-
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                  <TooltipContent>
-                    <p>Fonte: Google Analytics</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-            </CardHeader>
-
-            <CardContent className="flex py-0 flex-1  items-center justify-center">
-            <GraficoContagemEventosDia />
-            </CardContent>
-          </Alert>
-                </div>
+                  <CardContent className="flex py-0 flex-1  items-center justify-center">
+                    <PercentualEventos />
+                  </CardContent>
+                </Alert>
 
                 <Alert className="w-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div>
-                <CardTitle className="text-sm font-medium">
-                Número de eventos por país
-                </CardTitle>
-                <CardDescription>Últimos 30 dia</CardDescription>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <div>
+                      <CardTitle className="text-sm font-medium">
+                        Contagem de eventos por dia
+                      </CardTitle>
+                      <CardDescription>Últimos 30 dia</CardDescription>
+                    </div>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                        <TooltipContent>
+                          <p>Fonte: Google Analytics</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                  </CardHeader>
+
+                  <CardContent className="flex py-0 flex-1  items-center justify-center">
+                    <GraficoContagemEventosDia />
+                  </CardContent>
+                </Alert>
               </div>
 
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
-                  <TooltipContent>
-                    <p>Fonte: Google Analytics</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Alert className="w-full">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <div>
+                    <CardTitle className="text-sm font-medium">
+                      Número de eventos por país
+                    </CardTitle>
+                    <CardDescription>Últimos 30 dia</CardDescription>
+                  </div>
 
-            </CardHeader>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger> <Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                      <TooltipContent>
+                        <p>Fonte: Google Analytics</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
 
-            <CardContent className="flex py-0 flex-1  items-center justify-center">
-            <PaisesAcessos />
-            </CardContent>
-          </Alert>
+                </CardHeader>
+
+                <CardContent className="flex py-0 flex-1  items-center justify-center">
+                  <PaisesAcessos />
+                </CardContent>
+              </Alert>
             </div>
 
           </TabsContent>
@@ -603,9 +604,9 @@ export function GeralViewDashboard() {
           </TabsContent>
 
           <TabsContent value="unread" className="h-full flex flex-col gap-4 md:gap-8 px-4 md:px-8 m-0  ">
-         <div className="h-full flex flex-col gap-4  md:gap-8  mb-[50px]  ">
-         <FirestoreView/>
-         </div>
+            <div className="h-full flex flex-col gap-4  md:gap-8  mb-[50px]  ">
+              <FirestoreView />
+            </div>
           </TabsContent>
         </Tabs>
       </main>

@@ -284,10 +284,8 @@ export function AddResearcherDashboard() {
             .normalize("NFD")
             .replace(/[̀-ͯ]/g, "")
             .toLowerCase();
-
         const searchString = normalizeString(item.name);
         const normalizedSearch = normalizeString(search);
-
         return (
             searchString.includes(normalizedSearch)
         );
@@ -623,7 +621,6 @@ export function AddResearcherDashboard() {
 
                                                         <Masonry gutter="16px">
                                                             {filteredTotal.slice(0, count).map((props: any) => {
-
                                                                 return (
                                                                     <div onClick={() => onOpen('researcher-modal', { name: props.name })} className="flex group min-h-[300px] w-full cursor-pointer">
                                                                         <Alert className="flex p-0 flex-col flex-1 gap-4 bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url("${urlGeral}ResearcherData/Image?name=${props.name}")` }}>

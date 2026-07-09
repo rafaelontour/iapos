@@ -17,6 +17,7 @@ export interface Pesquisador {
     institution_id: string
     last_update?: string
     areas: AreaEntry[]
+    participation: any[]
     status: boolean
     create_at?: string
 }
