@@ -1074,7 +1074,15 @@ export function DocentesGraduate(props: Props) {
                               </TabsTrigger> 
                               <Separator orientation="vertical" />
                               {!isProjetoZerado && (
-                                <TabsTrigger value="projetos_defendidos">Projetos Defendidos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
+                                <>
+                                  <TabsTrigger value="projetos_defendidos">
+                                    Projetos Defendidos &nbsp; 
+                                    <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center bg-eng-blue text-white">
+                                      {orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length : "0"}
+                                    </span>
+                                  </TabsTrigger> 
+                                  <Separator orientation="vertical" />
+                                </>
                               )}
                               <TabsTrigger value="qualificados">Qualificados &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
                               <TabsTrigger value="concluidos">Concluídos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
