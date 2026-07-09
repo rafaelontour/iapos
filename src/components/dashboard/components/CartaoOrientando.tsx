@@ -48,20 +48,15 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
 
     const tipo = () => {
-        if (o.orientacaoC.type === 'PROJETO') {
-            return 'Previsão de defesa do projeto:'
-        }
-
-        if (o.orientacaoC.type === 'QUALIFICAÇÃO') {
-            return 'Previsão de qualificação:'
-        }
-
-        if (o.orientacaoC.type === 'CONCLUSÃO') {
-            return 'Previsão de defesa final:'
-        }
-
-        if (o.orientacaoC.type === 'FINALIZADO') {
-            return 'Concluído em: '
+        if (o.tipoPrograma === 'Mestrado') {
+            if (o.orientacaoC.type === 'QUALIFICAÇÃO') return 'Previsão de qualificação:'
+            if (o.orientacaoC.type === 'CONCLUSÃO') return 'Previsão de defesa final:'
+            if (o.orientacaoC.type === 'FINALIZADO') return 'Concluído em: '
+        } else {
+            if (o.orientacaoC.type === 'PROJETO') return 'Previsão de defesa do projeto:'
+            if (o.orientacaoC.type === 'QUALIFICAÇÃO') return 'Previsão de qualificação:'
+            if (o.orientacaoC.type === 'CONCLUSÃO') return 'Previsão de defesa final:'
+            if (o.orientacaoC.type === 'FINALIZADO') return 'Concluído em: '
         }
     }
 
@@ -86,21 +81,13 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     }
 
     const calcularData = () => {
-        if (o.orientacaoC.type === "PROJETO") {
-            return formatarData(o.orientacaoC.planned_date_project)
-        }
-
-        if (o.orientacaoC.type === "QUALIFICAÇÃO") {
+        if (o.tipoPrograma === "Mestrado" && o.orientacaoC.type === "QUALIFICAÇÃO") {
             return formatarData(o.orientacaoC.planned_date_qualification)
         }
-
-        if (o.orientacaoC.type === "CONCLUSÃO") {
-            return formatarData(o.orientacaoC.planned_date_conclusion)
-        }
-
-        if (o.orientacaoC.type === "FINALIZADO") {
-            return formatarData(o.orientacaoC.done_date_conclusion)
-        }
+        if (o.orientacaoC.type === "PROJETO") return formatarData(o.orientacaoC.planned_date_project)
+        if (o.orientacaoC.type === "QUALIFICAÇÃO") return formatarData(o.orientacaoC.planned_date_qualification)
+        if (o.orientacaoC.type === "CONCLUSÃO") return formatarData(o.orientacaoC.planned_date_conclusion)
+        if (o.orientacaoC.type === "FINALIZADO") return formatarData(o.orientacaoC.done_date_conclusion)
     }
 
     async function getNomePorId(id: string) {
@@ -180,59 +167,27 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     }
 
     function gerarDatas(): void {
-
         const [anoStr, mesStr, diaStr] = (dataEntrada || "").split("-");
         const ano = parseInt(anoStr);
         const mes = parseInt(mesStr) - 1;
         const dia = parseInt(diaStr);
 
-        const data = new Date(ano, mes, dia);
-        let mesesAdicionais: number;
+        const projMeses = configDataSelecionada?.duration_project_months || 0;
+        const qualMeses = configDataSelecionada?.duration_qualification_months || 0;
+        const concMeses = configDataSelecionada?.duration_conclusion_months || 0;
 
+        // 1. Previsão do Projeto (Soma apenas meses do projeto a partir da entrada)
+        const dProj = new Date(ano, mes + projMeses, dia);
+        setDataPrevisaoDefesa(`${dProj.getFullYear()}-${String(dProj.getMonth() + 1).padStart(2, "0")}-${diaStr}`);
 
-        // Definindo data de previsão da defesa do projeto
+        // 2. Previsão da Qualificação (Soma projeto + qualificação a partir da entrada)
+        // Se for Mestrado, projMeses será 0, então contará perfeitamente apenas os meses de qualificação!
+        const dQual = new Date(ano, mes + projMeses + qualMeses, dia);
+        setDataPrevisaoQualificacao(`${dQual.getFullYear()}-${String(dQual.getMonth() + 1).padStart(2, "0")}-${diaStr}`);
 
-        data.setMonth(data.getMonth() + (configDataSelecionada && configDataSelecionada?.duration_project_months || 0));
-        data.setDate(dia);
-
-        const novoAno = data.getFullYear();
-        const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
-
-        const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`
-
-        setDataPrevisaoDefesa(dataFormadaPrevisao);
-
-
-
-        // Definindo data de previsão da qualificação
-        data.setMonth(data.getMonth() +
-            (configDataSelecionada && configDataSelecionada?.duration_project_months || 0) +
-            (configDataSelecionada && configDataSelecionada?.duration_qualification_months || 0));
-        data.setDate(dia);
-
-        const novoAno2 = data.getFullYear();
-        const novoMesPrevisao2 = String(data.getMonth() + 1).padStart(2, "0");
-
-        const dataFormadaPrevisao2 = `${novoAno2}-${novoMesPrevisao2}-${diaStr}`;
-
-        setDataPrevisaoQualificacao(dataFormadaPrevisao2);
-
-
-
-        // Definindo data de previsão da defesa final
-
-        data.setMonth(data.getMonth() +
-            (configDataSelecionada && configDataSelecionada?.duration_project_months || 0) +
-            (configDataSelecionada && configDataSelecionada?.duration_qualification_months || 0) +
-            (configDataSelecionada && configDataSelecionada?.duration_conclusion_months || 0));
-        data.setDate(dia);
-
-        const novoAno3 = data.getFullYear();
-        const novoMesPrevisao3 = String(data.getMonth() + 1).padStart(2, "0");
-
-        const dataFormadaPrevisao3 = `${novoAno3}-${novoMesPrevisao3}-${diaStr}`;
-
-        setDataPrevisaoDefesaFinal(dataFormadaPrevisao3);
+        // 3. Previsão da Defesa Final (Soma todas as etapas a partir da entrada)
+        const dConc = new Date(ano, mes + projMeses + qualMeses + concMeses, dia);
+        setDataPrevisaoDefesaFinal(`${dConc.getFullYear()}-${String(dConc.getMonth() + 1).padStart(2, "0")}-${diaStr}`);
     }
 
     async function salvarOrientando(evento: any) {
@@ -430,8 +385,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                         o.pesquisador.researcher_id !== docente.researcher_id ?
                                                             <option key={docente.researcher_id} value={docente.researcher_id}>{docente.name}</option>
                                                             :
-                                                            <p>
-                                                                <option disabled key={docente.researcher_id} value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
+                                                            <p key={docente.researcher_id}>
+                                                                <option disabled value={docente.researcher_id}>{docente.name} - Docente selecionado</option>
                                                             </p>
                                                     ))
                                             }
@@ -451,7 +406,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             )
                                         }
                                     </div>
-                                </div>
+                                end text-muted-foreground			</div>
                             </div>
 
                             <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
@@ -467,11 +422,11 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
                                     <select
                                         className="w-full min-w-fit border-[3px] ml-3 py-2 px-4 rounded-md"
-                                        defaultValue="" // evita ficar com um valor preso
+                                        defaultValue="" 
                                         onChange={(event) => {
                                             const obj = JSON.parse(event.target.value);
                                             setTagsSelecionadas((tagsSelecionadas) => [...tagsSelecionadas, obj]);
-                                            event.target.value = ""; // reseta o select após selecionar
+                                            event.target.value = ""; 
                                         }}
                                     >
                                         <option value="" disabled>
@@ -481,7 +436,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                         {
                                             tags &&
                                             tags
-                                                // 🚫 não mostra tags que já foram selecionadas
                                                 .filter((tag) => !tagsSelecionadas.some((t) => t.id === tag.id))
                                                 .sort((a, b) => a.name.localeCompare(b.name))
                                                 .map((tag) => (
@@ -526,7 +480,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 style={{ boxShadow: '3px 3px 3px rgba(0, 0, 0, 0.25)' }}
                             >
                                 {
-                                    o.orientacaoC.planned_date_project !== o.orientacaoC.start_date && (
+                                    o.tipoPrograma !== "Mestrado" && o.orientacaoC.planned_date_project !== o.orientacaoC.start_date && (
                                         <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
                                             <p className="text-lg font-bold">Defesa do Projeto</p>
                                             <div className="flex items-center gap-3">
@@ -536,9 +490,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                     <input
                                                         className="w-full border-[2px] border-bl px-2 py-1 rounded-md"
                                                         onChange={(e) => {
-
                                                             setDataPrevisaoDefesa(e.target.value);
-                                                            // gerarDatas(e.target.value, "DEFESA_DO_PROJETO");
                                                         }}
                                                         type="date"
                                                         id="dataPrevista"
@@ -588,9 +540,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
-
                                                     setDataPrevisaoQualificacao(e.target.value);
-                                                    // gerarDatas(e.target.value, "QUALIFICACAO");
                                                 }}
                                                 type="date"
                                                 id="dataPrevista"
@@ -617,7 +567,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                     }
                                                 }}
                                                 onClick={() => {
-                                                    if (o.orientacaoC.done_date_project == null && dataRealizadaDefesa == null) {
+                                                    if (o.tipoPrograma !== "Mestrado" && o.orientacaoC.done_date_project == null && dataRealizadaDefesa == null) {
                                                         alert("Para definir data de realização de qualificação é preciso ter concluído a defesa do projeto!");
                                                     }
                                                 }}
@@ -641,9 +591,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             <input
                                                 className="w-full border-[2px] px-2 py-1 rounded-md"
                                                 onChange={(e) => {
-
                                                     setDataPrevisaoDefesaFinal(e.target.value);
-                                                    // gerarDatas(e.target.value, "DEFESA_FINAL");
                                                 }}
 
                                                 type="date"
@@ -691,7 +639,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 <button
                                     className="bg-[#559FB8] text-white px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
                                     onClick={(e) => {
-                                        if (dataRealizadaDefesaFinal != null && (dataRealizadaQualificacao == "" || dataRealizadaDefesa == "")) {
+                                        if (dataRealizadaDefesaFinal != null && (dataRealizadaQualificacao == "" || (o.tipoPrograma !== "Mestrado" && dataRealizadaDefesa == ""))) {
                                             alert("Corrija os dados e tente novamente!");
                                             return;
                                         }

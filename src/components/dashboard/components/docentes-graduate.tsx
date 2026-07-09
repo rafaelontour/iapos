@@ -78,13 +78,6 @@ export function DocentesGraduate(props: Props) {
 
   const urlGetResearcher = `${urlGeralAdm}GraduateProgramResearcherRest/Query?graduate_program_id=${props.graduate_program_id}`;
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Função para buscar todos os pesquisadores de um programa de pós-graduação.
-   * 
-   * @returns {Promise<void>} - Uma promessa que resolve com o estado de sucesso ou falha.
-   */
-  /*******  8453ee06-4689-4b24-84d9-e9ad9f9156a2  *******/
   const fetchDataAll = async () => {
     try {
       const response = await fetch(urlGetResearcher, {
@@ -389,7 +382,7 @@ export function DocentesGraduate(props: Props) {
         return
       }
 
-      toast.success("Dados atualizados com sucesso")
+      toast.success("Dados updated com sucesso")
 
       fetchDataAll()
     }
@@ -463,10 +456,10 @@ export function DocentesGraduate(props: Props) {
     })
   }
 
-  // Regra: Verifica se a configuração selecionada ou alguma configuração carregada possui duração de projeto zerada
-  const isProjetoZerado = configDataSelecionada 
+  // Regra Corrigida: Considera também se o tipo de orientação for explicitamente "Mestrado"
+  const isProjetoZerado = tipoOrientacao === "Mestrado" || (configDataSelecionada 
     ? configDataSelecionada.duration_project_months === 0 
-    : configDatas[0]?.duration_project_months === 0;
+    : configDatas[0]?.duration_project_months === 0);
 
   // Se for mestrado sem projeto (duração = 0) e a aba atual for de projetos, força ir para a aba inicial
   useEffect(() => {
@@ -991,11 +984,6 @@ export function DocentesGraduate(props: Props) {
                             </Button>
                           </div>
 
-                          {
-
-                          }
-
-
                           <div className="flex items-center gap-2 w-fit -mt-1 rounded-md border border-gray-300 overflow-hidden">
                             <span className="flex justify-center items-center text-white h-full w-10 bg-eng-blue">
                               <AlertCircle size={17} />
@@ -1060,8 +1048,6 @@ export function DocentesGraduate(props: Props) {
 
                       <hr />
 
-                      { /* Rafael - Modificações pro IAPÓS */}
-
                       <div className="flex">
                         <Tabs defaultValue="entrada" className="w-full ">
                           <div className="flex items-center justify-between mb-3">
@@ -1123,8 +1109,8 @@ export function DocentesGraduate(props: Props) {
                                           <option value="" disabled selected>Selecione um orientando</option>
                                           {discentesPosGraduacao &&
                                             discentesPosGraduacao
-                                              .slice() // cria uma cópia para não mutar o original
-                                              .sort((a, b) => a.name.localeCompare(b.name)) // ordena por nome
+                                              .slice()
+                                              .sort((a, b) => a.name.localeCompare(b.name))
                                               .map((discente) => (
                                                 discente.oriented === false && (
                                                   <option key={discente.researcher_id} value={discente.researcher_id}>
@@ -1252,11 +1238,11 @@ export function DocentesGraduate(props: Props) {
 
                                       <select
                                         className="w-full min-w-fit border-[3px] ml-3 py-2 px-4 rounded-md"
-                                        defaultValue="" // evita ficar com um valor preso
+                                        defaultValue=""
                                         onChange={(event) => {
                                           const obj = JSON.parse(event.target.value);
                                           setTagsSelecionadas((tagsSelecionadas) => [...tagsSelecionadas, obj]);
-                                          event.target.value = ""; // reseta o select após selecionar
+                                          event.target.value = "";
                                         }}
                                       >
                                         <option value="" disabled>
@@ -1266,7 +1252,6 @@ export function DocentesGraduate(props: Props) {
                                         {
                                           tags &&
                                           tags
-                                            // 🚫 não mostra tags que já foram selecionadas
                                             .filter((tag) => !tagsSelecionadas.some((t) => t.id === tag.id))
                                             .sort((a, b) => a.name.localeCompare(b.name))
                                             .map((tag) => (
@@ -1330,9 +1315,6 @@ export function DocentesGraduate(props: Props) {
                                                   return;
                                                 }
                                               }}
-                                              onKeyDown={(e) => {
-
-                                              }}
                                               onChange={(e) => {
                                                 setDataPrevisaoDefesa(e.target.value);
                                               }}
@@ -1377,7 +1359,6 @@ export function DocentesGraduate(props: Props) {
                                             }}
                                             onChange={(e) => {
                                               setDataPrevisaoQualificacao(e.target.value);
-                                              // gerarDatas(e.target.value, "QUALIFICACAO");
                                             }}
                                             type="date"
                                             id="dataPrevista"
@@ -1486,11 +1467,11 @@ export function DocentesGraduate(props: Props) {
                           </div>
 
                           <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="entrada">
-                            {orientacoes?.filter((o: any) => o.type === "PROJETO" || (isProjetoZerado && o.type === "QUALIFICAÇÃO")).length > 0 ? (
+                            {orientacoes?.filter((orientacao: any) => isProjetoZerado ? orientacao.type === "QUALIFICAÇÃO" : orientacao.type === "PROJETO").length > 0 ? (
                               orientacoes
-                                .filter((o: any) => o.type === "PROJETO" || (isProjetoZerado && o.type === "QUALIFICAÇÃO"))
-                                .map((o: any) => (
-                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                .filter((orientacao: any) => isProjetoZerado ? orientacao.type === "QUALIFICAÇÃO" : orientacao.type === "PROJETO")
+                                .map((orientacao: any) => (
+                                  <CartaoOrientando key={orientacao.id} tipoPrograma={tipoOrientacao} orientacaoC={orientacao} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
