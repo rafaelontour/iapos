@@ -463,6 +463,18 @@ export function DocentesGraduate(props: Props) {
     })
   }
 
+  // Regra: Verifica se a configuração selecionada ou alguma configuração carregada possui duração de projeto zerada
+  const isProjetoZerado = configDataSelecionada 
+    ? configDataSelecionada.duration_project_months === 0 
+    : configDatas[0]?.duration_project_months === 0;
+
+  // Se for mestrado sem projeto (duração = 0) e a aba atual for de projetos, força ir para a aba inicial
+  useEffect(() => {
+    if (isProjetoZerado && tab === 'projetos-defendidos') {
+      setTab('all');
+    }
+  }, [isProjetoZerado, tab]);
+
   async function buscarTags() {
     const t = await getTagsService();
     setTags(t);
@@ -1054,8 +1066,16 @@ export function DocentesGraduate(props: Props) {
                         <Tabs defaultValue="entrada" className="w-full ">
                           <div className="flex items-center justify-between mb-3">
                             <TabsList className="py-3">
-                              <TabsTrigger value="entrada">Entrada &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "PROJETO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "PROJETO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
-                              <TabsTrigger value="projetos_defendidos">Projetos Defendidos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
+                              <TabsTrigger value="entrada">
+                                Entrada &nbsp; 
+                                <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center bg-eng-blue text-white">
+                                  {orientacoes?.filter((orientacao: any) => orientacao.type === "PROJETO" || (isProjetoZerado && orientacao.type === "QUALIFICAÇÃO")).length}
+                                </span>
+                              </TabsTrigger> 
+                              <Separator orientation="vertical" />
+                              {!isProjetoZerado && (
+                                <TabsTrigger value="projetos_defendidos">Projetos Defendidos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
+                              )}
                               <TabsTrigger value="qualificados">Qualificados &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
                               <TabsTrigger value="concluidos">Concluídos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
                             </TabsList>
@@ -1458,9 +1478,9 @@ export function DocentesGraduate(props: Props) {
                           </div>
 
                           <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="entrada">
-                            {orientacoes?.filter((o: any) => o.type === "PROJETO").length > 0 ? (
+                            {orientacoes?.filter((o: any) => o.type === "PROJETO" || (isProjetoZerado && o.type === "QUALIFICAÇÃO")).length > 0 ? (
                               orientacoes
-                                .filter((o: any) => o.type === "PROJETO")
+                                .filter((o: any) => o.type === "PROJETO" || (isProjetoZerado && o.type === "QUALIFICAÇÃO"))
                                 .map((o: any) => (
                                   <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
@@ -1471,19 +1491,21 @@ export function DocentesGraduate(props: Props) {
                             )}
                           </TabsContent>
 
-                          <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="projetos_defendidos">
-                            {orientacoes?.filter((o: any) => o.type === "QUALIFICAÇÃO").length > 0 ? (
-                              orientacoes
-                                .filter((o: any) => o.type === "QUALIFICAÇÃO")
-                                .map((o: any) => (
-                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
-                                ))
-                            ) : (
-                              <p className="p-3 animate-pulse">
-                                Sem orientações a defender para este docente.
-                              </p>
-                            )}
-                          </TabsContent>
+                          {!isProjetoZerado && (
+                            <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="projetos_defendidos">
+                              {orientacoes?.filter((o: any) => o.type === "QUALIFICAÇÃO").length > 0 ? (
+                                orientacoes
+                                  .filter((o: any) => o.type === "QUALIFICAÇÃO")
+                                  .map((o: any) => (
+                                    <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  ))
+                              ) : (
+                                <p className="p-3 animate-pulse">
+                                  Sem orientações a defender para este docente.
+                                </p>
+                              )}
+                            </TabsContent>
+                          )}
 
                           <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="qualificados">
                             {orientacoes?.filter((o: any) => o.type === "CONCLUSÃO").length > 0 ? (
@@ -1512,7 +1534,6 @@ export function DocentesGraduate(props: Props) {
                               </p>
                             )}
                           </TabsContent>
-
 
                         </Tabs>
 
