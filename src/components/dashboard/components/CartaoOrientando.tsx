@@ -52,11 +52,13 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             if (o.orientacaoC.type === 'QUALIFICAÇÃO') return 'Previsão de qualificação:'
             if (o.orientacaoC.type === 'CONCLUSÃO') return 'Previsão de defesa final:'
             if (o.orientacaoC.type === 'FINALIZADO') return 'Concluído em: '
+            return 'Previsão de qualificação:' // Fallback para novos discentes
         } else {
             if (o.orientacaoC.type === 'PROJETO') return 'Previsão de defesa do projeto:'
             if (o.orientacaoC.type === 'QUALIFICAÇÃO') return 'Previsão de qualificação:'
             if (o.orientacaoC.type === 'CONCLUSÃO') return 'Previsão de defesa final:'
             if (o.orientacaoC.type === 'FINALIZADO') return 'Concluído em: '
+            return 'Previsão de qualificação:' // Fallback para novos discentes
         }
     }
 
@@ -88,6 +90,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         if (o.orientacaoC.type === "QUALIFICAÇÃO") return formatarData(o.orientacaoC.planned_date_qualification)
         if (o.orientacaoC.type === "CONCLUSÃO") return formatarData(o.orientacaoC.planned_date_conclusion)
         if (o.orientacaoC.type === "FINALIZADO") return formatarData(o.orientacaoC.done_date_conclusion)
+        
+        // Se cair aqui (ex: type_ "DISCENTE"), exibe por padrão a data da qualificação
+        return formatarData(o.orientacaoC.planned_date_qualification)
     }
 
     async function getNomePorId(id: string) {
