@@ -569,7 +569,8 @@ export function DocentesGraduate(props: Props) {
       supervisor_researcher_id: idOrientador,
       student_researcher_id: idOrientando,
       co_supervisor_ids: idCoorientador ? [idCoorientador] : [],
-      tag_ids: tagsSelecionadas.map(tag => tag.id)
+      tag_ids: tagsSelecionadas.map(tag => tag.id),
+      tipo_programa: tipoOrientacao
     }
 
     console.log("Orientaçao para salvar: ", orientacao)
