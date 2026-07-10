@@ -43,6 +43,8 @@ interface InfoOrientacaoProps {
 
 
 export default function CartaoOrientando(o: InfoOrientacaoProps) {
+    console.log("Dados do Orientando:", o.orientacaoC);
+
     const [nomeDiscente, setNomeDiscente] = useState<string>("");
 
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
