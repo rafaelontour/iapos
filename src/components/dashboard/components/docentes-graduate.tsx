@@ -1467,11 +1467,11 @@ export function DocentesGraduate(props: Props) {
                           </div>
 
                           <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="entrada">
-                            {orientacoes?.filter((orientacao: any) => tipoOrientacao === "Mestrado" ? orientacao.type === "QUALIFICAÇÃO" : orientacao.type === "PROJETO").length > 0 ? (
+                            {orientacoes?.filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO").length > 0 ? (
                               orientacoes
-                                .filter((orientacao: any) => tipoOrientacao === "Mestrado" ? orientacao.type === "QUALIFICAÇÃO" : orientacao.type === "PROJETO")
+                                .filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO")
                                 .map((orientacao: any) => (
-                                  <CartaoOrientando key={orientacao.id} tipoPrograma={tipoOrientacao} orientacaoC={orientacao} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={orientacao.id || orientacao.lattes_id} tipoPrograma={tipoOrientacao} orientacaoC={orientacao} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
