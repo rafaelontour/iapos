@@ -50,16 +50,18 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
 
     const tipo = () => {
+        const typeValue = o.orientacaoC.type; // Facilita a leitura e evita repetição
+
         if (o.tipoPrograma === 'Mestrado') {
-            if (o.orientacaoC.type === 'QUALIFICAÇÃO') return 'Previsão de qualificação:'
-            if (o.orientacaoC.type === 'CONCLUSÃO') return 'Previsão de defesa final:'
-            if (o.orientacaoC.type === 'FINALIZADO') return 'Concluído em: '
+            if (typeValue === 'QUALIFICAÇÃO' || typeValue === 'QUALIFICACAO') return 'Previsão de qualificação:'
+            if (typeValue === 'CONCLUSÃO' || typeValue === 'CONCLUSAO') return 'Previsão de defesa final:'
+            if (typeValue === 'FINALIZADO') return 'Concluído em: '
             return 'Previsão de qualificação:' // Fallback para novos discentes
         } else {
-            if (o.orientacaoC.type === 'PROJETO') return 'Previsão de defesa do projeto:'
-            if (o.orientacaoC.type === 'QUALIFICAÇÃO') return 'Previsão de qualificação:'
-            if (o.orientacaoC.type === 'CONCLUSÃO') return 'Previsão de defesa final:'
-            if (o.orientacaoC.type === 'FINALIZADO') return 'Concluído em: '
+            if (typeValue === 'PROJETO') return 'Previsão de defesa do projeto:'
+            if (typeValue === 'QUALIFICAÇÃO' || typeValue === 'QUALIFICACAO') return 'Previsão de qualificação:'
+            if (typeValue === 'CONCLUSÃO' || typeValue === 'CONCLUSAO') return 'Previsão de defesa final:'
+            if (typeValue === 'FINALIZADO') return 'Concluído em: '
             return 'Previsão de qualificação:' // Fallback para novos discentes
         }
     }
@@ -85,18 +87,27 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     }
 
     const calcularData = () => {
-        if (o.tipoPrograma === "Mestrado" && o.orientacaoC.type === "QUALIFICAÇÃO") {
-            return formatarData(o.orientacaoC.planned_date_qualification)
-        }
-        if (o.orientacaoC.type === "PROJETO") return formatarData(o.orientacaoC.planned_date_project)
-        if (o.orientacaoC.type === "QUALIFICAÇÃO") return formatarData(o.orientacaoC.planned_date_qualification)
-        if (o.orientacaoC.type === "CONCLUSÃO") return formatarData(o.orientacaoC.planned_date_conclusion)
-        if (o.orientacaoC.type === "FINALIZADO") return formatarData(o.orientacaoC.done_date_conclusion)
-        
-        // Se cair aqui (ex: type_ "DISCENTE"), exibe por padrão a data da qualificação
-        return formatarData(o.orientacaoC.planned_date_qualification)
-    }
+        const tipo = o.orientacaoC.type; // Garante que está lendo a propriedade correta do objeto
 
+        if (o.tipoPrograma === "Mestrado" && (tipo === "QUALIFICAÇÃO" || tipo === "QUALIFICACAO")) {
+            return formatarData(o.orientacaoC.planned_date_qualification);
+        }
+        if (tipo === "PROJETO") {
+            return formatarData(o.orientacaoC.planned_date_project);
+        }
+        if (tipo === "QUALIFICAÇÃO" || tipo === "QUALIFICACAO") {
+            return formatarData(o.orientacaoC.planned_date_qualification);
+        }
+        if (tipo === "CONCLUSÃO" || tipo === "CONCLUSAO") {
+            return formatarData(o.orientacaoC.planned_date_conclusion);
+        }
+        if (tipo === "FINALIZADO") {
+            return formatarData(o.orientacaoC.done_date_conclusion);
+        }
+        
+        // Se cair aqui (ex: tipo_ "DISCENTE" ou nulo), exibe por padrão a data da qualificação
+        return formatarData(o.orientacaoC.planned_date_qualification);
+    }
     async function getNomePorId(id: string) {
         const nome = await getInfoPesquisadorPorId(id)
 
