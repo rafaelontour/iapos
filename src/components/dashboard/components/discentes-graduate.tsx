@@ -22,7 +22,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
 import { Separator } from "../../ui/separator";
-
+import { CartaoOrientando } from "../../components/CartaoOrientando";
 
 export interface PesquisadorProps {
     lattes_id: string
@@ -36,6 +36,145 @@ export interface PesquisadorProps {
 interface Props {
     graduate_program_id: string
 }
+
+interface DiscenteItemProps {
+        props: PesquisadorProps;
+        index: number;
+        selectedYears: Array<Array<number>>;
+        handleYearsChange: (index: number, years: string[]) => void;
+        handleUpdateData: (index: number, id_r: string) => void;
+        years: number[];
+        onOpen: any;
+        urlGeral: string;
+        urlGeralAdm: string;
+    }
+
+function DiscenteItem({
+        props,
+        index,
+        selectedYears,
+        handleYearsChange,
+        handleUpdateData,
+        years,
+        onOpen,
+        urlGeral,
+        urlGeralAdm
+    }: DiscenteItemProps) {
+        const [orientacao, setOrientacao] = useState<any>(null);
+        const [loading, setLoading] = useState(false);
+
+        // Busca a orientação deste discente específico no backend
+        const buscarOrientacaoDoDiscente = async () => {
+            if (orientacao || loading) return; // Evita buscas duplicadas se já carregou
+            setLoading(true);
+            try {
+                // Chamamos a rota de guidance_tracking passando o ID deste aluno
+                const response = await fetch(
+                    `${urlGeralAdm}guidance_tracking?student_researcher_id=${props.lattes_id}`, // Ajuste a rota se necessário
+                    { mode: "cors" }
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        setOrientacao(data[0]); // Pega o primeiro registro de rastreamento encontrado
+                    }
+                }
+            } catch (err) {
+                console.error("Erro ao buscar orientacao do discente:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        return (
+            <Alert>
+                <AccordionItem value={String(index)}>
+                    <div className="flex justify-between items-center h-10 group">
+                        <div className="h-10">
+                            <div className="flex items-center gap-2">
+                                <Avatar className="cursor-pointer rounded-md h-8 w-8">
+                                    <AvatarImage
+                                        className="rounded-md h-8 w-8"
+                                        src={`${urlGeral}ResearcherData/Image?name=${props.name}`}
+                                    />
+                                    <AvatarFallback className="flex items-center justify-center">
+                                        <UserIcon size={12} />
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-medium">{props.name}</p>
+                                    <div className="text-xs text-gray-500">{props.lattes_id}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="items-center gap-3 hidden group-hover:flex transition-all">
+                                <Button 
+                                    size={'icon'} 
+                                    onClick={() => onOpen('confirm-delete-student-graduate-program', { lattes_id: props.lattes_id, graduate_program_id: props.graduate_program_id, nome: props.name })} 
+                                    variant={'destructive'} 
+                                    className="text-white h-10 w-10 dark:text-white"
+                                >
+                                    <Trash size={16} />
+                                </Button>
+                            </div>
+                            {/* Ao clicar na setinha do AccordionTrigger, dispara o carregamento */}
+                            <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger>
+                        </div>
+                    </div>
+
+                    <AccordionContent className="p-0">
+                        <div className="flex w-full gap-4 items-end mt-4">
+                            <div className="grid gap-4 w-full">
+                                <Label htmlFor="years">Anos de participação</Label>
+                                {selectedYears[index] ? (
+                                    <ToggleGroup
+                                        type="multiple"
+                                        className="gap-3 justify-start w-fit"
+                                        value={selectedYears[index].map(String)}
+                                        onValueChange={(years) => handleYearsChange(index, years)}
+                                    >
+                                        {years.map((year) => (
+                                            <ToggleGroupItem
+                                                key={year}
+                                                variant={'outline'}
+                                                value={year.toString()}
+                                                aria-label={`Toggle ${year}`}
+                                            >
+                                                {year}
+                                            </ToggleGroupItem>
+                                        ))}
+                                    </ToggleGroup>
+                                ) : (
+                                    <p className="text-gray-500">Nenhum ano disponível</p>
+                                )}
+                            </div>
+                            <Button onClick={() => handleUpdateData(index, props.lattes_id)}>
+                                <RefreshCcw size={16} /> Atualizar dados
+                            </Button>
+                        </div>
+
+                        {/* RENDERIZAÇÃO DO CARTÃO DO ORIENTANDO SE ELE POSSUIR RASTREAMENTO */}
+                        {loading && <p className="text-sm text-gray-500 mt-4 animate-pulse">Carregando situação da orientação...</p>}
+                        
+                        {orientacao && (
+                            <div className="mt-6 border-t pt-4">
+                                <p className="font-semibold text-sm mb-3">Situação Acadêmica no Programa:</p>
+                                <div className="max-w-md">
+                                    <CartaoOrientando 
+                                        tipoPrograma={props.type_} // Ex: MESTRADO ou DOUTORADO
+                                        orientacaoC={orientacao} 
+                                        pesquisador={props} 
+                                        buscarOrientacoes={buscarOrientacaoDoDiscente} 
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </AccordionContent>
+                </AccordionItem>
+            </Alert>
+        );
+    }
 
 export function DiscentesGraduate(props: Props) {
     const { urlGeralAdm, user, urlGeral } = useContext(UserContext);
@@ -367,80 +506,18 @@ export function DiscentesGraduate(props: Props) {
                     </div>
 
                     {filteredTotal.map((props, index) => (
-                        <Alert key={index}>
-                            <AccordionItem value={String(index)}>
-                                <div className="flex justify-between items-center h-10 group">
-                                    <div className="h-10">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="cursor-pointer rounded-md h-8 w-8">
-                                                <AvatarImage
-                                                    className="rounded-md h-8 w-8"
-                                                    src={`${urlGeral}ResearcherData/Image?name=${props.name}`}
-                                                />
-                                                <AvatarFallback className="flex items-center justify-center">
-                                                    <UserIcon size={12} />
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <p className="font-medium">{props.name}</p>
-                                                <div className="text-xs text-gray-500">{props.lattes_id}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className=" items-center gap-3 hidden group-hover:flex transition-all">
-
-
-                                            <Button size={'icon'} onClick={() => onOpen('confirm-delete-student-graduate-program', { lattes_id: props.lattes_id, graduate_program_id: props.graduate_program_id, nome: props.name })} variant={'destructive'} className=" text-white h-10 w-10 dark:text-white">
-                                                <Trash size={16} />
-                                            </Button>
-
-                                        </div>
-                                        <AccordionTrigger></AccordionTrigger>
-
-                                    </div>
-                                </div>
-
-                                <AccordionContent className="p-0">
-                                    <div className="flex w-full gap-4 items-end mt-4">
-
-                                        <div className="grid gap-4 w-full">
-                                            <Label htmlFor="years">Anos de participação</Label>
-                                            {selectedYears[index] ? (
-                                                <ToggleGroup
-                                                    type="multiple"
-                                                    className="gap-3 justify-start w-fit"
-                                                    value={selectedYears[index].map(String)}
-                                                    onValueChange={(years) => handleYearsChange(index, years)}
-                                                >
-                                                    {years.map((year) => (
-                                                        <ToggleGroupItem
-                                                            key={year}
-                                                            variant={'outline'}
-                                                            value={year.toString()}
-                                                            aria-label={`Toggle ${year}`}
-                                                        >
-                                                            {year}
-                                                        </ToggleGroupItem>
-                                                    ))}
-                                                </ToggleGroup>
-                                            ) : (
-                                                <p className="text-gray-500">Nenhum ano disponível</p>
-                                            )}
-
-
-                                        </div>
-                                        <Button
-                                            onClick={() => handleUpdateData(index, props.lattes_id)}
-                                        >
-                                            <RefreshCcw size={16} /> Atualizar dados
-                                        </Button>
-                                    </div>
-
-
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Alert>
+                        <DiscenteItem 
+                            key={props.lattes_id || index}
+                            props={props}
+                            index={index}
+                            selectedYears={selectedYears}
+                            handleYearsChange={handleYearsChange}
+                            handleUpdateData={handleUpdateData}
+                            years={years}
+                            onOpen={onOpen}
+                            urlGeral={urlGeral}
+                            urlGeralAdm={urlGeralAdm}
+                        />
                     ))}
                 </Accordion>
 

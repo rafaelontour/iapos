@@ -1056,7 +1056,7 @@ export function DocentesGraduate(props: Props) {
                               <TabsTrigger value="entrada">
                                 Entrada &nbsp; 
                                 <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center bg-eng-blue text-white">
-                                  {orientacoes?.filter((orientacao: any) => orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO").length}
+                                  {orientacoes?.filter((orientacao: any) => orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO").length}
                                 </span>
                               </TabsTrigger> 
                               <Separator orientation="vertical" />
@@ -1065,14 +1065,14 @@ export function DocentesGraduate(props: Props) {
                                   <TabsTrigger value="projetos_defendidos">
                                     Projetos Defendidos &nbsp; 
                                     <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center bg-eng-blue text-white">
-                                      {orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO").length : "0"}
+                                      {orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO").length : "0"}
                                     </span>
                                   </TabsTrigger> 
                                   <Separator orientation="vertical" />
                                 </>
                               )}
-                              <TabsTrigger value="qualificados">Qualificados &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
-                              <TabsTrigger value="concluidos">Concluídos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO").length : "0"}</span></TabsTrigger>
+                              <TabsTrigger value="qualificados">Qualificados &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO" || orientacao.type === "CONCLUSAO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "CONCLUSÃO" || orientacao.type === "CONCLUSAO").length : "0"}</span></TabsTrigger> <Separator orientation="vertical" />
+                              <TabsTrigger value="concluidos">Concluídos &nbsp; <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center  bg-eng-blue text-white">{orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO" || orientacao.type === "FINALIZACAO").length > 0 ? orientacoes?.filter((orientacao: any) => orientacao.type === "FINALIZADO" || orientacao.type === "FINALIZACAO").length : "0"}</span></TabsTrigger>
                             </TabsList>
 
                             <Dialog open={openDialogAdicionar} onOpenChange={setOpenDialogAdicionar}>
@@ -1468,9 +1468,9 @@ export function DocentesGraduate(props: Props) {
                           </div>
 
                           <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="entrada">
-                            {orientacoes?.filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO").length > 0 ? (
+                            {orientacoes?.filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO").length > 0 ? (
                               orientacoes
-                                .filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO")
+                                .filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO")
                                 .map((orientacao: any) => (
                                   <CartaoOrientando key={orientacao.id || orientacao.lattes_id} tipoPrograma={tipoOrientacao} orientacaoC={orientacao} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
@@ -1483,9 +1483,9 @@ export function DocentesGraduate(props: Props) {
 
                           {!isProjetoZerado && (
                             <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="projetos_defendidos">
-                              {orientacoes?.filter((o: any) => o.type === "QUALIFICAÇÃO").length > 0 ? (
+                              {orientacoes?.filter((o: any) => o.type === "QUALIFICAÇÃO" || o.type === "QUALIFICACAO").length > 0 ? (
                                 orientacoes
-                                  .filter((o: any) => o.type === "QUALIFICAÇÃO")
+                                  .filter((o: any) => o.type === "QUALIFICAÇÃO" || o.type === "QUALIFICACAO")
                                   .map((o: any) => (
                                     <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                   ))
@@ -1498,9 +1498,9 @@ export function DocentesGraduate(props: Props) {
                           )}
 
                           <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="qualificados">
-                            {orientacoes?.filter((o: any) => o.type === "CONCLUSÃO").length > 0 ? (
+                            {orientacoes?.filter((o: any) => o.type === "CONCLUSÃO" || o.type === "CONCLUSAO").length > 0 ? (
                               orientacoes
-                                .filter((o: any) => o.type === "CONCLUSÃO")
+                                .filter((o: any) => o.type === "CONCLUSÃO" || o.type === "CONCLUSAO")
                                 .map((o: any) => (
                                   <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
@@ -1512,9 +1512,9 @@ export function DocentesGraduate(props: Props) {
                           </TabsContent>
 
                           <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="concluidos">
-                            {orientacoes?.filter((o: any) => o.type === "FINALIZADO").length > 0 ? (
+                            {orientacoes?.filter((o: any) => o.type === "FINALIZADO" || o.type === "FINALIZACAO").length > 0 ? (
                               orientacoes
-                                .filter((o: any) => o.type === "FINALIZADO")
+                                .filter((o: any) => o.type === "FINALIZADO" || o.type === "FINALIZACAO")
                                 .map((o: any) => (
                                   <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
                                 ))
