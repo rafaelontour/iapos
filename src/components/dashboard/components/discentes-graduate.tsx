@@ -162,9 +162,12 @@ function DiscenteItem({
                                 <p className="font-semibold text-sm mb-3">Situação Acadêmica no Programa:</p>
                                 <div className="max-w-md">
                                     <CartaoOrientando 
-                                        tipoPrograma={props.type_} // Ex: MESTRADO ou DOUTORADO
+                                        tipoPrograma={props.type_} 
                                         orientacaoC={orientacao} 
-                                        pesquisador={props} 
+                                        pesquisador={{
+                                            ...props,
+                                            id: props.lattes_id // Mapeia lattes_id para id para satisfazer o CartaoOrientando
+                                        }} 
                                         buscarOrientacoes={buscarOrientacaoDoDiscente} 
                                     />
                                 </div>
