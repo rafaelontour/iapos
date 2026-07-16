@@ -22,7 +22,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
 import { Separator } from "../../ui/separator";
-import { CartaoOrientando } from "../../components/CartaoOrientando";
+import CartaoOrientando from "./CartaoOrientando";
 
 export interface PesquisadorProps {
     lattes_id: string
