@@ -86,11 +86,13 @@ function DiscenteItem({
             }
             
         };
-
+        
+        /*
         // Dispara a busca automaticamente ao montar o item do discente
         useEffect(() => {
             buscarOrientacaoDoDiscente();
         }, [props.lattes_id]); // Recarrega se o id do discente mudar
+        */
 
         return (
             <Alert>
@@ -125,8 +127,8 @@ function DiscenteItem({
                                 </Button>
                             </div>
                             {/* Ao clicar na setinha do AccordionTrigger, dispara o carregamento */}
-                            {/* <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger> */}
-                            <AccordionTrigger></AccordionTrigger>
+                            <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger>
+                            {/* <AccordionTrigger></AccordionTrigger> */}
                         </div>
                     </div>
 
