@@ -65,7 +65,7 @@ function DiscenteItem({
 
         // Busca a orientação deste discente específico no backend
         const buscarOrientacaoDoDiscente = async () => {
-            if (orientacao || loading) return; // Evita buscas duplicadas se já carregou
+            // if (orientacao || loading) return; // Evita buscas duplicadas se já carregou
             setLoading(true);
             try {
                 // Chamamos a rota de guidance_tracking passando o ID deste aluno
@@ -84,7 +84,13 @@ function DiscenteItem({
             } finally {
                 setLoading(false);
             }
+            
         };
+
+        // Dispara a busca automaticamente ao montar o item do discente
+        useEffect(() => {
+            buscarOrientacaoDoDiscente();
+        }, [props.lattes_id]); // Recarrega se o id do discente mudar
 
         return (
             <Alert>
@@ -119,7 +125,8 @@ function DiscenteItem({
                                 </Button>
                             </div>
                             {/* Ao clicar na setinha do AccordionTrigger, dispara o carregamento */}
-                            <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger>
+                            {/* <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger> */}
+                            <AccordionTrigger></AccordionTrigger>
                         </div>
                     </div>
 
