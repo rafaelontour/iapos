@@ -63,13 +63,13 @@ function DiscenteItem({
     const [loading, setLoading] = useState(false);
 
     // Busca a orientação deste discente específico no backend
-    const buscarOrientacaoDoDiscente = async () => {
+    const buscarOrientacaoDoDiscente = async (lattesId: string, nomeEstudante: string) => {
         if (orientacao || loading) return; 
 
         setLoading(true);
         try {
             const response = await fetch(
-                `${urlGeralAdm}guidance_tracking/?student_researcher_id=${props.lattes_id}`, 
+                `${urlGeralAdm}guidance_tracking/?student_researcher_id=${lattesId}`, 
                 { mode: "cors" }
             );
             if (response.ok) {
@@ -122,7 +122,7 @@ function DiscenteItem({
                             </Button>
                         </div>
                         
-                        <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger>
+                        <AccordionTrigger onClick={() => buscarOrientacaoDoDiscente(props.lattes_id, props.name)}></AccordionTrigger>
                     </div>
                 </div>
 
