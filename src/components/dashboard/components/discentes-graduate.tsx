@@ -69,7 +69,7 @@ function DiscenteItem({
         setLoading(true);
         try {
             const response = await fetch(
-                `${urlGeralAdm}guidance_tracking?student_researcher_id=${props.lattes_id}`, 
+                `${urlGeralAdm}guidance_tracking/?student_researcher_id=${props.lattes_id}`, 
                 { mode: "cors" }
             );
             if (response.ok) {
