@@ -171,7 +171,10 @@ function DiscenteItem({
                             <div className="max-w-md">
                                 <CartaoOrientando 
                                     tipoPrograma={props.type_} 
-                                    orientacaoC={orientacao} 
+                                    orientacaoC={{
+                                        ...orientacao,
+                                        student_name: props.name // Injeta o nome do discente atual
+                                    }} 
                                     pesquisador={{
                                         ...props,
                                         id: props.lattes_id // Mapeia lattes_id para id para satisfazer o CartaoOrientando
