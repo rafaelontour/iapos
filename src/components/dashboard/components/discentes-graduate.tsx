@@ -32,22 +32,21 @@ export interface PesquisadorProps {
     years: Array<number>
 }
 
-
 interface Props {
     graduate_program_id: string
 }
 
 interface DiscenteItemProps {
-        props: PesquisadorProps;
-        index: number;
-        selectedYears: Array<Array<number>>;
-        handleYearsChange: (index: number, years: string[]) => void;
-        handleUpdateData: (index: number, id_r: string) => void;
-        years: number[];
-        onOpen: any;
-        urlGeral: string;
-        urlGeralAdm: string;
-    }
+    props: PesquisadorProps;
+    index: number;
+    selectedYears: Array<Array<number>>;
+    handleYearsChange: (index: number, years: string[]) => void;
+    handleUpdateData: (index: number, id_r: string) => void;
+    years: number[];
+    onOpen: any;
+    urlGeral: string;
+    urlGeralAdm: string;
+}
 
 function DiscenteItem({
     props,
@@ -65,12 +64,10 @@ function DiscenteItem({
 
     // Busca a orientação deste discente específico no backend
     const buscarOrientacaoDoDiscente = async () => {
-        // SEGURANÇA 1: Se já tivermos a orientação salva ou se já estiver carregando, NÃO busca novamente!
         if (orientacao || loading) return; 
 
         setLoading(true);
         try {
-            // Chamamos a rota de guidance_tracking passando o ID deste aluno
             const response = await fetch(
                 `${urlGeralAdm}guidance_tracking?student_researcher_id=${props.lattes_id}`, 
                 { mode: "cors" }
@@ -78,7 +75,7 @@ function DiscenteItem({
             if (response.ok) {
                 const data = await response.json();
                 if (data && data.length > 0) {
-                    setOrientacao(data[0]); // Pega o primeiro registro de rastreamento encontrado
+                    setOrientacao(data[0]); 
                 }
             }
         } catch (err) {
@@ -88,9 +85,8 @@ function DiscenteItem({
         }
     };
 
-    // SEGURANÇA 2: Deixamos o useEffect vazio para ele NUNCA buscar nada ao carregar a página
     useEffect(() => {
-        // Vazio! Não faz nada ao iniciar, poupando o servidor.
+        // Vazio para evitar chamadas excessivas ao carregar a página
     }, []);
 
     return (
@@ -126,7 +122,6 @@ function DiscenteItem({
                             </Button>
                         </div>
                         
-                        {/* DISPARADOR: A busca só acontece quando o usuário clica para abrir a setinha do discente */}
                         <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger>
                     </div>
                 </div>
@@ -162,7 +157,6 @@ function DiscenteItem({
                         </Button>
                     </div>
 
-                    {/* RENDERIZAÇÃO DO CARTÃO DO ORIENTANDO SE ELE POSSUIR RASTREAMENTO */}
                     {loading && <p className="text-sm text-gray-500 mt-4 animate-pulse">Carregando situação da orientação...</p>}
                     
                     {orientacao && (
@@ -173,11 +167,11 @@ function DiscenteItem({
                                     tipoPrograma={props.type_} 
                                     orientacaoC={{
                                         ...orientacao,
-                                        student_name: props.name // Injeta o nome do discente atual
+                                        student_name: props.name 
                                     }} 
                                     pesquisador={{
                                         ...props,
-                                        id: props.lattes_id // Mapeia lattes_id para id para satisfazer o CartaoOrientando
+                                        id: props.lattes_id 
                                     }} 
                                     buscarOrientacoes={buscarOrientacaoDoDiscente} 
                                 />
@@ -189,156 +183,10 @@ function DiscenteItem({
         </Alert>
     );
 }
-    /*
-function DiscenteItem({
-        props,
-        index,
-        selectedYears,
-        handleYearsChange,
-        handleUpdateData,
-        years,
-        onOpen,
-        urlGeral,
-        urlGeralAdm
-    }: DiscenteItemProps) {
-        const [orientacao, setOrientacao] = useState<any>(null);
-        const [loading, setLoading] = useState(false);
-
-        // Busca a orientação deste discente específico no backend
-        const buscarOrientacaoDoDiscente = async () => {
-            // if (orientacao || loading) return; // Evita buscas duplicadas se já carregou
-            setLoading(true);
-            try {
-                // Chamamos a rota de guidance_tracking passando o ID deste aluno
-                const response = await fetch(
-                    `${urlGeralAdm}guidance_tracking?student_researcher_id=${props.lattes_id}`, // Ajuste a rota se necessário
-                    { mode: "cors" }
-                );
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        setOrientacao(data[0]); // Pega o primeiro registro de rastreamento encontrado
-                    }
-                }
-            } catch (err) {
-                console.error("Erro ao buscar orientacao do discente:", err);
-            } finally {
-                setLoading(false);
-            }
-            
-        };
-
-        */
-        
-        /*
-        // Dispara a busca automaticamente ao montar o item do discente
-        useEffect(() => {
-            buscarOrientacaoDoDiscente();
-        }, [props.lattes_id]); // Recarrega se o id do discente mudar
-        */
-
-        return (
-            <Alert>
-                <AccordionItem value={String(index)}>
-                    <div className="flex justify-between items-center h-10 group">
-                        <div className="h-10">
-                            <div className="flex items-center gap-2">
-                                <Avatar className="cursor-pointer rounded-md h-8 w-8">
-                                    <AvatarImage
-                                        className="rounded-md h-8 w-8"
-                                        src={`${urlGeral}ResearcherData/Image?name=${props.name}`}
-                                    />
-                                    <AvatarFallback className="flex items-center justify-center">
-                                        <UserIcon size={12} />
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-medium">{props.name}</p>
-                                    <div className="text-xs text-gray-500">{props.lattes_id}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="items-center gap-3 hidden group-hover:flex transition-all">
-                                <Button 
-                                    size={'icon'} 
-                                    onClick={() => onOpen('confirm-delete-student-graduate-program', { lattes_id: props.lattes_id, graduate_program_id: props.graduate_program_id, nome: props.name })} 
-                                    variant={'destructive'} 
-                                    className="text-white h-10 w-10 dark:text-white"
-                                >
-                                    <Trash size={16} />
-                                </Button>
-                            </div>
-                            {/* Ao clicar na setinha do AccordionTrigger, dispara o carregamento */}
-                            <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger>
-                            {/* <AccordionTrigger></AccordionTrigger> */}
-                        </div>
-                    </div>
-
-                    <AccordionContent className="p-0">
-                        <div className="flex w-full gap-4 items-end mt-4">
-                            <div className="grid gap-4 w-full">
-                                <Label htmlFor="years">Anos de participação</Label>
-                                {selectedYears[index] ? (
-                                    <ToggleGroup
-                                        type="multiple"
-                                        className="gap-3 justify-start w-fit"
-                                        value={selectedYears[index].map(String)}
-                                        onValueChange={(years) => handleYearsChange(index, years)}
-                                    >
-                                        {years.map((year) => (
-                                            <ToggleGroupItem
-                                                key={year}
-                                                variant={'outline'}
-                                                value={year.toString()}
-                                                aria-label={`Toggle ${year}`}
-                                            >
-                                                {year}
-                                            </ToggleGroupItem>
-                                        ))}
-                                    </ToggleGroup>
-                                ) : (
-                                    <p className="text-gray-500">Nenhum ano disponível</p>
-                                )}
-                            </div>
-                            <Button onClick={() => handleUpdateData(index, props.lattes_id)}>
-                                <RefreshCcw size={16} /> Atualizar dados
-                            </Button>
-                        </div>
-
-                        {/* RENDERIZAÇÃO DO CARTÃO DO ORIENTANDO SE ELE POSSUIR RASTREAMENTO */}
-                        {loading && <p className="text-sm text-gray-500 mt-4 animate-pulse">Carregando situação da orientação...</p>}
-
-                        {orientacao && (
-                            <div className="mt-6 border-t pt-4">
-                                <p className="font-semibold text-sm mb-3">Situação Acadêmica no Programa:</p>
-                                <div className="max-w-md">
-                                    <CartaoOrientando 
-                                        tipoPrograma={props.type_} 
-                                        orientacaoC={{
-                                            ...orientacao,
-                                            // Força o nome do estudante dentro do relacionamento a ser o do discente atual
-                                            student_name: props.name 
-                                        }} 
-                                        pesquisador={{
-                                            ...props,
-                                            id: props.lattes_id // Mapeia lattes_id para id para satisfazer o CartaoOrientando
-                                        }} 
-                                        buscarOrientacoes={buscarOrientacaoDoDiscente} 
-                                    />
-                                </div>
-                            </div>
-                        )}
-                    </AccordionContent>
-                </AccordionItem>
-            </Alert>
-        );
-    }
 
 export function DiscentesGraduate(props: Props) {
     const { urlGeralAdm, user, urlGeral } = useContext(UserContext);
     const { onOpen, isOpen, type: typeModal } = useModal();
-    //student 
 
     const [student, setStudent] = useState<PesquisadorProps[]>([]);
 
@@ -358,13 +206,11 @@ export function DiscentesGraduate(props: Props) {
             });
             const data = await response.json();
             if (data) {
-                // Certifique-se de que cada researcher tenha o graduate_program_id correto
                 const researchersWithGraduateProgramId = data.map((researcher: PesquisadorProps) => ({
                     ...researcher,
                     graduate_program_id: props.graduate_program_id,
                 }));
                 setStudent(researchersWithGraduateProgramId);
-                console.log(student)
             }
         } catch (err) {
             console.log(err);
@@ -389,12 +235,9 @@ export function DiscentesGraduate(props: Props) {
                 }
             ]
 
-            console.log(data)
-
             let urlProgram = urlGeralAdm + '/studentRest/insert'
 
             const fetchData = async () => {
-
                 if (nomePesquisador.length != 0 && lattesID.length > 13) {
                     try {
                         const response = await fetch(urlProgram, {
@@ -412,7 +255,6 @@ export function DiscentesGraduate(props: Props) {
 
                         if (response.ok) {
                             setLattesID('')
-
                             setNomePesquisador('')
 
                             toast("Dados enviados com sucesso", {
@@ -433,7 +275,6 @@ export function DiscentesGraduate(props: Props) {
                                 },
                             })
                         }
-
                     } catch (err) {
                         console.log(err);
                     }
@@ -448,7 +289,7 @@ export function DiscentesGraduate(props: Props) {
                         })
                     } else if (lattesID.length < 14) {
                         toast("Parece que o Lattes Id está incorreto ou não preenchido", {
-                            description: "O Lattes ID teve conter 13 números",
+                            description: "O Lattes ID deve conter 13 números",
                             action: {
                                 label: "Fechar",
                                 onClick: () => console.log("Undo"),
@@ -466,8 +307,6 @@ export function DiscentesGraduate(props: Props) {
                 }
             };
             fetchData();
-
-
         } catch (error) {
             console.error('Erro ao processar a requisição:', error);
         }
@@ -477,58 +316,39 @@ export function DiscentesGraduate(props: Props) {
         if (typeModal === 'confirm-delete-student-graduate-program' && !isOpen) {
             fetchDataStudent();
         }
-
         fetchDataStudent();
     }, [isOpen, typeModal, urlGetStudent, props.graduate_program_id]);
 
     const [selectedYears, setSelectedYears] = useState(
-        student.map((props) => props.years ?? []) // Garantir um array vazio caso 'props.years' seja undefined
+        student.map((props) => props.years ?? [])
     );
 
-
     const currentYear = new Date().getFullYear() + 1;
-    const years = Array.from({ length: 12 }, (_, index) => currentYear - index); // Ordenando os anos em ordem crescente
+    const years = Array.from({ length: 12 }, (_, index) => currentYear - index);
 
     const handleYearsChange = (index: number, years: string[]) => {
         const newSelectedYears = [...selectedYears];
-        // Converte o array de strings para números
         newSelectedYears[index] = years.map((year) => parseInt(year));
         setSelectedYears(newSelectedYears);
     };
 
-
     useEffect(() => {
-
         setSelectedYears(student.map((props) => props.years))
-
     }, [student]);
 
-
-
-    //update
-
     const handleUpdateData = (index: number, id_r: string) => {
-        const yearsString = ''
-
-
-
         try {
             const data = [
                 {
                     graduate_program_id: props.graduate_program_id,
                     lattes_id: id_r,
                     year: selectedYears[index].join(';'),
-
                 }
             ]
 
-            console.log(data)
-
             let urlProgram = urlGeralAdm + 'studentRest/update'
 
-
             const fetchData = async () => {
-
                 try {
                     const response = await fetch(urlProgram, {
                         mode: 'cors',
@@ -544,7 +364,6 @@ export function DiscentesGraduate(props: Props) {
                     });
 
                     if (response.ok) {
-
                         toast("Dados enviados com sucesso", {
                             description: "Pesquisador atualizado no programa de pós-graduação",
                             action: {
@@ -552,10 +371,7 @@ export function DiscentesGraduate(props: Props) {
                                 onClick: () => console.log("Undo"),
                             },
                         })
-
                         fetchDataStudent()
-
-
                     } else {
                         console.error('Erro ao enviar dados para o servidor.');
                         toast("Tente novamente!", {
@@ -566,15 +382,11 @@ export function DiscentesGraduate(props: Props) {
                             },
                         })
                     }
-
                 } catch (err) {
                     console.log(err);
                 }
             };
             fetchData();
-
-
-
         } catch (error) {
             toast("Erro ao processar requisição", {
                 description: "Tente novamente!",
@@ -584,18 +396,15 @@ export function DiscentesGraduate(props: Props) {
                 },
             })
         }
-
     };
-
 
     const [input2, setInput2] = useState('')
 
     const filteredTotal = Array.isArray(student) ? student.filter(item => {
-        // Normaliza a string do item e da busca para comparação
         const normalizeString = (str: any) => str
-            .normalize("NFD") // Decompõe os caracteres acentuados
-            .replace(/[\u0300-\u036f]/g, "") // Remove os diacríticos
-            .toLowerCase(); // Converte para minúsculas
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
 
         const searchString = normalizeString(item.name);
         const normalizedSearch = normalizeString(input2);
@@ -627,15 +436,11 @@ export function DiscentesGraduate(props: Props) {
                             <CardTitle className="group flex items-center w-fit gap-2 text-lg">
                                 <div className="w-fit">Discentes</div>
                             </CardTitle>
-                            <div className="flex gap-3 items-center ">
-
-                            </div>
                         </div>
                     </CardHeader>
 
                     <CardContent className="mt-6">
                         <div className="gap-6 flex mt-6 items-end">
-
                             <div className="grid gap-3 w-full">
                                 <Label htmlFor="name">Nome completo</Label>
                                 <Input value={nomePesquisador} onChange={(e) => setNomePesquisador(e.target.value)} type="text" />
@@ -644,11 +449,9 @@ export function DiscentesGraduate(props: Props) {
                             <div className="grid gap-3 w-full">
                                 <Label htmlFor="name">Lattes Id</Label>
                                 <Input value={lattesID} onChange={(e) => setLattesID(e.target.value)} type="text" />
-
                             </div>
 
                             <Button onClick={() => handleSubmitPesquisadorUnique()}><Plus size={16} />Adicionar</Button>
-
                         </div>
                     </CardContent>
                 </Alert>
@@ -679,7 +482,6 @@ export function DiscentesGraduate(props: Props) {
                         />
                     ))}
                 </Accordion>
-
             </CardContent>
         </div>
     )
