@@ -50,6 +50,144 @@ interface DiscenteItemProps {
     }
 
 function DiscenteItem({
+    props,
+    index,
+    selectedYears,
+    handleYearsChange,
+    handleUpdateData,
+    years,
+    onOpen,
+    urlGeral,
+    urlGeralAdm
+}: DiscenteItemProps) {
+    const [orientacao, setOrientacao] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+
+    // Busca a orientação deste discente específico no backend
+    const buscarOrientacaoDoDiscente = async () => {
+        // SEGURANÇA 1: Se já tivermos a orientação salva ou se já estiver carregando, NÃO busca novamente!
+        if (orientacao || loading) return; 
+
+        setLoading(true);
+        try {
+            // Chamamos a rota de guidance_tracking passando o ID deste aluno
+            const response = await fetch(
+                `${urlGeralAdm}guidance_tracking?student_researcher_id=${props.lattes_id}`, 
+                { mode: "cors" }
+            );
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    setOrientacao(data[0]); // Pega o primeiro registro de rastreamento encontrado
+                }
+            }
+        } catch (err) {
+            console.error("Erro ao buscar orientacao do discente:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // SEGURANÇA 2: Deixamos o useEffect vazio para ele NUNCA buscar nada ao carregar a página
+    useEffect(() => {
+        // Vazio! Não faz nada ao iniciar, poupando o servidor.
+    }, []);
+
+    return (
+        <Alert>
+            <AccordionItem value={String(index)}>
+                <div className="flex justify-between items-center h-10 group">
+                    <div className="h-10">
+                        <div className="flex items-center gap-2">
+                            <Avatar className="cursor-pointer rounded-md h-8 w-8">
+                                <AvatarImage
+                                    className="rounded-md h-8 w-8"
+                                    src={`${urlGeral}ResearcherData/Image?name=${props.name}`}
+                                />
+                                <AvatarFallback className="flex items-center justify-center">
+                                    <UserIcon size={12} />
+                                </AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <p className="font-medium">{props.name}</p>
+                                <div className="text-xs text-gray-500">{props.lattes_id}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="items-center gap-3 hidden group-hover:flex transition-all">
+                            <Button 
+                                size={'icon'} 
+                                onClick={() => onOpen('confirm-delete-student-graduate-program', { lattes_id: props.lattes_id, graduate_program_id: props.graduate_program_id, nome: props.name })} 
+                                variant={'destructive'} 
+                                className="text-white h-10 w-10 dark:text-white"
+                            >
+                                <Trash size={16} />
+                            </Button>
+                        </div>
+                        
+                        {/* DISPARADOR: A busca só acontece quando o usuário clica para abrir a setinha do discente */}
+                        <AccordionTrigger onClick={buscarOrientacaoDoDiscente}></AccordionTrigger>
+                    </div>
+                </div>
+
+                <AccordionContent className="p-0">
+                    <div className="flex w-full gap-4 items-end mt-4">
+                        <div className="grid gap-4 w-full">
+                            <Label htmlFor="years">Anos de participação</Label>
+                            {selectedYears[index] ? (
+                                <ToggleGroup
+                                    type="multiple"
+                                    className="gap-3 justify-start w-fit"
+                                    value={selectedYears[index].map(String)}
+                                    onValueChange={(years) => handleYearsChange(index, years)}
+                                >
+                                    {years.map((year) => (
+                                        <ToggleGroupItem
+                                            key={year}
+                                            variant={'outline'}
+                                            value={year.toString()}
+                                            aria-label={`Toggle ${year}`}
+                                        >
+                                            {year}
+                                        </ToggleGroupItem>
+                                    ))}
+                                </ToggleGroup>
+                            ) : (
+                                <p className="text-gray-500">Nenhum ano disponível</p>
+                            )}
+                        </div>
+                        <Button onClick={() => handleUpdateData(index, props.lattes_id)}>
+                            <RefreshCcw size={16} /> Atualizar dados
+                        </Button>
+                    </div>
+
+                    {/* RENDERIZAÇÃO DO CARTÃO DO ORIENTANDO SE ELE POSSUIR RASTREAMENTO */}
+                    {loading && <p className="text-sm text-gray-500 mt-4 animate-pulse">Carregando situação da orientação...</p>}
+                    
+                    {orientacao && (
+                        <div className="mt-6 border-t pt-4">
+                            <p className="font-semibold text-sm mb-3">Situação Acadêmica no Programa:</p>
+                            <div className="max-w-md">
+                                <CartaoOrientando 
+                                    tipoPrograma={props.type_} 
+                                    orientacaoC={orientacao} 
+                                    pesquisador={{
+                                        ...props,
+                                        id: props.lattes_id // Mapeia lattes_id para id para satisfazer o CartaoOrientando
+                                    }} 
+                                    buscarOrientacoes={buscarOrientacaoDoDiscente} 
+                                />
+                            </div>
+                        </div>
+                    )}
+                </AccordionContent>
+            </AccordionItem>
+        </Alert>
+    );
+}
+    /*
+function DiscenteItem({
         props,
         index,
         selectedYears,
@@ -86,6 +224,8 @@ function DiscenteItem({
             }
             
         };
+
+        */
         
         /*
         // Dispara a busca automaticamente ao montar o item do discente
@@ -165,14 +305,18 @@ function DiscenteItem({
 
                         {/* RENDERIZAÇÃO DO CARTÃO DO ORIENTANDO SE ELE POSSUIR RASTREAMENTO */}
                         {loading && <p className="text-sm text-gray-500 mt-4 animate-pulse">Carregando situação da orientação...</p>}
-                        
+
                         {orientacao && (
                             <div className="mt-6 border-t pt-4">
                                 <p className="font-semibold text-sm mb-3">Situação Acadêmica no Programa:</p>
                                 <div className="max-w-md">
                                     <CartaoOrientando 
                                         tipoPrograma={props.type_} 
-                                        orientacaoC={orientacao} 
+                                        orientacaoC={{
+                                            ...orientacao,
+                                            // Força o nome do estudante dentro do relacionamento a ser o do discente atual
+                                            student_name: props.name 
+                                        }} 
                                         pesquisador={{
                                             ...props,
                                             id: props.lattes_id // Mapeia lattes_id para id para satisfazer o CartaoOrientando
