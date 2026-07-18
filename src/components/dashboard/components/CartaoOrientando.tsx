@@ -525,8 +525,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 <div className="flex gap-2 items-center w-1/2">
                                                     <label htmlFor="dataRealizada">Realizada: </label>
                                                     <input
-                                                        defaultValue={new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0]}
                                                         className="w-full border-[2px] px-2 py-1 rounded-md"
+                                                        type="date"
                                                         onChange={(e) => {
                                                             setDataRealizadaDefesa(e.target.value);
 
@@ -534,14 +534,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                                 setDataRealizadaDefesa("1");
                                                             }
                                                         }}
-                                                        type="date"
                                                         value={
                                                             dataRealizadaDefesa != null
                                                                 ? dataRealizadaDefesa
                                                                 : o.orientacaoC.done_date_project
-                                                                    ? new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0]
+                                                                    ? (new Date(o.orientacaoC.done_date_project).toString() !== "Invalid Date" ? new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0] : "")
                                                                     : ""
-
                                                         }
                                                     />
                                                 </div>
@@ -593,7 +591,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                     dataRealizadaQualificacao != null
                                                         ? dataRealizadaQualificacao
                                                         : o.orientacaoC.done_date_qualification
-                                                            ? new Date(o.orientacaoC.done_date_qualification).toISOString().split("T")[0]
+                                                            ? (new Date(o.orientacaoC.done_date_qualification).toString() !== "Invalid Date" ? new Date(o.orientacaoC.done_date_qualification).toISOString().split("T")[0] : "")
                                                             : ""
                                                 }
                                             />
@@ -646,7 +644,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                     dataRealizadaDefesaFinal != null
                                                         ? dataRealizadaDefesaFinal
                                                         : o.orientacaoC.done_date_conclusion
-                                                            ? new Date(o.orientacaoC.done_date_conclusion).toISOString().split("T")[0]
+                                                            ? (new Date(o.orientacaoC.done_date_conclusion).toString() !== "Invalid Date" ? new Date(o.orientacaoC.done_date_conclusion).toISOString().split("T")[0] : "")
                                                             : ""
                                                 }
                                             />
