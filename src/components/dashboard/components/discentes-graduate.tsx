@@ -75,7 +75,10 @@ function DiscenteItem({
             if (response.ok) {
                 const data = await response.json();
                 if (data && data.length > 0) {
-                    setOrientacao(data[0]); 
+                    const orientacaoDoAluno = data.find(
+                        (item: any) => item.student_researcher_id === lattesId
+                    ) || data[0];
+                    setOrientacao(orientacaoDoAluno);
                 }
             }
         } catch (err) {
