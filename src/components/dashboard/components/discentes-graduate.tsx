@@ -114,7 +114,7 @@ function DiscenteItem({
                             <Avatar className="cursor-pointer rounded-md h-8 w-8">
                                 <AvatarImage
                                     className="rounded-md h-8 w-8"
-                                    src={`${urlGeral}ResearcherData/Image?name=${(props as any).id || (props as any).researcher_id}`}
+                                    src={`${urlGeral}ResearcherData/Image?researcher_id=${(props as any).id || (props as any).researcher_id}`}
                                 />
                                 <AvatarFallback className="flex items-center justify-center">
                                     <UserIcon size={12} />
