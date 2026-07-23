@@ -138,7 +138,7 @@ function DiscenteItem({
                             </Button>
                         </div>
                         
-                        <AccordionTrigger onClick={() => buscarOrientacaoDoDiscente(props.lattes_id, props.name)}></AccordionTrigger>
+                        <AccordionTrigger onClick={() => buscarOrientacaoDoDiscente(props.id || props.researcher_id, props.name)}></AccordionTrigger>
                     </div>
                 </div>
 
@@ -173,9 +173,9 @@ function DiscenteItem({
                         </Button>
                     </div>
 
-                    {loading && <p className="text-sm text-gray-500 mt-4 animate-pulse">Carregando situação da orientação...</p>}
-                    
-                    {orientacao && (
+                    {loading ? (
+                        <p className="text-sm text-gray-500 mt-4 animate-pulse">Carregando situação da orientação...</p>
+                    ) : orientacao ? (
                         <div className="mt-6 border-t pt-4">
                             <p className="font-semibold text-sm mb-3">Situação Acadêmica no Programa:</p>
                             <div className="max-w-md">
@@ -187,17 +187,24 @@ function DiscenteItem({
                                     }} 
                                     pesquisador={{
                                         ...props,
-                                        id: props.lattes_id 
+                                        // Passamos o ID correto para não quebrar a chamada da foto/pesquisador
+                                        id: props.id || props.researcher_id || props.lattes_id 
                                     }} 
-                                    buscarOrientacoes={buscarOrientacaoDoDiscente} 
+                                    buscarOrientacoes={() => buscarOrientacaoDoDiscente(props.id || props.researcher_id, props.name)} 
                                 />
                             </div>
+                        </div>
+                    ) : (
+                        // 💡 Se o aluno não tiver orientação cadastrada no banco:
+                        <div className="mt-6 border-t pt-4 text-gray-500 text-sm italic">
+                            Nenhuma orientação acadêmica cadastrada para este discente.
                         </div>
                     )}
                 </AccordionContent>
             </AccordionItem>
         </Alert>
     );
+
 }
 
 export function DiscentesGraduate(props: Props) {
