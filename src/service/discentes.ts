@@ -19,7 +19,7 @@ async function getDiscentesPorPrograma(idPrograma: string): Promise<any> {
             throw new Error("Erro ao buscar discentes!")
         }
 
-        const dados = resposta.json();
+        const dados = await resposta.json();
         console.log("Discentes: ", dados)
         return dados;
     } catch (err) {
@@ -28,28 +28,34 @@ async function getDiscentesPorPrograma(idPrograma: string): Promise<any> {
 }
 
 async function getInfoPesquisadorPorId(id: string): Promise<string | undefined> {
+    // 🛑 PROTEÇÃO: Não faz chamada se o ID for inválido ou a string "undefined"
+    if (!id || id === "undefined" || id === "null") {
+        console.warn("ID do pesquisador inválido recebido:", id);
+        return undefined;
+    }
 
-    console.log("ID pesquisador: ", id)
+    console.log("ID pesquisador: ", id);
     try {
         const url = `https://iapos-api.senaicimatec.com.br/adm/ResearcherRest/Query?researcher_id=${id}`;
 
-        console.log("URL: ", url)
         const resposta = await fetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
             }
-        })
+        });
 
         if (!resposta.ok) {
-            throw new Error("Erro ao buscar discentes!")
+            throw new Error("Erro ao buscar dados do pesquisador!");
         }
 
         const dados = await resposta.json();
 
-        return dados.name
+        // Garante que só retorna o nome se dados e dados.name existirem
+        return dados?.name || undefined;
     } catch (error) {
         console.log("Erro ao buscar informação do pesquisador: ", error);
+        return undefined;
     }
 }
 
