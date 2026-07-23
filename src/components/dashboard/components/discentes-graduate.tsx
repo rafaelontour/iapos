@@ -114,7 +114,7 @@ function DiscenteItem({
                             <Avatar className="cursor-pointer rounded-md h-8 w-8">
                                 <AvatarImage
                                     className="rounded-md h-8 w-8"
-                                    src={`${urlGeral}ResearcherData/Image?name=${props.name}`}
+                                    src={`${urlGeral}ResearcherData/Image?name=${(props as any).id || (props as any).researcher_id}`}
                                 />
                                 <AvatarFallback className="flex items-center justify-center">
                                     <UserIcon size={12} />
@@ -179,9 +179,6 @@ function DiscenteItem({
                         <div className="mt-6 border-t pt-4">
                             <p className="font-semibold text-sm mb-3">Situação Acadêmica no Programa:</p>
                             <div className="max-w-md">
-                                <p className="text-red-500 font-bold bg-yellow-300 p-2 text-center rounded">
-                                    TESTE BUILD NOVO - FEAT SITUACAO DISCENTE
-                                </p>
                                 <CartaoOrientando 
                                     tipoPrograma={props.type_} 
                                     orientacaoC={{
