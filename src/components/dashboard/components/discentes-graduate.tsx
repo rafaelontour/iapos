@@ -138,7 +138,7 @@ function DiscenteItem({
                             </Button>
                         </div>
                         
-                        <AccordionTrigger onClick={() => buscarOrientacaoDoDiscente((props as any).id || (props as any).researcher_id || props.lattes_id, props.name)}>
+                        <AccordionTrigger onClick={() => buscarOrientacaoDoDiscente((props as any).id || (props as any).researcher_id || props.lattes_id, props.name)}></AccordionTrigger>
                     </div>
                 </div>
 
@@ -188,9 +188,9 @@ function DiscenteItem({
                                     pesquisador={{
                                         ...props,
                                         // Passamos o ID correto para não quebrar a chamada da foto/pesquisador
-                                        id: props.id || props.researcher_id || props.lattes_id 
+                                        id: (props as any).id || (props as any).researcher_id || props.lattes_id
                                     }} 
-                                    buscarOrientacoes={() => buscarOrientacaoDoDiscente(props.id || props.researcher_id, props.name)} 
+                                    buscarOrientacoes={() => buscarOrientacaoDoDiscente((props as any).id || (props as any).researcher_id || props.lattes_id, props.name)} 
                                 />
                             </div>
                         </div>
