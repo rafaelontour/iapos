@@ -109,12 +109,17 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         return formatarData(o.orientacaoC.planned_date_qualification);
     }
     async function getNomePorId(id: string) {
+        // Se não tiver ID válido, não faz a requisição
+        if (!id || id === "undefined" || id === "null") return;
+
         const nome = await getInfoPesquisadorPorId(id)
 
         if (nome) {
             setNomeDiscente(nome)
         }
     }
+
+    console.log("ID do Discente recebido no Card:", o.orientacaoC.student_researcher_id);
 
     useEffect(() => {
         getNomePorId(o.orientacaoC.student_researcher_id)
@@ -336,11 +341,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                     <div
                         className={`flex items-center w-[120px] full rounded-md bg-contain bg-no-repeat bg-center`}
                         style={{
-                            backgroundImage: nomeDiscente ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?name=${encodeURIComponent(nomeDiscente)})` : "",
+                            backgroundImage: (nomeDiscente && nomeDiscente.trim() !== "") 
+                                ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?name=${encodeURIComponent(nomeDiscente)})` 
+                                : "none",
                             boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
                         }}
                     />
-
                     <div className="flex flex-col justify-center gap-2 h-[150px]">
                         <p className="font-bold text-[17px]">{nomeDiscente}</p>
                         <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
