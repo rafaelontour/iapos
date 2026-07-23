@@ -138,7 +138,7 @@ function DiscenteItem({
                             </Button>
                         </div>
                         
-                        <AccordionTrigger onClick={() => buscarOrientacaoDoDiscente(props.id || props.researcher_id, props.name)}></AccordionTrigger>
+                        <AccordionTrigger onClick={() => buscarOrientacaoDoDiscente((props as any).id || (props as any).researcher_id || props.lattes_id, props.name)}>
                     </div>
                 </div>
 
