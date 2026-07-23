@@ -64,9 +64,21 @@ function DiscenteItem({
 
     // Busca a orientação deste discente específico no backend
     const buscarOrientacaoDoDiscente = async (lattesId: string, nomeEstudante: string) => {
-        if (orientacao || loading) return; 
+        
+        // 🔍 ADICIONE ESTE LOG AQUI:
+        console.log("=== CHECK DE ID DO DISCENTE ===");
+        console.log("Nome do Estudante:", nomeEstudante);
+        console.log("Valor do lattesId recebido:", lattesId);
+        console.log("Tamanho do ID:", lattesId?.length);
 
+        if (!lattesId || lattesId === "undefined") {
+            console.warn("ID do discente inválido para busca!");
+            return;
+        }
+
+        setOrientacao(null); // Limpa o card anterior para não reaproveitar dados!
         setLoading(true);
+
         try {
             const response = await fetch(
                 `${urlGeralAdm}guidance_tracking/?student_researcher_id=${lattesId}`, 
@@ -76,7 +88,11 @@ function DiscenteItem({
                 const data = await response.json();
                 if (data && data.length > 0) {
                     setOrientacao(data[0]);
+                } else {
+                    setOrientacao(null); // Se o aluno não tiver orientação cadastrada
                 }
+            } else {
+                setOrientacao(null);
             }
         } catch (err) {
             console.error("Erro ao buscar orientacao do discente:", err);
