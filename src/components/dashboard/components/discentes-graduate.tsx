@@ -62,21 +62,13 @@ function DiscenteItem({
     const [orientacao, setOrientacao] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
-    // Busca a orientação deste discente específico no backend
+    // Identificador único do discente
+    const discenteId = (props as any).id || (props as any).researcher_id || props.lattes_id;
+
     const buscarOrientacaoDoDiscente = async (lattesId: string, nomeEstudante: string) => {
-        
-        // 🔍 ADICIONE ESTE LOG AQUI:
-        console.log("=== CHECK DE ID DO DISCENTE ===");
-        console.log("Nome do Estudante:", nomeEstudante);
-        console.log("Valor do lattesId recebido:", lattesId);
-        console.log("Tamanho do ID:", lattesId?.length);
+        if (!lattesId || lattesId === "undefined") return;
 
-        if (!lattesId || lattesId === "undefined") {
-            console.warn("ID do discente inválido para busca!");
-            return;
-        }
-
-        setOrientacao(null); // Limpa o card anterior para não reaproveitar dados!
+        setOrientacao(null);
         setLoading(true);
 
         try {
@@ -89,32 +81,29 @@ function DiscenteItem({
                 if (data && data.length > 0) {
                     setOrientacao(data[0]);
                 } else {
-                    setOrientacao(null); // Se o aluno não tiver orientação cadastrada
+                    setOrientacao(null);
                 }
             } else {
                 setOrientacao(null);
             }
         } catch (err) {
-            console.error("Erro ao buscar orientacao do discente:", err);
+            console.error("Erro ao buscar orientação do discente:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        // Vazio para evitar chamadas excessivas ao carregar a página
-    }, []);
-
     return (
         <Alert>
-            <AccordionItem value={String(index)}>
+            {/* 1. MUDANÇA IMPORTANTE: Use o discenteId no value em vez de String(index) */}
+            <AccordionItem value={discenteId}>
                 <div className="flex justify-between items-center h-10 group">
                     <div className="h-10">
                         <div className="flex items-center gap-2">
                             <Avatar className="cursor-pointer rounded-md h-8 w-8">
                                 <AvatarImage
                                     className="rounded-md h-8 w-8"
-                                    src={`${urlGeral}ResearcherData/Image?researcher_id=${(props as any).id || (props as any).researcher_id}`}
+                                    src={`${urlGeral}ResearcherData/Image?researcher_id=${discenteId}`}
                                 />
                                 <AvatarFallback className="flex items-center justify-center">
                                     <UserIcon size={12} />
@@ -138,7 +127,10 @@ function DiscenteItem({
                             </Button>
                         </div>
                         
-                        <AccordionTrigger onClick={() => buscarOrientacaoDoDiscente((props as any).id || (props as any).researcher_id || props.lattes_id, props.name)}></AccordionTrigger>
+                        {/* 2. MUDANÇA IMPORTANTE: Dispara o fetch quando o gatilho do accordion for clicado */}
+                        <AccordionTrigger 
+                            onClick={() => buscarOrientacaoDoDiscente(discenteId, props.name)}
+                        />
                     </div>
                 </div>
 
@@ -187,15 +179,13 @@ function DiscenteItem({
                                     }} 
                                     pesquisador={{
                                         ...props,
-                                        // Passamos o ID correto para não quebrar a chamada da foto/pesquisador
-                                        id: (props as any).id || (props as any).researcher_id || props.lattes_id
+                                        id: discenteId
                                     }} 
-                                    buscarOrientacoes={() => buscarOrientacaoDoDiscente((props as any).id || (props as any).researcher_id || props.lattes_id, props.name)} 
+                                    buscarOrientacoes={() => buscarOrientacaoDoDiscente(discenteId, props.name)} 
                                 />
                             </div>
                         </div>
                     ) : (
-                        // 💡 Se o aluno não tiver orientação cadastrada no banco:
                         <div className="mt-6 border-t pt-4 text-gray-500 text-sm italic">
                             Nenhuma orientação acadêmica cadastrada para este discente.
                         </div>
@@ -204,7 +194,6 @@ function DiscenteItem({
             </AccordionItem>
         </Alert>
     );
-
 }
 
 export function DiscentesGraduate(props: Props) {
