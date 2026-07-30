@@ -113,6 +113,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         if (!id || id === "undefined" || id === "null") return;
 
         const nome = await getInfoPesquisadorPorId(id)
+        console.log("2. Nome retornado da API para o ID", id, "foi:", nome);
 
         if (nome) {
             setNomeDiscente(nome)
@@ -122,6 +123,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     console.log("ID do Discente recebido no Card:", o.orientacaoC.student_researcher_id);
 
     useEffect(() => {
+        console.log("1. ID recebido para buscar nome:", o.orientacaoC?.student_researcher_id);
         if (o.orientacaoC?.student_researcher_id) {
             getNomePorId(o.orientacaoC.student_researcher_id);
         }
