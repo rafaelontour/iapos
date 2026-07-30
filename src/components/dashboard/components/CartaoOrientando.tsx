@@ -123,11 +123,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     useEffect(() => {
         if (o.orientacaoC?.student_researcher_id) {
-            getNomePorId(o.orientacaoC.student_researcher_id).then((nome) => {
-                if (nome) {
-                    setNomeDiscente(nome);
-                }
-            });
+            getNomePorId(o.orientacaoC.student_researcher_id);
         }
     }, [o.orientacaoC?.student_researcher_id]);
 
