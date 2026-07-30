@@ -122,8 +122,14 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     console.log("ID do Discente recebido no Card:", o.orientacaoC.student_researcher_id);
 
     useEffect(() => {
-        getNomePorId(o.orientacaoC.student_researcher_id)
-    }, [o.orientacaoC.student_researcher_id])
+        if (o.orientacaoC?.student_researcher_id) {
+            getNomePorId(o.orientacaoC.student_researcher_id).then((nome) => {
+                if (nome) {
+                    setNomeDiscente(nome);
+                }
+            });
+        }
+    }, [o.orientacaoC?.student_researcher_id]);
 
     const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -170,14 +176,15 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     }, [openDialog])
 
     function buscarTags() {
-        const t = getTagsService();
-
-        t.then((response) => {
-            setTags(response)
-        })
-
-        const tagsDaOrientacao = tags.filter((tag: Tag) => o.orientacaoC.tags.some((tagOrientacao: Tag) => tagOrientacao.id === tag.id));
-        setTagsSelecionadas(tagsDaOrientacao);
+        getTagsService().then((response) => {
+            setTags(response);
+            if (response && o.orientacaoC?.tags) {
+                const tagsDaOrientacao = response.filter((tag: Tag) => 
+                    o.orientacaoC.tags.some((tagOrientacao: Tag) => tagOrientacao.id === tag.id)
+                );
+                setTagsSelecionadas(tagsDaOrientacao);
+            }
+        });
     }
 
     function buscarDatas() {
@@ -242,7 +249,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
         if (resposta === 200) {
             limparCampos();
-            o.buscarOrientacoes(o.pesquisador.researcher_id, o.orientacaoC.graduate_program_id);
+            o.buscarOrientacoes(o.orientacaoC.supervisor_researcher_id, o.orientacaoC.graduate_program_id);
             toast.success("Orientação salva com sucesso!");
             setOpenDialog(!openDialog);
         } else {
@@ -255,7 +262,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
         if (resposta == 200) {
             limparCampos();
-            o.buscarOrientacoes(o.pesquisador.researcher_id, o.orientacaoC.graduate_program_id);
+            o.buscarOrientacoes(o.orientacaoC.supervisor_researcher_id, o.orientacaoC.graduate_program_id);
             toast.success("Orientação excluida com sucesso!");
         }
     }
