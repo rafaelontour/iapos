@@ -341,14 +341,16 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                     <div
                         className={`flex items-center w-[120px] full rounded-md bg-contain bg-no-repeat bg-center`}
                         style={{
-                            backgroundImage: (nomeDiscente && nomeDiscente.trim() !== "") 
-                                ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?name=${encodeURIComponent(nomeDiscente)})` 
+                            backgroundImage: o.orientacaoC?.student_researcher_id
+                                ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?researcher_id=${o.orientacaoC.student_researcher_id})` 
                                 : "none",
                             boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
                         }}
                     />
                     <div className="flex flex-col justify-center gap-2 h-[150px]">
-                        <p className="font-bold text-[17px]">{nomeDiscente}</p>
+                        <p className="font-bold text-[17px]">
+                            {nomeDiscente || "Carregando..."}
+                        </p>
                         <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
                         {
                             o.orientacaoC.peding && (
