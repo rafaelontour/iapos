@@ -45,7 +45,9 @@ interface InfoOrientacaoProps {
 export default function CartaoOrientando(o: InfoOrientacaoProps) {
     console.log("Dados do Orientando:", o.orientacaoC);
 
-    const [nomeDiscente, setNomeDiscente] = useState<string>("");
+    const nomeDiscente = o.pesquisador?.name || o.orientacaoC?.student_name || "Carregando...";
+
+    //const [nomeDiscente, setNomeDiscente] = useState<string>("");
 
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
 
@@ -108,6 +110,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         // Se cair aqui (ex: tipo_ "DISCENTE" ou nulo), exibe por padrão a data da qualificação
         return formatarData(o.orientacaoC.planned_date_qualification);
     }
+    /*
     async function getNomePorId(id: string) {
         // Se não tiver ID válido, não faz a requisição
         if (!id || id === "undefined" || id === "null") return;
@@ -118,16 +121,18 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         if (nome) {
             setNomeDiscente(nome)
         }
-    }
+    }*/
 
     console.log("ID do Discente recebido no Card:", o.orientacaoC.student_researcher_id);
 
+    /*
     useEffect(() => {
         console.log("1. ID recebido para buscar nome:", o.orientacaoC?.student_researcher_id);
         if (o.orientacaoC?.student_researcher_id) {
             getNomePorId(o.orientacaoC.student_researcher_id);
         }
     }, [o.orientacaoC?.student_researcher_id]);
+    */
 
     const [openDialog, setOpenDialog] = useState<boolean>(false);
 
