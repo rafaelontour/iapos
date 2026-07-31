@@ -45,7 +45,7 @@ interface InfoOrientacaoProps {
 export default function CartaoOrientando(o: InfoOrientacaoProps) {
     console.log("Dados do Orientando:", o.orientacaoC);
 
-    const nomeDiscente = o.pesquisador?.name || o.orientacaoC?.student_name || "Carregando...";
+    const nomeDiscente = o.pesquisador?.name || (o.orientacaoC as any)?.student_name || "Carregando...";
 
     //const [nomeDiscente, setNomeDiscente] = useState<string>("");
 
