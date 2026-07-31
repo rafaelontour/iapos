@@ -76,10 +76,18 @@ function DiscenteItem({
                 `${urlGeralAdm}guidance_tracking/?student_researcher_id=${lattesId}`, 
                 { mode: "cors" }
             );
+
             if (response.ok) {
                 const data = await response.json();
-                if (data && data.length > 0) {
-                    setOrientacao(data[0]);
+
+                if (Array.isArray(data) && data.length > 0) {
+                    // 🔍 Procura no array a orientação que realmente bate com o ID deste discente
+                    const orientacaoDoAluno = data.find(
+                        (item: any) => item.student_researcher_id === discenteId || item.student_researcher_id === lattesId
+                    );
+
+                    // 📌 Se encontrou a orientação DELE, define. Se não, fica null (não exibe o Guilherme!)
+                    setOrientacao(orientacaoDoAluno || null);
                 } else {
                     setOrientacao(null);
                 }
@@ -88,10 +96,21 @@ function DiscenteItem({
             }
         } catch (err) {
             console.error("Erro ao buscar orientação do discente:", err);
+            setOrientacao(null);
         } finally {
             setLoading(false);
         }
     };
+
+    console.log(
+    "%c 📌 PAI (discentes-graduate): Props enviadas!",
+    "background: #222; color: #bada55; font-size: 14px;",
+    {
+        propsName: props.name,
+        discenteId: discenteId,
+        orientacaoRecebida: orientacao
+    }
+    );
 
     return (
         <Alert>
