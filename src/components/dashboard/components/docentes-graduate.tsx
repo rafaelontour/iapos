@@ -60,6 +60,16 @@ interface Props {
   graduate_program_id: string
 }
 
+type SearchScope = 'all' | 'student' | 'supervisor';
+
+interface GuidanceSearchResult {
+  guidance_id: string;
+  student_researcher_id: string;
+  student_name: string;
+  supervisor_researcher_id: string;
+  supervisor_name: string;
+}
+
 
 export function DocentesGraduate(props: Props) {
   const [type, setType] = useState('COLABORADOR');
@@ -393,8 +403,11 @@ export function DocentesGraduate(props: Props) {
   const [tab, setTab] = useState('all')
 
   const [input2, setInput2] = useState('')
+  const [searchScope, setSearchScope] = useState<SearchScope>('all')
+  const [guidanceSearchResults, setGuidanceSearchResults] = useState<GuidanceSearchResult[]>([])
+  const [isSearchingGuidance, setIsSearchingGuidance] = useState(false)
 
-  const filteredTotal: any = Array.isArray(researcher) ? researcher.filter(item => {
+  const filteredBySupervisorName: any = Array.isArray(researcher) ? researcher.filter(item => {
 
     console.log("researcher: ", item)
     // Normaliza a string do item e da busca para comparação
@@ -407,6 +420,59 @@ export function DocentesGraduate(props: Props) {
     const normalizedSearch = normalizeString(input2);
 
     return searchString.includes(normalizedSearch);
+  }) : [];
+
+  useEffect(() => {
+    const query = input2.trim();
+    if (query.length < 2) {
+      setGuidanceSearchResults([]);
+      setIsSearchingGuidance(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setIsSearchingGuidance(true);
+      try {
+        const params = new URLSearchParams({
+          graduate_program_id: props.graduate_program_id,
+          q: query,
+          scope: searchScope,
+        });
+        const response = await fetch(`${urlGeralAdm}guidance_tracking/search/?${params}`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error('Não foi possível buscar orientandos.');
+        setGuidanceSearchResults(await response.json());
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error(error);
+          setGuidanceSearchResults([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) setIsSearchingGuidance(false);
+      }
+    }, 300);
+
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [input2, props.graduate_program_id, searchScope, urlGeralAdm]);
+
+  const normalizedSearch = normalizeString(input2.trim());
+  const filteredTotal: any = Array.isArray(researcher) ? researcher.filter(item => {
+    if (!normalizedSearch) return true;
+
+    const matchesSupervisor = normalizeString(item.name).includes(normalizedSearch);
+    const matchesStudent = guidanceSearchResults.some(result =>
+      result.supervisor_researcher_id === item.researcher_id
+      && normalizeString(result.student_name).includes(normalizedSearch)
+    );
+
+    if (searchScope === 'student') return matchesStudent;
+    if (searchScope === 'supervisor') return matchesSupervisor;
+    return matchesSupervisor || matchesStudent;
   }) : [];
 
   // Rafael
@@ -906,15 +972,33 @@ export function DocentesGraduate(props: Props) {
             collapsible
             className="flex flex-col gap-4"
           >
-            <div className="border bg-white dark:bg-neutral-950  rounded-md px-6 h-12 flex items-center gap-1 border-neutral-200 dark:border-neutral-800">
+            <div className="border bg-white dark:bg-neutral-950 rounded-md px-4 min-h-12 flex flex-wrap items-center gap-2 border-neutral-200 dark:border-neutral-800">
               <MagnifyingGlass size={16} />
               <Input
                 className="border-0"
                 value={input2}
                 onChange={(e) => setInput2(e.target.value)}
-                placeholder="Buscar pesquisador"
+                placeholder="Buscar docente ou orientando"
               />
+              <ToggleGroup
+                type="single"
+                value={searchScope}
+                onValueChange={(value) => value && setSearchScope(value as SearchScope)}
+                className="justify-start"
+              >
+                <ToggleGroupItem value="all" size="sm">Todos</ToggleGroupItem>
+                <ToggleGroupItem value="supervisor" size="sm">Docentes</ToggleGroupItem>
+                <ToggleGroupItem value="student" size="sm">Orientandos</ToggleGroupItem>
+              </ToggleGroup>
             </div>
+
+            {input2.trim().length >= 2 && (
+              <p className="px-1 text-xs text-muted-foreground">
+                {isSearchingGuidance
+                  ? 'Buscando orientandos...'
+                  : `${filteredTotal.length} docente(s) encontrado(s).`}
+              </p>
+            )}
 
             {filteredTotal.map((props, index) => (
               <Alert key={index}>
@@ -934,6 +1018,14 @@ export function DocentesGraduate(props: Props) {
                         <div>
                           <p className="font-medium">{props.name}</p>
                           <div className="text-xs text-gray-500">{props.lattes_id}</div>
+                          {searchScope !== 'supervisor' && input2.trim().length >= 2 && guidanceSearchResults
+                            .filter(result => result.supervisor_researcher_id === props.researcher_id
+                              && normalizeString(result.student_name).includes(normalizedSearch))
+                            .map(result => (
+                              <div key={result.guidance_id} className="text-xs text-eng-dark-blue">
+                                Orientando encontrado: {result.student_name}
+                              </div>
+                            ))}
                         </div>
                       </div>
                     </div>
