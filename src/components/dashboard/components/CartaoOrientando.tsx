@@ -28,6 +28,7 @@ interface OrientacaoProps {
     planned_date_qualification: string,
     start_date: string,
     student_researcher_id: string,
+    student_name?: string,
     supervisor_researcher_id: string,
     type: string,
     updated_at: string,
@@ -45,9 +46,7 @@ interface InfoOrientacaoProps {
 export default function CartaoOrientando(o: InfoOrientacaoProps) {
     console.log("Dados do Orientando:", o.orientacaoC);
 
-    const nomeDiscente = o.pesquisador?.name || (o.orientacaoC as any)?.student_name || "Carregando...";
-
-    //const [nomeDiscente, setNomeDiscente] = useState<string>("");
+    const [nomeDiscente, setNomeDiscente] = useState<string>(o.orientacaoC.student_name || "");
 
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
 
@@ -133,6 +132,25 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         }
     }, [o.orientacaoC?.student_researcher_id]);
     */
+
+    useEffect(() => {
+        let ativo = true;
+
+        async function carregarNomeDiscente() {
+            if (o.orientacaoC.student_name) {
+                if (ativo) setNomeDiscente(o.orientacaoC.student_name);
+                return;
+            }
+
+            const nome = await getInfoPesquisadorPorId(o.orientacaoC.student_researcher_id);
+            if (ativo) setNomeDiscente(nome || "");
+        }
+
+        void carregarNomeDiscente();
+        return () => {
+            ativo = false;
+        };
+    }, [o.orientacaoC.student_name, o.orientacaoC.student_researcher_id]);
 
     const [openDialog, setOpenDialog] = useState<boolean>(false);
 

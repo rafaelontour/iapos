@@ -52,7 +52,8 @@ async function getInfoPesquisadorPorId(id: string): Promise<string | undefined> 
         const dados = await resposta.json();
 
         // Garante que só retorna o nome se dados e dados.name existirem
-        return dados?.name || undefined;
+        const pesquisador = Array.isArray(dados) ? dados[0] : dados;
+        return pesquisador?.name || undefined;
     } catch (error) {
         console.log("Erro ao buscar informação do pesquisador: ", error);
         return undefined;
