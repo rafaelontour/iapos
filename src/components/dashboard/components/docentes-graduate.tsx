@@ -415,7 +415,7 @@ export function DocentesGraduate(props: Props) {
 
   const [tipoOrientacao, setTipoOrientacao] = useState<any>(null)
   const [orientacoes, setOrientacoes] = useState<any>([])
-
+  console.log(orientacoes, 'TO AQUI')
   const [idOrientador, setIdOrientador] = useState<string | null>(null)
   const [idOrientando, setIdOrientando] = useState<string | null>(null)
   const [idCoorientador, setIdCoorientador] = useState<string | null>(null)
@@ -925,7 +925,7 @@ export function DocentesGraduate(props: Props) {
                         <Avatar className="cursor-pointer rounded-md h-8 w-8">
                           <AvatarImage
                             className="rounded-md h-8 w-8"
-                            src={`${urlGeral}ResearcherData/Image?name=${props.name}`}
+                            src={`${urlGeral}ResearcherData/Image?lattes_id=${props.lattes_id}`}
                           />
                           <AvatarFallback className="flex items-center justify-center">
                             <UserIcon size={12} />

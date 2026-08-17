@@ -41,30 +41,45 @@ interface InfoOrientacaoProps {
     tipoPrograma: any
 }
 
-
 export default function CartaoOrientando(o: InfoOrientacaoProps) {
     console.log("Dados do Orientando:", o.orientacaoC);
 
-    const nomeDiscente = o.pesquisador?.name || (o.orientacaoC as any)?.student_name || "Carregando...";
-
-    //const [nomeDiscente, setNomeDiscente] = useState<string>("");
-
+    const [nomeDiscente, setNomeDiscente] = useState<string>(o.pesquisador?.name || (o.orientacaoC as any)?.student_name || "Carregando...");
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
+    const [lattesIdDiscente, setLattesIdDiscente] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (o.orientacaoC?.student_researcher_id) {
+            fetch(`https://iapos-api.senaicimatec.com.br/adm/ResearcherRest/Query?researcher_id=${o.orientacaoC.student_researcher_id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data) {
+                        if (data.lattes_id) {
+                            setLattesIdDiscente(data.lattes_id);
+                        }
+                        if (data.name) {
+                            setNomeDiscente(data.name);
+                        }
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+    }, [o.orientacaoC?.student_researcher_id]);
 
     const tipo = () => {
-        const typeValue = o.orientacaoC.type; // Facilita a leitura e evita repetição
+        const typeValue = o.orientacaoC.type;
 
         if (o.tipoPrograma === 'Mestrado') {
             if (typeValue === 'QUALIFICAÇÃO' || typeValue === 'QUALIFICACAO') return 'Previsão de qualificação:'
             if (typeValue === 'CONCLUSÃO' || typeValue === 'CONCLUSAO') return 'Previsão de defesa final:'
             if (typeValue === 'FINALIZADO') return 'Concluído em: '
-            return 'Previsão de qualificação:' // Fallback para novos discentes
+            return 'Previsão de qualificação:' 
         } else {
             if (typeValue === 'PROJETO') return 'Previsão de defesa do projeto:'
             if (typeValue === 'QUALIFICAÇÃO' || typeValue === 'QUALIFICACAO') return 'Previsão de qualificação:'
             if (typeValue === 'CONCLUSÃO' || typeValue === 'CONCLUSAO') return 'Previsão de defesa final:'
             if (typeValue === 'FINALIZADO') return 'Concluído em: '
-            return 'Previsão de qualificação:' // Fallback para novos discentes
+            return 'Previsão de qualificação:' 
         }
     }
 
@@ -82,14 +97,14 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         const data = new Date(dataStr);
 
         const dia = String(data.getUTCDate()).padStart(2, '0');
-        const mes = String(data.getUTCMonth() + 1).padStart(2, '0'); // getUTCMonth() começa do 0
+        const mes = String(data.getUTCMonth() + 1).padStart(2, '0'); 
         const ano = data.getUTCFullYear();
 
         return `${dia}/${mes}/${ano}`;
     }
 
     const calcularData = () => {
-        const tipo = o.orientacaoC.type; // Garante que está lendo a propriedade correta do objeto
+        const tipo = o.orientacaoC.type;
 
         if (o.tipoPrograma === "Mestrado" && (tipo === "QUALIFICAÇÃO" || tipo === "QUALIFICACAO")) {
             return formatarData(o.orientacaoC.planned_date_qualification);
@@ -106,33 +121,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         if (tipo === "FINALIZADO") {
             return formatarData(o.orientacaoC.done_date_conclusion);
         }
-        
-        // Se cair aqui (ex: tipo_ "DISCENTE" ou nulo), exibe por padrão a data da qualificação
+
         return formatarData(o.orientacaoC.planned_date_qualification);
     }
-    /*
-    async function getNomePorId(id: string) {
-        // Se não tiver ID válido, não faz a requisição
-        if (!id || id === "undefined" || id === "null") return;
-
-        const nome = await getInfoPesquisadorPorId(id)
-        console.log("2. Nome retornado da API para o ID", id, "foi:", nome);
-
-        if (nome) {
-            setNomeDiscente(nome)
-        }
-    }*/
-
-    console.log("ID do Discente recebido no Card:", o.orientacaoC.student_researcher_id);
-
-    /*
-    useEffect(() => {
-        console.log("1. ID recebido para buscar nome:", o.orientacaoC?.student_researcher_id);
-        if (o.orientacaoC?.student_researcher_id) {
-            getNomePorId(o.orientacaoC.student_researcher_id);
-        }
-    }, [o.orientacaoC?.student_researcher_id]);
-    */
 
     const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -196,7 +187,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         datas.then((response) => {
             setConfigDatas(response)
         })
-
     }
 
     function gerarDatas(): void {
@@ -209,16 +199,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         const qualMeses = configDataSelecionada?.duration_qualification_months || 0;
         const concMeses = configDataSelecionada?.duration_conclusion_months || 0;
 
-        // 1. Previsão do Projeto (Soma apenas meses do projeto a partir da entrada)
         const dProj = new Date(ano, mes + projMeses, dia);
         setDataPrevisaoDefesa(`${dProj.getFullYear()}-${String(dProj.getMonth() + 1).padStart(2, "0")}-${diaStr}`);
 
-        // 2. Previsão da Qualificação (Soma projeto + qualificação a partir da entrada)
-        // Se for Mestrado, projMeses será 0, então contará perfeitamente apenas os meses de qualificação!
         const dQual = new Date(ano, mes + projMeses + qualMeses, dia);
         setDataPrevisaoQualificacao(`${dQual.getFullYear()}-${String(dQual.getMonth() + 1).padStart(2, "0")}-${diaStr}`);
 
-        // 3. Previsão da Defesa Final (Soma todas as etapas a partir da entrada)
         const dConc = new Date(ano, mes + projMeses + qualMeses + concMeses, dia);
         setDataPrevisaoDefesaFinal(`${dConc.getFullYear()}-${String(dConc.getMonth() + 1).padStart(2, "0")}-${diaStr}`);
     }
@@ -301,7 +287,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     }
 
-   function formatarDataPtBR_semFuso(dataIso) {
+   function formatarDataPtBR_semFuso(dataIso: string) {
         const data = new Date(dataIso);
 
         const dia = data.getUTCDate();
@@ -318,7 +304,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         <div className={`flex flex-col items-center ${o.orientacaoC.tags.length > 0 ? "gap-5" : "gap-9"} border rounded-md shadow-md p-5 h-fit relative overflow-hidden`}>
             <div className="flex flex-col w-full gap-6">
                 <div className="flex items-center gap-1">
-
                     {
                         o.orientacaoC.tags.length > 0 && (
                             <span className="flex items-center gap-2 p-2 bg-slate-300 w-full absolute top-0 left-0">
@@ -338,9 +323,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 <p>{tag.name}</p>
                                             </div>
                                         ))
-
                                     }
-
                                 </div>
                             </span>
                         )
@@ -351,15 +334,15 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                     <div
                         className={`flex items-center w-[120px] full rounded-md bg-contain bg-no-repeat bg-center`}
                         style={{
-                            backgroundImage: o.orientacaoC?.student_researcher_id
-                                ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?researcher_id=${o.orientacaoC.student_researcher_id})` 
+                            backgroundImage: lattesIdDiscente
+                                ? `url(https://iapos-api.senaicimatec.com.br/ResearcherData/Image?lattes_id=${lattesIdDiscente})` 
                                 : "none",
                             boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
                         }}
                     />
                     <div className="flex flex-col justify-center gap-2 h-[150px]">
                         <p className="font-bold text-[17px]">
-                            {nomeDiscente || "Carregando..."}
+                            {nomeDiscente}
                         </p>
                         <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
                         {
@@ -442,7 +425,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                             )
                                         }
                                     </div>
-                                end text-muted-foreground			</div>
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
@@ -627,7 +610,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 onChange={(e) => {
                                                     setDataPrevisaoDefesaFinal(e.target.value);
                                                 }}
-
                                                 type="date"
                                                 id="dataPrevista"
                                                 value={
@@ -708,9 +690,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Excluir orientação</DialogTitle>
+                            <DialogTitle>Excluir orientação</DialogTitle>
                             <DialogDescription>
-                                Tem certeza que deseja excluir essa orientação?
+                                Tem certeza que deseja excluir essa orientação?
                             </DialogDescription>
                         </DialogHeader>
                         <DialogClose
@@ -741,7 +723,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                     </DialogContent>
                 </Dialog>
             </div>
-
         </div>
     )
 }
