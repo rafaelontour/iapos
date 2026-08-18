@@ -52,8 +52,19 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     const [configDatas, setConfigDatas] = useState<Configuracao[]>([])
 
+    const possuiEtapaProjeto = () => {
+        const dataProjeto = o.orientacaoC.planned_date_project?.slice(0, 10);
+        const dataEntrada = o.orientacaoC.start_date?.slice(0, 10);
+
+        return Boolean(dataProjeto && dataEntrada && dataProjeto !== dataEntrada);
+    }
+
     const tipo = () => {
         const typeValue = o.orientacaoC.type; // Facilita a leitura e evita repetição
+
+        if (typeValue === 'PROJETO' && !possuiEtapaProjeto()) {
+            return 'Previsão de qualificação:'
+        }
 
         if (o.tipoPrograma === 'Mestrado') {
             if (typeValue === 'QUALIFICAÇÃO' || typeValue === 'QUALIFICACAO') return 'Previsão de qualificação:'
@@ -102,7 +113,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         if (o.tipoPrograma === "Mestrado" && (tipo === "QUALIFICAÇÃO" || tipo === "QUALIFICACAO")) {
             return formatarData(o.orientacaoC.planned_date_qualification);
         }
-        if (tipo === "PROJETO") {
+        if (tipo === "PROJETO" && possuiEtapaProjeto()) {
             return formatarData(o.orientacaoC.planned_date_project);
         }
         if (tipo === "QUALIFICAÇÃO" || tipo === "QUALIFICACAO") {
