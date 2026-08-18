@@ -40,6 +40,8 @@ interface InfoOrientacaoProps {
     pesquisador: any
     buscarOrientacoes: (idDocente: string, idPrograma: string) => void
     tipoPrograma: any
+    mostrarResumoDiscente?: boolean
+    nomeOrientador?: string
 }
 
 
@@ -75,6 +77,13 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         } else {
             return 'yellow-500'
         }
+    }
+
+    const etapaAcademica = () => {
+        if (o.orientacaoC.done_date_conclusion) return "Concluído";
+        if (o.orientacaoC.done_date_qualification) return "Qualificado";
+        if (o.orientacaoC.done_date_project) return "Defesa de projeto";
+        return "Entrada";
     }
 
     function formatarData(dataStr: string): string {
@@ -375,10 +384,16 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                             boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
                         }}
                     />
-                    <div className="flex flex-col justify-center gap-2 h-[150px]">
+                    <div className="flex flex-col justify-center gap-2 min-h-[150px]">
                         <p className="font-bold text-[17px]">
                             {nomeDiscente || "Carregando..."}
                         </p>
+                        {o.mostrarResumoDiscente && (
+                            <>
+                                <p className="text-sm">Orientador: <span className="font-semibold">{o.nomeOrientador || "Carregando..."}</span></p>
+                                <p className="text-sm">Etapa: <span className="font-semibold">{etapaAcademica()}</span></p>
+                            </>
+                        )}
                         <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
                         {
                             o.orientacaoC.peding && (

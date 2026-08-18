@@ -505,14 +505,14 @@ export function DocentesGraduate(props: Props) {
   const [tagsSelecionadas, setTagsSelecionadas] = useState<Tag[]>([]);
 
   useEffect(() => {
-    if (dataEntrada !== null) {
+    if (dataEntrada !== null && configDataSelecionada !== null) {
       gerarDatas();
     }
-  }, [configDatas])
+  }, [dataEntrada, configDataSelecionada])
 
   useEffect(() => {
     buscarDatas();
-  }, [configDataSelecionada])
+  }, [])
 
   function buscarDatas() {
     const datas = getConfiguracoes();

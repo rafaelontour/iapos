@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
 import { Separator } from "../../ui/separator";
 import CartaoOrientando from "./CartaoOrientando";
+import { getInfoPesquisadorPorId } from "../../../service/discentes";
 
 export interface PesquisadorProps {
     lattes_id: string
@@ -60,6 +61,7 @@ function DiscenteItem({
     urlGeralAdm
 }: DiscenteItemProps) {
     const [orientacao, setOrientacao] = useState<any>(null);
+    const [nomeOrientador, setNomeOrientador] = useState<string>("");
     const [loading, setLoading] = useState(false);
 
     // Identificador único do discente
@@ -69,11 +71,12 @@ function DiscenteItem({
         if (!lattesId || lattesId === "undefined") return;
 
         setOrientacao(null);
+        setNomeOrientador("");
         setLoading(true);
 
         try {
             const response = await fetch(
-                `${urlGeralAdm}guidance_tracking/?student_researcher_id=${lattesId}`, 
+                `${urlGeralAdm}guidance_tracking/?student_researcher_id=${lattesId}&graduate_program_id=${props.graduate_program_id}`,
                 { mode: "cors" }
             );
 
@@ -88,6 +91,12 @@ function DiscenteItem({
 
                     // 📌 Se encontrou a orientação DELE, define. Se não, fica null (não exibe o Guilherme!)
                     setOrientacao(orientacaoDoAluno || null);
+                    if (orientacaoDoAluno?.supervisor_researcher_id) {
+                        const nome = await getInfoPesquisadorPorId(
+                            orientacaoDoAluno.supervisor_researcher_id
+                        );
+                        setNomeOrientador(nome || "Não identificado");
+                    }
                 } else {
                     setOrientacao(null);
                 }
@@ -192,6 +201,8 @@ function DiscenteItem({
                             <div className="max-w-md">
                                 <CartaoOrientando 
                                     tipoPrograma={props.type_} 
+                                    mostrarResumoDiscente
+                                    nomeOrientador={nomeOrientador}
                                     orientacaoC={{
                                         ...orientacao,
                                         student_name: props.name 
