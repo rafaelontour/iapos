@@ -66,18 +66,11 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             return 'Previsão de qualificação:'
         }
 
-        if (o.tipoPrograma === 'Mestrado') {
-            if (typeValue === 'QUALIFICAÇÃO' || typeValue === 'QUALIFICACAO') return 'Previsão de qualificação:'
-            if (typeValue === 'CONCLUSÃO' || typeValue === 'CONCLUSAO') return 'Previsão de defesa final:'
-            if (typeValue === 'FINALIZADO') return 'Concluído em: '
-            return 'Previsão de qualificação:' // Fallback para novos discentes
-        } else {
-            if (typeValue === 'PROJETO') return 'Previsão de defesa do projeto:'
-            if (typeValue === 'QUALIFICAÇÃO' || typeValue === 'QUALIFICACAO') return 'Previsão de qualificação:'
-            if (typeValue === 'CONCLUSÃO' || typeValue === 'CONCLUSAO') return 'Previsão de defesa final:'
-            if (typeValue === 'FINALIZADO') return 'Concluído em: '
-            return 'Previsão de qualificação:' // Fallback para novos discentes
-        }
+        if (typeValue === 'PROJETO') return 'Previsão de defesa do projeto:'
+        if (typeValue === 'QUALIFICAÇÃO' || typeValue === 'QUALIFICACAO') return 'Previsão de qualificação:'
+        if (typeValue === 'CONCLUSÃO' || typeValue === 'CONCLUSAO') return 'Previsão de defesa final:'
+        if (typeValue === 'FINALIZADO') return 'Concluído em: '
+        return 'Previsão de qualificação:' // Fallback para novos discentes
     }
 
     const corSpanPrevisao = () => {
@@ -110,9 +103,6 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const calcularData = () => {
         const tipo = o.orientacaoC.type; // Garante que está lendo a propriedade correta do objeto
 
-        if (o.tipoPrograma === "Mestrado" && (tipo === "QUALIFICAÇÃO" || tipo === "QUALIFICACAO")) {
-            return formatarData(o.orientacaoC.planned_date_qualification);
-        }
         if (tipo === "PROJETO" && possuiEtapaProjeto()) {
             return formatarData(o.orientacaoC.planned_date_project);
         }
@@ -560,7 +550,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 style={{ boxShadow: '3px 3px 3px rgba(0, 0, 0, 0.25)' }}
                             >
                                 {
-                                    o.tipoPrograma !== "Mestrado" && o.orientacaoC.planned_date_project !== o.orientacaoC.start_date && (
+                                    possuiEtapaProjeto() && (
                                         <div className="flex flex-col p-3 gap-3 border-dashed border-black border-[2px] rounded-md">
                                             <p className="text-lg font-bold">Defesa do Projeto</p>
                                             <div className="flex items-center gap-3">
@@ -645,7 +635,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                     }
                                                 }}
                                                 onClick={() => {
-                                                    if (o.tipoPrograma !== "Mestrado" && o.orientacaoC.done_date_project == null && dataRealizadaDefesa == null) {
+                                                    if (possuiEtapaProjeto() && o.orientacaoC.done_date_project == null && dataRealizadaDefesa == null) {
                                                         alert("Para definir data de realização de qualificação é preciso ter concluído a defesa do projeto!");
                                                     }
                                                 }}
@@ -717,7 +707,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 <button
                                     className="bg-[#559FB8] text-white px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
                                     onClick={(e) => {
-                                        if (dataRealizadaDefesaFinal != null && (dataRealizadaQualificacao == "" || (o.tipoPrograma !== "Mestrado" && dataRealizadaDefesa == ""))) {
+                                        if (dataRealizadaDefesaFinal != null && (dataRealizadaQualificacao == "" || (possuiEtapaProjeto() && dataRealizadaDefesa == ""))) {
                                             alert("Corrija os dados e tente novamente!");
                                             return;
                                         }

@@ -522,10 +522,11 @@ export function DocentesGraduate(props: Props) {
     })
   }
 
-  // Regra Corrigida: Considera também se o tipo de orientação for explicitamente "Mestrado"
-  const isProjetoZerado = tipoOrientacao === "Mestrado" || (configDataSelecionada 
-    ? configDataSelecionada.duration_project_months === 0 
-    : configDatas[0]?.duration_project_months === 0);
+  // A etapa de projeto é determinada pela configuração de datas (duration_project_months > 0),
+  // independente do tipo do programa (Mestrado ou Doutorado).
+  const isProjetoZerado = configDataSelecionada
+    ? configDataSelecionada.duration_project_months === 0
+    : configDatas[0]?.duration_project_months === 0;
 
   // Se for mestrado sem projeto (duração = 0) e a aba atual for de projetos, força ir para a aba inicial
   useEffect(() => {
@@ -1469,7 +1470,8 @@ export function DocentesGraduate(props: Props) {
                                                 alert("Não é possível definir a data de realização de qualificação sem a data de entrada!");
                                                 return;
                                               } else {
-                                                if (dataRealizadaDefesa == null) {
+                                                const possuiEtapaProjeto = (configDataSelecionada?.duration_project_months ?? 0) !== 0;
+                                                if (possuiEtapaProjeto && dataRealizadaDefesa == null) {
                                                   alert("A orientação deve ter defesa concluída para definir a data de qualificação!");
                                                 }
                                               }
