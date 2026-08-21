@@ -33,6 +33,8 @@ interface OrientacaoProps {
     type: string,
     updated_at: string,
     tags: Tag[],
+    titulo_projeto?: string,
+    linha_pesquisa?: string,
 }
 
 interface InfoOrientacaoProps {
@@ -168,6 +170,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [idOrientando, setIdOrientando] = useState<string | null>(null)
     const [idCoorientador, setIdCoorientador] = useState<string | null>(o.orientacaoC.co_supervisor_ids[0] ? o.orientacaoC.co_supervisor_ids[0] : null)
 
+    const [tituloProjeto, setTituloProjeto] = useState<string>(o.orientacaoC.titulo_projeto || "")
+    const [linhaPesquisa, setLinhaPesquisa] = useState<string>(o.orientacaoC.linha_pesquisa || "")
+
     const [tipoOrientacao, setTipoOrientacao] = useState<string | null>(null)
     const [dataEntrada, setDataEntrada] = useState<string | null>(null)
     const [dataPrevisaoDefesa, setDataPrevisaoDefesa] = useState<string | null>(null)
@@ -272,6 +277,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             supervisor_researcher_id: o.orientacaoC.supervisor_researcher_id,
             student_researcher_id: o.orientacaoC.student_researcher_id,
             co_supervisor_ids: idCoorientador ? [idCoorientador] : [],
+            titulo_projeto: tituloProjeto || null,
+            linha_pesquisa: linhaPesquisa || null,
 
             tag_ids: tagsSelecionadas.map((tag: Tag) => tag.id)
         }
@@ -312,6 +319,8 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         setDataPrevisaoDefesaFinal(null)
         setDataRealizadaDefesaFinal(null)
         setConfigDataSelecionada(null)
+        setTituloProjeto(o.orientacaoC.titulo_projeto || "")
+        setLinhaPesquisa(o.orientacaoC.linha_pesquisa || "")
     }
 
     function data() {
@@ -393,9 +402,24 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                             <>
                                 <p className="text-sm">Orientador: <span className="font-semibold">{o.nomeOrientador || "Carregando..."}</span></p>
                                 <p className="text-sm">Etapa: <span className="font-semibold">{etapaAcademica()}</span></p>
+                                {o.pesquisador?.cpf && (
+                                    <p className="text-sm">CPF: <span className="font-semibold">{o.pesquisador.cpf}</span></p>
+                                )}
+                                {o.pesquisador?.email_pessoal && (
+                                    <p className="text-sm">E-mail pessoal: <span className="font-semibold">{o.pesquisador.email_pessoal}</span></p>
+                                )}
+                                {o.pesquisador?.email_google && (
+                                    <p className="text-sm">E-mail Google: <span className="font-semibold">{o.pesquisador.email_google}</span></p>
+                                )}
                             </>
                         )}
                         <p className="text-sm">{tipo()} <span className="font-bold">{calcularData()}</span></p>
+                        {o.orientacaoC.titulo_projeto && (
+                            <p className="text-sm">Título: <span className="font-semibold">{o.orientacaoC.titulo_projeto}</span></p>
+                        )}
+                        {o.orientacaoC.linha_pesquisa && (
+                            <p className="text-sm">Linha de pesquisa: <span className="font-semibold">{o.orientacaoC.linha_pesquisa}</span></p>
+                        )}
                         {
                             o.orientacaoC.peding && (
                                 <p>Status: <span className={`bg-${corSpanPrevisao()} text-white px-2 py-1 rounded-md shadow-sm`}>{o.orientacaoC.peding}</span></p>
@@ -482,6 +506,34 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                             <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
                                 <p className="text-lg font-bold whitespace-nowrap">Data de entrada: </p>
                                 <p>{formatarDataPtBR_semFuso(o.orientacaoC.start_date)}</p>
+                            </div>
+
+                            <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
+                                <label className="text-lg font-bold whitespace-nowrap" htmlFor="tituloProjeto">
+                                    Título do projeto:
+                                </label>
+                                <input
+                                    id="tituloProjeto"
+                                    className="w-full border-[2px] px-2 py-1 rounded-md"
+                                    type="text"
+                                    placeholder="Título da dissertação ou tese"
+                                    value={tituloProjeto}
+                                    onChange={(e) => setTituloProjeto(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
+                                <label className="text-lg font-bold whitespace-nowrap" htmlFor="linhaPesquisa">
+                                    Linha de pesquisa:
+                                </label>
+                                <input
+                                    id="linhaPesquisa"
+                                    className="w-full border-[2px] px-2 py-1 rounded-md"
+                                    type="text"
+                                    placeholder="Linha de pesquisa do programa"
+                                    value={linhaPesquisa}
+                                    onChange={(e) => setLinhaPesquisa(e.target.value)}
+                                />
                             </div>
 
                             <div className="flex gap-3 w-full border border-gray-300 rounded-md p-3">

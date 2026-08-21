@@ -13,5 +13,7 @@ export interface GraduationProgramGuidance {
     done_date_conclusion: string,
     created_at: string,
     updated_at: string,
-    deleted_at: string
+    deleted_at: string,
+    titulo_projeto?: string,
+    linha_pesquisa?: string,
 }

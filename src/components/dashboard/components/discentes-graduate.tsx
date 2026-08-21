@@ -31,6 +31,9 @@ export interface PesquisadorProps {
     type_: string
     graduate_program_id: string
     years: Array<number>
+    cpf?: string
+    email_pessoal?: string
+    email_google?: string
 }
 
 interface Props {

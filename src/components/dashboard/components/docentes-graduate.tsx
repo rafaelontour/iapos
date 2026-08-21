@@ -487,6 +487,8 @@ export function DocentesGraduate(props: Props) {
   const [idCoorientador, setIdCoorientador] = useState<string | null>(null)
 
   const [dataEntrada, setDataEntrada] = useState<string | null>(null)
+  const [tituloProjeto, setTituloProjeto] = useState<string>("")
+  const [linhaPesquisa, setLinhaPesquisa] = useState<string>("")
   const [dataPrevisaoDefesa, setDataPrevisaoDefesa] = useState<string | null>(null)
   const [dataRealizadaDefesa, setDataRealizadaDefesa] = useState<string | null>(null)
 
@@ -637,6 +639,8 @@ export function DocentesGraduate(props: Props) {
       student_researcher_id: idOrientando,
       co_supervisor_ids: idCoorientador ? [idCoorientador] : [],
       tag_ids: tagsSelecionadas.map(tag => tag.id),
+      titulo_projeto: tituloProjeto || null,
+      linha_pesquisa: linhaPesquisa || null,
       tipo_programa: tipoOrientacao
     }
 
@@ -659,6 +663,8 @@ export function DocentesGraduate(props: Props) {
     setIdCoorientador(null)
     setOpenDialogAdicionar(false)
     setDataEntrada(null)
+    setTituloProjeto("")
+    setLinhaPesquisa("")
     setDataPrevisaoDefesa(null)
     setDataRealizadaDefesa(null)
     setDataPrevisaoQualificacao(null)
@@ -1322,6 +1328,34 @@ export function DocentesGraduate(props: Props) {
                                         </Tooltip>
                                       )
                                     }
+                                  </div>
+
+                                  <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
+                                    <label className="text-lg font-bold whitespace-nowrap" htmlFor="tituloProjeto">
+                                      Título do projeto:
+                                    </label>
+                                    <input
+                                      id="tituloProjeto"
+                                      className="w-full border-[2px] px-2 py-1 rounded-md"
+                                      type="text"
+                                      placeholder="Título da dissertação ou tese (opcional)"
+                                      value={tituloProjeto}
+                                      onChange={(e) => setTituloProjeto(e.target.value)}
+                                    />
+                                  </div>
+
+                                  <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
+                                    <label className="text-lg font-bold whitespace-nowrap" htmlFor="linhaPesquisa">
+                                      Linha de pesquisa:
+                                    </label>
+                                    <input
+                                      id="linhaPesquisa"
+                                      className="w-full border-[2px] px-2 py-1 rounded-md"
+                                      type="text"
+                                      placeholder="Linha de pesquisa do programa (opcional)"
+                                      value={linhaPesquisa}
+                                      onChange={(e) => setLinhaPesquisa(e.target.value)}
+                                    />
                                   </div>
 
                                   <div className="flex gap-3 w-full border border-gray-300 rounded-md p-3">
