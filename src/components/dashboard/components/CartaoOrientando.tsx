@@ -553,7 +553,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
                                     <div className="flex items-center">
                                         <p className="text-lg font-bold">Orientador: &nbsp;</p>
-                                        <p>{o.pesquisador?.name || o.nomeOrientador || "—"}</p>
+                                        <p>{o.mostrarResumoDiscente ? (o.nomeOrientador || "—") : (o.pesquisador?.name || "—")}</p>
                                     </div>
 
                                     <div className="flex items-center justify-between gap-0">
