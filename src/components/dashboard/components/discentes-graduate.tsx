@@ -1,4 +1,4 @@
-import { AreaChart, ChevronsUpDown, Globe, MapPinIcon, PencilLine, Plus, RefreshCcw, SquareArrowOutUpRight, Star, User, UserIcon, Users } from "lucide-react";
+import { AreaChart, ChevronsUpDown, Globe, MapPinIcon, PencilLine, Plus, RefreshCcw, SquareArrowOutUpRight, Star, Upload, User, UserIcon, Users } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import { CardContent, CardHeader, CardTitle } from "../../ui/card";
@@ -265,6 +265,38 @@ export function DiscentesGraduate(props: Props) {
     const [nomePesquisador, setNomePesquisador] = useState('');
     const [lattesID, setLattesID] = useState('');
 
+    // Importação por planilha
+    const [openImport, setOpenImport] = useState(false)
+    const [arquivoImport, setArquivoImport] = useState<File | null>(null)
+    const [importando, setImportando] = useState(false)
+    const [resultadoImport, setResultadoImport] = useState<{ updated: number; not_found: string[]; not_found_count: number } | null>(null)
+
+    const handleImportarPlanilha = async () => {
+        if (!arquivoImport) return
+        setImportando(true)
+        setResultadoImport(null)
+        try {
+            const formData = new FormData()
+            formData.append("file", arquivoImport)
+            const resposta = await fetch(`${urlGeralAdm}ResearcherRest/import-contacts`, {
+                method: "POST",
+                body: formData,
+            })
+            const dados = await resposta.json()
+            if (resposta.ok) {
+                setResultadoImport(dados)
+                toast.success(`${dados.updated} discente(s) atualizados com sucesso.`)
+            } else {
+                toast.error(dados.message || "Erro ao importar planilha.")
+            }
+        } catch (err) {
+            console.error(err)
+            toast.error("Erro ao conectar com o servidor.")
+        } finally {
+            setImportando(false)
+        }
+    }
+
     const handleSubmitPesquisadorUnique = async () => {
         const currentYear = new Date().getFullYear();
 
@@ -497,6 +529,57 @@ export function DiscentesGraduate(props: Props) {
                             </div>
 
                             <Button onClick={() => handleSubmitPesquisadorUnique()}><Plus size={16} />Adicionar</Button>
+
+                            <Dialog open={openImport} onOpenChange={(v) => { setOpenImport(v); if (!v) { setArquivoImport(null); setResultadoImport(null); } }}>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline"><Upload size={16} className="mr-1" />Importar planilha</Button>
+                                </DialogTrigger>
+                                <DialogContent className="w-[520px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Importar dados de contato</DialogTitle>
+                                        <DialogDescription>
+                                            Envie um arquivo <strong>.csv</strong>, <strong>.xlsx</strong> ou <strong>.xls</strong> com as colunas:<br />
+                                            <code className="text-xs bg-gray-100 px-1 rounded">lattes_id</code> (ou <code className="text-xs bg-gray-100 px-1 rounded">name</code>), <code className="text-xs bg-gray-100 px-1 rounded">cpf</code>, <code className="text-xs bg-gray-100 px-1 rounded">email_pessoal</code>, <code className="text-xs bg-gray-100 px-1 rounded">email_google</code>.<br />
+                                            Colunas ausentes são ignoradas. Valores em branco não sobrescrevem dados existentes.
+                                        </DialogDescription>
+                                    </DialogHeader>
+
+                                    <div className="flex flex-col gap-4 mt-2">
+                                        <input
+                                            type="file"
+                                            accept=".csv,.xlsx,.xls"
+                                            className="border border-gray-300 rounded-md p-2 text-sm"
+                                            onChange={(e) => {
+                                                setArquivoImport(e.target.files?.[0] || null)
+                                                setResultadoImport(null)
+                                            }}
+                                        />
+
+                                        <Button
+                                            disabled={!arquivoImport || importando}
+                                            onClick={handleImportarPlanilha}
+                                        >
+                                            {importando ? "Importando..." : "Importar"}
+                                        </Button>
+
+                                        {resultadoImport && (
+                                            <div className="flex flex-col gap-2 text-sm border border-gray-200 rounded-md p-3 bg-gray-50">
+                                                <p className="text-green-700 font-semibold">✓ {resultadoImport.updated} discente(s) atualizados</p>
+                                                {resultadoImport.not_found_count > 0 && (
+                                                    <>
+                                                        <p className="text-red-600 font-semibold">✗ {resultadoImport.not_found_count} não encontrado(s):</p>
+                                                        <ul className="list-disc list-inside text-red-500 max-h-32 overflow-y-auto">
+                                                            {resultadoImport.not_found.map((id, i) => (
+                                                                <li key={i}>{id}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </CardContent>
                 </Alert>

@@ -173,6 +173,11 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [tituloProjeto, setTituloProjeto] = useState<string>(o.orientacaoC.titulo_projeto || "")
     const [linhaPesquisa, setLinhaPesquisa] = useState<string>(o.orientacaoC.linha_pesquisa || "")
 
+    const [openDialogContato, setOpenDialogContato] = useState<boolean>(false)
+    const [cpf, setCpf] = useState<string>(o.pesquisador?.cpf || "")
+    const [emailPessoal, setEmailPessoal] = useState<string>(o.pesquisador?.email_pessoal || "")
+    const [emailGoogle, setEmailGoogle] = useState<string>(o.pesquisador?.email_google || "")
+
     const [tipoOrientacao, setTipoOrientacao] = useState<string | null>(null)
     const [dataEntrada, setDataEntrada] = useState<string | null>(null)
     const [dataPrevisaoDefesa, setDataPrevisaoDefesa] = useState<string | null>(null)
@@ -323,6 +328,33 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         setLinhaPesquisa(o.orientacaoC.linha_pesquisa || "")
     }
 
+    async function salvarContato() {
+        const researcherId = o.orientacaoC.student_researcher_id
+        if (!researcherId) return
+
+        try {
+            const url = `https://iapos-api.senaicimatec.com.br/adm/ResearcherRest/${researcherId}/contact`
+            const resposta = await fetch(url, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    cpf: cpf || null,
+                    email_pessoal: emailPessoal || null,
+                    email_google: emailGoogle || null,
+                }),
+            })
+            if (resposta.ok) {
+                toast.success("Dados de contato salvos com sucesso!")
+                setOpenDialogContato(false)
+            } else {
+                toast.error("Erro ao salvar dados de contato.")
+            }
+        } catch (err) {
+            console.error(err)
+            toast.error("Erro ao conectar com o servidor.")
+        }
+    }
+
     function data() {
         if (o.orientacaoC.peding === "EM DIA" && o.orientacaoC.type === "FINALIZADO") {
             return "Concluído há: "
@@ -431,10 +463,69 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
             </div>
 
             <div className="flex gap-3 w-full">
+                {/* Modal de dados de contato */}
+                <Dialog open={openDialogContato} onOpenChange={setOpenDialogContato}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="w-1/3">
+                            Dados de contato
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="w-[50%]">
+                        <p className="text-2xl font-bold">Dados de contato<br /><span className="text-[16px] font-normal text-gray-500">{nomeDiscente}</span></p>
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3 border border-gray-300 rounded-md p-3">
+                                <label className="text-sm font-bold whitespace-nowrap w-32" htmlFor="cpf">CPF:</label>
+                                <input
+                                    id="cpf"
+                                    className="w-full border-[2px] px-2 py-1 rounded-md text-sm"
+                                    type="text"
+                                    placeholder="000.000.000-00"
+                                    value={cpf}
+                                    onChange={(e) => setCpf(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex items-center gap-3 border border-gray-300 rounded-md p-3">
+                                <label className="text-sm font-bold whitespace-nowrap w-32" htmlFor="emailPessoal">E-mail pessoal:</label>
+                                <input
+                                    id="emailPessoal"
+                                    className="w-full border-[2px] px-2 py-1 rounded-md text-sm"
+                                    type="email"
+                                    placeholder="exemplo@email.com"
+                                    value={emailPessoal}
+                                    onChange={(e) => setEmailPessoal(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex items-center gap-3 border border-gray-300 rounded-md p-3">
+                                <label className="text-sm font-bold whitespace-nowrap w-32" htmlFor="emailGoogle">E-mail Google:</label>
+                                <input
+                                    id="emailGoogle"
+                                    className="w-full border-[2px] px-2 py-1 rounded-md text-sm"
+                                    type="email"
+                                    placeholder="aluno@g.cimatec.edu.br"
+                                    value={emailGoogle}
+                                    onChange={(e) => setEmailGoogle(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                className="bg-[#559FB8] text-white px-4 py-2 rounded-md transition-all duration-75 active:scale-95"
+                                onClick={salvarContato}
+                            >
+                                Salvar
+                            </button>
+                        </div>
+                        <DialogClose
+                            className="absolute top-6 right-6 bg-red-500 text-white p-2 rounded-md"
+                            title="Fechar"
+                        >
+                            <X className="w-4 h-4" />
+                        </DialogClose>
+                    </DialogContent>
+                </Dialog>
+
                 <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                     <DialogTrigger asChild>
                         <Button
-                            className="w-1/2"
+                            className="w-1/3"
                             onClick={() => {
                                 setOpenDialog(!openDialog)
                                 setIdCoorientador(o.orientacaoC.co_supervisor_ids[0] ? o.orientacaoC.co_supervisor_ids[0] : null)
@@ -786,7 +877,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                 <Dialog open={openDialogExcluir} onOpenChange={setOpenDialogExcluir}>
                     <DialogTrigger asChild>
                         <Button
-                            className="w-1/2 bg-red-500 hover:bg-red-600"
+                            className="w-1/3 bg-red-500 hover:bg-red-600"
                         >
                             Excluir
                         </Button>
