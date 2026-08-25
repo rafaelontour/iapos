@@ -1600,7 +1600,7 @@ export function DocentesGraduate(props: Props) {
                               orientacoes
                                 .filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO")
                                 .map((orientacao: any) => (
-                                  <CartaoOrientando key={orientacao.id || orientacao.lattes_id} tipoPrograma={tipoOrientacao} orientacaoC={orientacao} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={orientacao.id || orientacao.lattes_id} tipoPrograma={tipoOrientacao} orientacaoC={orientacao} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} mostrarResumoDiscente nomeOrientador={props.name} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
@@ -1615,7 +1615,7 @@ export function DocentesGraduate(props: Props) {
                                 orientacoes
                                   .filter((o: any) => o.type === "QUALIFICAÇÃO" || o.type === "QUALIFICACAO")
                                   .map((o: any) => (
-                                    <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                    <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} mostrarResumoDiscente nomeOrientador={props.name} />
                                   ))
                               ) : (
                                 <p className="p-3 animate-pulse">

@@ -35,6 +35,9 @@ interface OrientacaoProps {
     tags: Tag[],
     titulo_projeto?: string,
     linha_pesquisa?: string,
+    student_cpf?: string,
+    student_email_pessoal?: string,
+    student_email_google?: string,
 }
 
 interface InfoOrientacaoProps {
@@ -174,9 +177,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
     const [linhaPesquisa, setLinhaPesquisa] = useState<string>(o.orientacaoC.linha_pesquisa || "")
 
     const [openDialogContato, setOpenDialogContato] = useState<boolean>(false)
-    const [cpf, setCpf] = useState<string>(o.pesquisador?.cpf || "")
-    const [emailPessoal, setEmailPessoal] = useState<string>(o.pesquisador?.email_pessoal || "")
-    const [emailGoogle, setEmailGoogle] = useState<string>(o.pesquisador?.email_google || "")
+    const [cpf, setCpf] = useState<string>(o.orientacaoC.student_cpf || o.pesquisador?.cpf || "")
+    const [emailPessoal, setEmailPessoal] = useState<string>(o.orientacaoC.student_email_pessoal || o.pesquisador?.email_pessoal || "")
+    const [emailGoogle, setEmailGoogle] = useState<string>(o.orientacaoC.student_email_google || o.pesquisador?.email_google || "")
 
     const [tipoOrientacao, setTipoOrientacao] = useState<string | null>(null)
     const [dataEntrada, setDataEntrada] = useState<string | null>(null)
@@ -432,16 +435,16 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                         </p>
                         {o.mostrarResumoDiscente && (
                             <>
-                                <p className="text-sm">Orientador: <span className="font-semibold">{o.nomeOrientador || "Carregando..."}</span></p>
+                                <p className="text-sm">Orientador: <span className="font-semibold">{o.mostrarResumoDiscente ? (o.nomeOrientador || "—") : (o.pesquisador?.name || "—")}</span></p>
                                 <p className="text-sm">Etapa: <span className="font-semibold">{etapaAcademica()}</span></p>
-                                {o.pesquisador?.cpf && (
-                                    <p className="text-sm">CPF: <span className="font-semibold">{o.pesquisador.cpf}</span></p>
+                                {(o.orientacaoC.student_cpf || o.pesquisador?.cpf) && (
+                                    <p className="text-sm">CPF: <span className="font-semibold">{o.orientacaoC.student_cpf || o.pesquisador?.cpf}</span></p>
                                 )}
-                                {o.pesquisador?.email_pessoal && (
-                                    <p className="text-sm">E-mail pessoal: <span className="font-semibold">{o.pesquisador.email_pessoal}</span></p>
+                                {(o.orientacaoC.student_email_pessoal || o.pesquisador?.email_pessoal) && (
+                                    <p className="text-sm">E-mail pessoal: <span className="font-semibold">{o.orientacaoC.student_email_pessoal || o.pesquisador?.email_pessoal}</span></p>
                                 )}
-                                {o.pesquisador?.email_google && (
-                                    <p className="text-sm">E-mail Google: <span className="font-semibold">{o.pesquisador.email_google}</span></p>
+                                {(o.orientacaoC.student_email_google || o.pesquisador?.email_google) && (
+                                    <p className="text-sm">E-mail Google: <span className="font-semibold">{o.orientacaoC.student_email_google || o.pesquisador?.email_google}</span></p>
                                 )}
                             </>
                         )}
