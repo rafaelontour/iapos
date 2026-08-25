@@ -1630,7 +1630,7 @@ export function DocentesGraduate(props: Props) {
                               orientacoes
                                 .filter((o: any) => o.type === "CONCLUSÃO" || o.type === "CONCLUSAO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} mostrarResumoDiscente nomeOrientador={props.name} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
@@ -1644,7 +1644,7 @@ export function DocentesGraduate(props: Props) {
                               orientacoes
                                 .filter((o: any) => o.type === "FINALIZADO" || o.type === "FINALIZACAO")
                                 .map((o: any) => (
-                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} />
+                                  <CartaoOrientando key={o.id} tipoPrograma={tipoOrientacao} orientacaoC={o} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} mostrarResumoDiscente nomeOrientador={props.name} />
                                 ))
                             ) : (
                               <p className="p-3 animate-pulse">
