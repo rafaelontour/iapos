@@ -472,6 +472,11 @@ function App() {
                                     />
 
                                     <Route
+                                        path='/dashboard/linhas-pesquisa'
+                                        element={<Dashboard />}
+                                    />
+
+                                    <Route
                                         path='/dashboard/areas'
                                         element={<Dashboard />}
                                     />

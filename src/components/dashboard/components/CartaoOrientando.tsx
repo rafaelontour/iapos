@@ -4,6 +4,7 @@ import { Button } from "../../ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { Info, X } from "lucide-react";
 import { atualizarOrientacao, excluirOrientacao, getDocentesPorPrograma, getOrientacoesPorDocente } from "../../../service/docentes";
+import { LinhaPesquisa, getLinhasPesquisaService } from "../../../service/linhasPesquisa";
 import { Configuracao } from "../dados-pos-graduacao/dados-pos-graduacao";
 import { getConfiguracoes } from "../../../service/configuracaoDataPosGraduacao";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
@@ -175,6 +176,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     const [tituloProjeto, setTituloProjeto] = useState<string>(o.orientacaoC.titulo_projeto || "")
     const [linhaPesquisa, setLinhaPesquisa] = useState<string>(o.orientacaoC.linha_pesquisa || "")
+    const [linhasPesquisa, setLinhasPesquisa] = useState<LinhaPesquisa[]>([])
 
     const [openDialogContato, setOpenDialogContato] = useState<boolean>(false)
     const [cpf, setCpf] = useState<string>(o.orientacaoC.student_cpf || o.pesquisador?.cpf || "")
@@ -217,6 +219,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
 
     useEffect(() => {
         buscarTags();
+        buscarLinhas();
     }, [openDialog])
 
     function buscarTags() {
@@ -228,6 +231,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                 );
                 setTagsSelecionadas(tagsDaOrientacao);
             }
+        });
+    }
+
+    function buscarLinhas() {
+        getLinhasPesquisaService(o.orientacaoC.graduate_program_id).then((response) => {
+            setLinhasPesquisa(response);
         });
     }
 
@@ -625,14 +634,22 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 <label className="text-lg font-bold whitespace-nowrap" htmlFor="linhaPesquisa">
                                     Linha de pesquisa:
                                 </label>
-                                <input
+                                <select
                                     id="linhaPesquisa"
                                     className="w-full border-[2px] px-2 py-1 rounded-md"
-                                    type="text"
-                                    placeholder="Linha de pesquisa do programa"
                                     value={linhaPesquisa}
                                     onChange={(e) => setLinhaPesquisa(e.target.value)}
-                                />
+                                >
+                                    <option value="">Selecione uma linha de pesquisa</option>
+                                    {linhasPesquisa
+                                        .sort((a, b) => a.name.localeCompare(b.name))
+                                        .map((linha) => (
+                                            <option key={linha.id} value={linha.name}>
+                                                {linha.name}
+                                            </option>
+                                        ))
+                                    }
+                                </select>
                             </div>
 
                             <div className="flex gap-3 w-full border border-gray-300 rounded-md p-3">

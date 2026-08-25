@@ -177,6 +177,11 @@ export function AppSidebarAdmin({ ...props }: React.ComponentProps<typeof Sideba
                         icon: Tag
                     },
                     {
+                        title: "Linhas de Pesquisa",
+                        url: "/dashboard/linhas-pesquisa",
+                        icon: BookOpen
+                    },
+                    {
                         title: "Áreas",
                         url: "/dashboard/areas",
                         icon: Group

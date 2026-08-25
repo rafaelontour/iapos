@@ -29,6 +29,7 @@ import { getConfiguracoes } from "../../../service/configuracaoDataPosGraduacao"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import { Tag } from "../dados-pos-graduacao/Tags";
 import { getTagsService } from "../../../service/tags";
+import { LinhaPesquisa, getLinhasPesquisaService } from "../../../service/linhasPesquisa";
 
 
 
@@ -489,6 +490,7 @@ export function DocentesGraduate(props: Props) {
   const [dataEntrada, setDataEntrada] = useState<string | null>(null)
   const [tituloProjeto, setTituloProjeto] = useState<string>("")
   const [linhaPesquisa, setLinhaPesquisa] = useState<string>("")
+  const [linhasPesquisa, setLinhasPesquisa] = useState<LinhaPesquisa[]>([])
   const [dataPrevisaoDefesa, setDataPrevisaoDefesa] = useState<string | null>(null)
   const [dataRealizadaDefesa, setDataRealizadaDefesa] = useState<string | null>(null)
 
@@ -542,6 +544,11 @@ export function DocentesGraduate(props: Props) {
     setTags(t);
   }
 
+  async function buscarLinhas() {
+    const linhas = await getLinhasPesquisaService(props.graduate_program_id);
+    setLinhasPesquisa(linhas);
+  }
+
   function buscarDiscentes() {
     const discentes = getDiscentesPorPrograma(props.graduate_program_id);
 
@@ -554,6 +561,7 @@ export function DocentesGraduate(props: Props) {
     infoPrograma();
     buscarDiscentes();
     buscarTags();
+    buscarLinhas();
     const docentes = getDocentesPorPrograma(props.graduate_program_id);
 
     docentes.then((response) => {
@@ -1348,14 +1356,22 @@ export function DocentesGraduate(props: Props) {
                                     <label className="text-lg font-bold whitespace-nowrap" htmlFor="linhaPesquisa">
                                       Linha de pesquisa:
                                     </label>
-                                    <input
+                                    <select
                                       id="linhaPesquisa"
                                       className="w-full border-[2px] px-2 py-1 rounded-md"
-                                      type="text"
-                                      placeholder="Linha de pesquisa do programa (opcional)"
                                       value={linhaPesquisa}
                                       onChange={(e) => setLinhaPesquisa(e.target.value)}
-                                    />
+                                    >
+                                      <option value="">Selecione uma linha de pesquisa</option>
+                                      {linhasPesquisa
+                                        .sort((a, b) => a.name.localeCompare(b.name))
+                                        .map((linha) => (
+                                          <option key={linha.id} value={linha.name}>
+                                            {linha.name}
+                                          </option>
+                                        ))
+                                      }
+                                    </select>
                                   </div>
 
                                   <div className="flex gap-3 w-full border border-gray-300 rounded-md p-3">
