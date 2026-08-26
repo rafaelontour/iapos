@@ -17,14 +17,8 @@ export default function LinhasPesquisa() {
         setCarregando(true);
         const dados = await getLinhasPesquisaService(idGraduateProgram || undefined);
 
-        if (!dados) {
-            toast.error("Erro ao buscar as linhas de pesquisa!");
-            setCarregando(false);
-            return;
-        }
-
-        setLinhas(dados);
-        setTimeout(() => setCarregando(false), 500);
+        setLinhas(Array.isArray(dados) ? dados : []);
+        setTimeout(() => setCarregando(false), 300);
     }
 
     useEffect(() => {

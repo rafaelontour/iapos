@@ -11,7 +11,8 @@ export interface LinhaPesquisa {
 
 async function getLinhasPesquisaService(graduate_program_id?: string): Promise<LinhaPesquisa[]> {
     try {
-        const url = graduate_program_id
+        const isParamValido = graduate_program_id && graduate_program_id !== "undefined" && graduate_program_id !== "null" && graduate_program_id.trim() !== "";
+        const url = isParamValido
             ? `${BASE_URL}?graduate_program_id=${graduate_program_id}`
             : BASE_URL;
 
@@ -22,7 +23,8 @@ async function getLinhasPesquisaService(graduate_program_id?: string): Promise<L
 
         if (!resposta.ok) return [];
 
-        return await resposta.json();
+        const json = await resposta.json();
+        return Array.isArray(json) ? json : [];
     } catch {
         return [];
     }

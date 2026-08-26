@@ -1,0 +1,8 @@
+FROM gleidsoncosta/simcc-admin-back-old:latest
+
+WORKDIR /app
+
+# Mantém as dependências e o comando da imagem que já está em produção,
+# substituindo somente os módulos alterados para a busca de orientações.
+COPY adm_simcc/rest/guidance_tracking.py /app/adm_simcc/rest/guidance_tracking.py
+COPY adm_simcc/dao/dao_guidnace_tracking.py /app/adm_simcc/dao/dao_guidnace_tracking.py
