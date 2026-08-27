@@ -541,6 +541,7 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                             onClick={() => {
                                 setOpenDialog(!openDialog)
                                 setIdCoorientador(o.orientacaoC.co_supervisor_ids[0] ? o.orientacaoC.co_supervisor_ids[0] : null)
+                                setDataEntrada(o.orientacaoC.start_date ? new Date(o.orientacaoC.start_date).toISOString().split("T")[0] : null)
                             }}
                         >
                             Editar orientação
@@ -612,8 +613,22 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                             </div>
 
                             <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
-                                <p className="text-lg font-bold whitespace-nowrap">Data de entrada: </p>
-                                <p>{formatarDataPtBR_semFuso(o.orientacaoC.start_date)}</p>
+                                <label className="text-lg font-bold whitespace-nowrap" htmlFor="dataEntrada">Data de entrada: </label>
+                                <input
+                                    id="dataEntrada"
+                                    type="date"
+                                    className="w-full border-[2px] px-2 py-1 rounded-md"
+                                    value={
+                                        dataEntrada != null
+                                            ? dataEntrada
+                                            : o.orientacaoC.start_date
+                                                ? new Date(o.orientacaoC.start_date).toISOString().split("T")[0]
+                                                : ""
+                                    }
+                                    onChange={(e) => {
+                                        setDataEntrada(e.target.value);
+                                    }}
+                                />
                             </div>
 
                             <div className="flex items-center gap-3 w-full border border-gray-300 rounded-md p-3">
