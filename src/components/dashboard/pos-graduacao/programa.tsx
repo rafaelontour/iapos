@@ -408,7 +408,7 @@ export function ProgramaDashboard() {
                                                                 className="cursor-pointer rounded-full relative border dark:border-neutral-800 h-8 w-8 hover:z-10 transition-transform hover:scale-110"
                                                                 style={{ marginLeft: index > 0 ? '-10px' : '0px' }}>
                                                                 <AvatarImage className="rounded-md h-8 w-8"
-                                                                    src={`${urlGeral}ResearcherData/Image?name=${item}`}
+                                                                    src={`${urlGeral}ResearcherData/Image?lattes_id=${item}`}
                                                                 />
                                                                 <AvatarFallback className="flex items-center justify-center">
                                                                     <User size={16} />
