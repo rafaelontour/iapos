@@ -5,7 +5,7 @@ import { CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { MagnifyingGlass, Trash } from "phosphor-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { toast } from "sonner"
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../../../context/context";
 import { useModal } from "../../hooks/use-modal-store";
 
@@ -481,6 +481,7 @@ export function DocentesGraduate(props: Props) {
   const [configDataSelecionada, setConfigDataSelecionada] = useState<Configuracao | null>(null)
 
   const [tipoOrientacao, setTipoOrientacao] = useState<any>(null)
+  const [programa, setPrograma] = useState<any>(null)
   const [orientacoes, setOrientacoes] = useState<any>([])
   console.log(orientacoes, 'TO AQUI')
   const [idOrientador, setIdOrientador] = useState<string | null>(null)
@@ -509,10 +510,14 @@ export function DocentesGraduate(props: Props) {
   const [tagsSelecionadas, setTagsSelecionadas] = useState<Tag[]>([]);
 
   useEffect(() => {
-    if (dataEntrada !== null && configDataSelecionada !== null) {
-      gerarDatas();
+    if (dataEntrada !== null) {
+      if (!configDataSelecionada && configDoPrograma) {
+        setConfigDataSelecionada(configDoPrograma);
+      } else if (configDataSelecionada) {
+        gerarDatas();
+      }
     }
-  }, [dataEntrada, configDataSelecionada])
+  }, [dataEntrada, configDataSelecionada, configDoPrograma])
 
   useEffect(() => {
     buscarDatas();
@@ -526,11 +531,50 @@ export function DocentesGraduate(props: Props) {
     })
   }
 
-  // A etapa de projeto é determinada pela configuração de datas (duration_project_months > 0),
-  // independente do tipo do programa (Mestrado ou Doutorado).
+  // Encontra a configuração correspondente ao programa atual
+  const configDoPrograma = useMemo(() => {
+    if (!configDatas || configDatas.length === 0 || !programa) return null;
+
+    const tipo = (programa.type || '').toLowerCase(); // 'mestrado' ou 'doutorado'
+    const sigla = (programa.acronym || '').toUpperCase(); // 'GETEC', 'MCTI', 'MPDS'
+    const nome = (programa.name || '').toUpperCase();
+
+    // 1. Tentar encontrar por sigla e tipo
+    const match = configDatas.find((c) => {
+      const cName = c.config_name.toUpperCase();
+      if (tipo === 'doutorado') {
+        return cName.includes('DOUTORADO');
+      }
+      if (tipo === 'mestrado') {
+        if (sigla === 'MPDS' || nome.includes('SUSTENT')) {
+          return cName.includes('MPDS') || cName.includes('SUSTENT');
+        }
+        if (sigla === 'GETEC' || sigla === 'MCTI') {
+          return cName.includes(sigla) || cName.includes('MCTI E GETEC');
+        }
+        return cName.includes('MESTRADO') && cName.includes(sigla);
+      }
+      return false;
+    });
+
+    if (match) return match;
+
+    // Fallback por tipo se não achou específico
+    const fallbackTipo = configDatas.find((c) => {
+      const cName = c.config_name.toUpperCase();
+      return tipo === 'doutorado' ? cName.includes('DOUTORADO') : cName.includes('MESTRADO');
+    });
+
+    return fallbackTipo || configDatas[0];
+  }, [configDatas, programa]);
+
+  // A etapa de projeto é determinada pela configuração de datas do programa.
+  // Se duration_project_months === 0, não existe etapa de projeto (como em Mestrado GETEC e Mestrado MCTI).
   const isProjetoZerado = configDataSelecionada
     ? configDataSelecionada.duration_project_months === 0
-    : configDatas[0]?.duration_project_months === 0;
+    : configDoPrograma
+      ? configDoPrograma.duration_project_months === 0
+      : (programa?.type === "Mestrado" && programa?.acronym !== "MPDS");
 
   // Se for mestrado sem projeto (duração = 0) e a aba atual for de projetos, força ir para a aba inicial
   useEffect(() => {
@@ -570,52 +614,35 @@ export function DocentesGraduate(props: Props) {
   }, [])
 
   function gerarDatas(): void {
-
     const [anoStr, mesStr, diaStr] = (dataEntrada || "").split("-");
-    const ano = parseInt(anoStr);
-    const mes = parseInt(mesStr) - 1;
-    const dia = parseInt(diaStr);
+    const ano = parseInt(anoStr, 10);
+    const mes = parseInt(mesStr, 10) - 1;
+    const dia = parseInt(diaStr, 10);
 
-    const data = new Date(ano, mes, dia);
-    let mesesAdicionais: number;
+    if (isNaN(ano) || isNaN(mes) || isNaN(dia)) return;
 
+    const cfg = configDataSelecionada || configDoPrograma;
+    const projMeses = cfg?.duration_project_months || 0;
+    const qualMeses = cfg?.duration_qualification_months || 0;
+    const concMeses = cfg?.duration_conclusion_months || 0;
 
     // Definindo data de previsão da defesa do projeto
-    data.setMonth(data.getMonth() + (configDataSelecionada && configDataSelecionada?.duration_project_months || 0));
-    data.setDate(dia);
-
-    const novoAno = data.getFullYear();
-    const novoMesPrevisao = String(data.getMonth() + 1).padStart(2, "0");
-
-    const dataFormadaPrevisao = `${novoAno}-${novoMesPrevisao}-${diaStr}`;
-    setDataPrevisaoDefesa(dataFormadaPrevisao);
-
+    const dProj = new Date(ano, mes + projMeses, dia);
+    const mesProjStr = String(dProj.getMonth() + 1).padStart(2, "0");
+    const diaProjStr = String(dProj.getDate()).padStart(2, "0");
+    setDataPrevisaoDefesa(`${dProj.getFullYear()}-${mesProjStr}-${diaProjStr}`);
 
     // Definindo data de previsão da qualificação
-    data.setMonth(data.getMonth() +
-      (configDataSelecionada && configDataSelecionada?.duration_qualification_months || 0));
-    data.setDate(dia);
-
-    const novoAno2 = data.getFullYear();
-    const novoMesPrevisao2 = String(data.getMonth() + 1).padStart(2, "0");
-
-    const dataFormadaPrevisao2 = `${novoAno2}-${novoMesPrevisao2}-${diaStr}`;
-
-    setDataPrevisaoQualificacao(dataFormadaPrevisao2);
-
+    const dQual = new Date(ano, mes + projMeses + qualMeses, dia);
+    const mesQualStr = String(dQual.getMonth() + 1).padStart(2, "0");
+    const diaQualStr = String(dQual.getDate()).padStart(2, "0");
+    setDataPrevisaoQualificacao(`${dQual.getFullYear()}-${mesQualStr}-${diaQualStr}`);
 
     // Definindo data de previsão da defesa final
-
-    data.setMonth(data.getMonth() +
-      (configDataSelecionada && configDataSelecionada?.duration_conclusion_months || 0));
-    data.setDate(dia);
-
-    const novoAno3 = data.getFullYear();
-    const novoMesPrevisao3 = String(data.getMonth() + 1).padStart(2, "0");
-
-    const dataFormadaPrevisao3 = `${novoAno3}-${novoMesPrevisao3}-${diaStr}`;
-
-    setDataPrevisaoDefesaFinal(dataFormadaPrevisao3);
+    const dConc = new Date(ano, mes + projMeses + qualMeses + concMeses, dia);
+    const mesConcStr = String(dConc.getMonth() + 1).padStart(2, "0");
+    const diaConcStr = String(dConc.getDate()).padStart(2, "0");
+    setDataPrevisaoDefesaFinal(`${dConc.getFullYear()}-${mesConcStr}-${diaConcStr}`);
   }
 
   async function buscarOrientacoesPorDocente(idDocente: string, idPrograma: string) {
@@ -699,7 +726,10 @@ export function DocentesGraduate(props: Props) {
     });
 
     const data = await resposta.json();
-    setTipoOrientacao(data[0].type);
+    if (data && data.length > 0) {
+      setTipoOrientacao(data[0].type);
+      setPrograma(data[0]);
+    }
   }
 
   // Parte de colaborador e permanente
@@ -1163,7 +1193,7 @@ export function DocentesGraduate(props: Props) {
                               <TabsTrigger value="entrada">
                                 Entrada &nbsp; 
                                 <span className="font-bold rounded-full w-6 h-6 flex justify-center items-center bg-eng-blue text-white">
-                                  {orientacoes?.filter((orientacao: any) => orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO").length}
+                                  {orientacoes?.filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO").length}
                                 </span>
                               </TabsTrigger> 
                               <Separator orientation="vertical" />
@@ -1612,9 +1642,9 @@ export function DocentesGraduate(props: Props) {
                           </div>
 
                           <TabsContent className="grid lg:grid-cols-3 grid-cols-2 gap-3 mt-0" value="entrada">
-                            {orientacoes?.filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO").length > 0 ? (
+                            {orientacoes?.filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO").length > 0 ? (
                               orientacoes
-                                .filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO" || orientacao.type === "QUALIFICAÇÃO" || orientacao.type === "QUALIFICACAO")
+                                .filter((orientacao: any) => orientacao.type_ === "DISCENTE" || orientacao.type === "PROJETO")
                                 .map((orientacao: any) => (
                                   <CartaoOrientando key={orientacao.id || orientacao.lattes_id} tipoPrograma={tipoOrientacao} orientacaoC={orientacao} pesquisador={props} buscarOrientacoes={buscarOrientacoesPorDocente} mostrarResumoDiscente nomeOrientador={props.name} />
                                 ))

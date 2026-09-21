@@ -241,6 +241,79 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
         })
     }
 
+    function recalcularDatasPrevisao(novaDataEntrada: string): void {
+        if (!novaDataEntrada) return;
+
+        const [anoStr, mesStr, diaStr] = novaDataEntrada.split("-");
+        const ano = parseInt(anoStr, 10);
+        const mes = parseInt(mesStr, 10) - 1;
+        const dia = parseInt(diaStr, 10);
+
+        if (isNaN(ano) || isNaN(mes) || isNaN(dia)) return;
+
+        const dataEntradaOrig = o.orientacaoC.start_date ? new Date(o.orientacaoC.start_date) : null;
+        const dataProjOrig = o.orientacaoC.planned_date_project ? new Date(o.orientacaoC.planned_date_project) : null;
+        const dataQualOrig = o.orientacaoC.planned_date_qualification ? new Date(o.orientacaoC.planned_date_qualification) : null;
+        const dataConcOrig = o.orientacaoC.planned_date_conclusion ? new Date(o.orientacaoC.planned_date_conclusion) : null;
+
+        const diffMeses = (dInicio: Date, dFim: Date) => {
+            return (dFim.getFullYear() - dInicio.getFullYear()) * 12 + (dFim.getMonth() - dInicio.getMonth());
+        };
+
+        let mesesProj: number | null = null;
+        let mesesQual: number | null = null;
+        let mesesConc: number | null = null;
+
+        if (dataEntradaOrig && dataEntradaOrig.toString() !== "Invalid Date") {
+            if (dataProjOrig && dataProjOrig.toString() !== "Invalid Date") {
+                const diff = diffMeses(dataEntradaOrig, dataProjOrig);
+                if (diff >= 0) mesesProj = diff;
+            }
+            if (dataQualOrig && dataQualOrig.toString() !== "Invalid Date") {
+                const diff = diffMeses(dataEntradaOrig, dataQualOrig);
+                if (diff >= 0) mesesQual = diff;
+            }
+            if (dataConcOrig && dataConcOrig.toString() !== "Invalid Date") {
+                const diff = diffMeses(dataEntradaOrig, dataConcOrig);
+                if (diff >= 0) mesesConc = diff;
+            }
+        }
+
+        // Se algum prazo não foi determinado pelas datas originais, usar a configuração de prazos
+        if (mesesProj === null || mesesQual === null || mesesConc === null) {
+            const tipo = (o.tipoPrograma || "").toLowerCase();
+            const cfg = configDataSelecionada || configDatas?.find((c) => {
+                const cName = c.config_name.toUpperCase();
+                return tipo.includes("doutor") ? cName.includes("DOUTORADO") : cName.includes("MESTRADO");
+            }) || configDatas?.[0];
+
+            if (cfg) {
+                if (mesesProj === null) mesesProj = cfg.duration_project_months;
+                if (mesesQual === null) mesesQual = cfg.duration_project_months + cfg.duration_qualification_months;
+                if (mesesConc === null) mesesConc = cfg.duration_project_months + cfg.duration_qualification_months + cfg.duration_conclusion_months;
+            }
+        }
+
+        if (mesesProj !== null) {
+            const dProj = new Date(ano, mes + mesesProj, dia);
+            const mesF = String(dProj.getMonth() + 1).padStart(2, "0");
+            const diaF = String(dProj.getDate()).padStart(2, "0");
+            setDataPrevisaoDefesa(`${dProj.getFullYear()}-${mesF}-${diaF}`);
+        }
+        if (mesesQual !== null) {
+            const dQual = new Date(ano, mes + mesesQual, dia);
+            const mesF = String(dQual.getMonth() + 1).padStart(2, "0");
+            const diaF = String(dQual.getDate()).padStart(2, "0");
+            setDataPrevisaoQualificacao(`${dQual.getFullYear()}-${mesF}-${diaF}`);
+        }
+        if (mesesConc !== null) {
+            const dConc = new Date(ano, mes + mesesConc, dia);
+            const mesF = String(dConc.getMonth() + 1).padStart(2, "0");
+            const diaF = String(dConc.getDate()).padStart(2, "0");
+            setDataPrevisaoDefesaFinal(`${dConc.getFullYear()}-${mesF}-${diaF}`);
+        }
+    }
+
     function gerarDatas(): void {
         const [anoStr, mesStr, diaStr] = (dataEntrada || "").split("-");
         const ano = parseInt(anoStr);
@@ -527,6 +600,12 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                 setOpenDialog(!openDialog)
                                 setIdCoorientador(o.orientacaoC.co_supervisor_ids[0] ? o.orientacaoC.co_supervisor_ids[0] : null)
                                 setDataEntrada(o.orientacaoC.start_date ? new Date(o.orientacaoC.start_date).toISOString().split("T")[0] : null)
+                                setDataPrevisaoDefesa(o.orientacaoC.planned_date_project ? new Date(o.orientacaoC.planned_date_project).toISOString().split("T")[0] : null)
+                                setDataRealizadaDefesa(o.orientacaoC.done_date_project ? (new Date(o.orientacaoC.done_date_project).toString() !== "Invalid Date" ? new Date(o.orientacaoC.done_date_project).toISOString().split("T")[0] : null) : null)
+                                setDataPrevisaoQualificacao(o.orientacaoC.planned_date_qualification ? new Date(o.orientacaoC.planned_date_qualification).toISOString().split("T")[0] : null)
+                                setDataRealizadaQualificacao(o.orientacaoC.done_date_qualification ? (new Date(o.orientacaoC.done_date_qualification).toString() !== "Invalid Date" ? new Date(o.orientacaoC.done_date_qualification).toISOString().split("T")[0] : null) : null)
+                                setDataPrevisaoDefesaFinal(o.orientacaoC.planned_date_conclusion ? new Date(o.orientacaoC.planned_date_conclusion).toISOString().split("T")[0] : null)
+                                setDataRealizadaDefesaFinal(o.orientacaoC.done_date_conclusion ? (new Date(o.orientacaoC.done_date_conclusion).toString() !== "Invalid Date" ? new Date(o.orientacaoC.done_date_conclusion).toISOString().split("T")[0] : null) : null)
                             }}
                         >
                             Editar orientação
@@ -611,7 +690,9 @@ export default function CartaoOrientando(o: InfoOrientacaoProps) {
                                                 : ""
                                     }
                                     onChange={(e) => {
-                                        setDataEntrada(e.target.value);
+                                        const novaData = e.target.value;
+                                        setDataEntrada(novaData);
+                                        recalcularDatasPrevisao(novaData);
                                     }}
                                 />
                             </div>
