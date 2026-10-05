@@ -181,6 +181,171 @@ export function ResearcherPage() {
         }
     };
 
+    const handleDownloadSituationReport = async () => {
+        if (!primaryResearcher?.id) return;
+        const toastId = toast.loading("Gerando relatório de situação...");
+        try {
+            const url = `${urlGeral}researcher/situation-report?researcher_id=${primaryResearcher.id}`;
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error("Erro ao buscar dados do relatório");
+            const data = await resp.json();
+
+            const quadrienal: string = data.quadrienal ?? '';
+            const researcher = data.researcher ?? {};
+            const guidances: any[] = data.active_guidances ?? [];
+            const articles: any[] = data.quadrienal_articles ?? [];
+            const summary: any[] = data.quadrienal_summary ?? [];
+
+            // Agrupa produções por tipo para o resumo
+            const summaryByType: Record<string, number> = {};
+            summary.forEach((s: any) => {
+                summaryByType[s.type] = (summaryByType[s.type] || 0) + Number(s.total);
+            });
+
+            // Agrupa orientações por tipo (MESTRADO / DOUTORADO)
+            const guidancesByType: Record<string, any[]> = {};
+            guidances.forEach((g: any) => {
+                const key = g.type || 'OUTROS';
+                if (!guidancesByType[key]) guidancesByType[key] = [];
+                guidancesByType[key].push(g);
+            });
+
+            const gps: any[] = researcher.graduate_programs ?? [];
+            const gpList = gps.map((g: any) =>
+                `${g.acronym ?? g.name} — ${g.modality ?? ''} (${g.type ?? ''})`
+            ).join('<br>');
+
+            const guidanceRows = Object.entries(guidancesByType).map(([tipo, items]) => `
+                <tr style="background:#f0f4ff;">
+                    <td colspan="4" style="padding:8px 12px;font-weight:700;font-size:13px;color:#1e3a8a;">
+                        ${tipo} (${items.length} orientação${items.length !== 1 ? 'ões' : ''})
+                    </td>
+                </tr>
+                ${items.map(g => `
+                <tr style="border-bottom:1px solid #e5e7eb;">
+                    <td style="padding:6px 12px;font-size:12px;">${g.student_name ?? '—'}</td>
+                    <td style="padding:6px 12px;font-size:12px;color:#6b7280;">${g.title ?? '—'}</td>
+                    <td style="padding:6px 12px;font-size:12px;text-align:center;">${g.year ?? '—'}</td>
+                    <td style="padding:6px 12px;font-size:12px;text-align:center;">
+                        <span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;">Em Andamento</span>
+                    </td>
+                </tr>`).join('')}`
+            ).join('');
+
+            const articleRows = articles.slice(0, 30).map(a => `
+                <tr style="border-bottom:1px solid #e5e7eb;">
+                    <td style="padding:6px 12px;font-size:12px;">${a.title ?? '—'}</td>
+                    <td style="padding:6px 12px;font-size:12px;color:#6b7280;white-space:nowrap;">${a.journal ?? '—'}</td>
+                    <td style="padding:6px 12px;font-size:12px;text-align:center;font-weight:700;color:#1e3a8a;">${a.qualis ?? 'SQ'}</td>
+                    <td style="padding:6px 12px;font-size:12px;text-align:center;">${a.year ?? '—'}</td>
+                </tr>`
+            ).join('');
+
+            const summaryHtml = Object.entries(summaryByType).map(([tipo, total]) => `
+                <div style="display:inline-block;margin:4px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 16px;text-align:center;">
+                    <div style="font-size:20px;font-weight:700;color:#1e3a8a;">${total}</div>
+                    <div style="font-size:11px;color:#6b7280;">${tipo}</div>
+                </div>`
+            ).join('');
+
+            const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+            const html = `
+            <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:800px;margin:0 auto;color:#111827;">
+                <!-- Header -->
+                <div style="background:#1e3a8a;color:#fff;padding:24px 32px;border-radius:8px 8px 0 0;">
+                    <div style="font-size:11px;letter-spacing:1px;color:#93c5fd;text-transform:uppercase;margin-bottom:4px;">iaPós · SENAI CIMATEC</div>
+                    <h1 style="margin:0 0 4px 0;font-size:20px;font-weight:700;">Relatório de Situação do Pesquisador</h1>
+                    <div style="font-size:13px;color:#bfdbfe;">Emitido em ${now} · Quadriênio ${quadrienal}</div>
+                </div>
+
+                <!-- Dados do pesquisador -->
+                <div style="border:1px solid #e5e7eb;border-top:none;padding:20px 32px;background:#f8fafc;">
+                    <h2 style="margin:0 0 12px 0;font-size:16px;font-weight:700;color:#1f2937;">${researcher.name ?? ''}</h2>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:#4b5563;">
+                        <div><strong>Formação:</strong> ${researcher.graduation ?? '—'}</div>
+                        <div><strong>Instituição:</strong> ${researcher.institution ?? '—'}</div>
+                        <div><strong>Área:</strong> ${researcher.area ?? '—'}</div>
+                        <div><strong>Lattes ID:</strong> ${researcher.lattes_id ?? '—'}</div>
+                        ${researcher.h_index ? `<div><strong>H-Index:</strong> ${researcher.h_index}</div>` : ''}
+                        ${researcher.orcid ? `<div><strong>ORCID:</strong> ${researcher.orcid}</div>` : ''}
+                    </div>
+                    ${gpList ? `<div style="margin-top:12px;font-size:13px;color:#4b5563;"><strong>Programas de Pós-Graduação:</strong><br>${gpList}</div>` : ''}
+                </div>
+
+                <!-- Produção na Quadrienal -->
+                <div style="padding:20px 32px;border:1px solid #e5e7eb;border-top:none;">
+                    <h3 style="margin:0 0 12px 0;font-size:14px;font-weight:700;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">
+                        Produção no Quadriênio ${quadrienal}
+                    </h3>
+                    <div style="margin-bottom:16px;">${summaryHtml || '<span style="color:#9ca3af;font-size:13px;">Nenhuma produção registrada neste quadriênio.</span>'}</div>
+
+                    ${articles.length > 0 ? `
+                    <div style="margin-top:16px;">
+                        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">Artigos em Periódicos (${articles.length})</div>
+                        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                            <thead>
+                                <tr style="background:#f3f4f6;">
+                                    <th style="padding:8px 12px;text-align:left;color:#6b7280;font-weight:600;">Título</th>
+                                    <th style="padding:8px 12px;text-align:left;color:#6b7280;font-weight:600;">Periódico</th>
+                                    <th style="padding:8px 12px;text-align:center;color:#6b7280;font-weight:600;">Qualis</th>
+                                    <th style="padding:8px 12px;text-align:center;color:#6b7280;font-weight:600;">Ano</th>
+                                </tr>
+                            </thead>
+                            <tbody>${articleRows}</tbody>
+                        </table>
+                        ${articles.length > 30 ? `<div style="font-size:11px;color:#9ca3af;margin-top:8px;">* Exibindo os 30 primeiros artigos de ${articles.length} no quadriênio.</div>` : ''}
+                    </div>` : ''}
+                </div>
+
+                <!-- Orientações Ativas -->
+                <div style="padding:20px 32px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;">
+                    <h3 style="margin:0 0 12px 0;font-size:14px;font-weight:700;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">
+                        Orientações Ativas — Apenas Itens em Andamento
+                    </h3>
+                    ${guidances.length > 0 ? `
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#f3f4f6;">
+                                <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">Orientando</th>
+                                <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">Título</th>
+                                <th style="padding:8px 12px;text-align:center;font-size:12px;color:#6b7280;font-weight:600;">Ano</th>
+                                <th style="padding:8px 12px;text-align:center;font-size:12px;color:#6b7280;font-weight:600;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>${guidanceRows}</tbody>
+                    </table>` : `
+                    <div style="color:#9ca3af;font-size:13px;">Nenhuma orientação ativa encontrada.</div>`}
+                </div>
+
+                <div style="margin-top:12px;font-size:11px;color:#9ca3af;text-align:center;">
+                    Documento gerado automaticamente pela plataforma iaPós · ${now}
+                </div>
+            </div>`;
+
+            const container = document.createElement('div');
+            container.innerHTML = html;
+            document.body.appendChild(container);
+
+            await html2pdf().set({
+                margin: [8, 10, 8, 10],
+                filename: `Relatorio_Situacao_${researcher.name?.replace(/\s+/g, '_') ?? 'pesquisador'}.pdf`,
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+            }).from(container).save();
+
+            document.body.removeChild(container);
+            toast.dismiss(toastId);
+            toast.success("Relatório gerado com sucesso!");
+        } catch (err) {
+            console.error(err);
+            toast.dismiss(toastId);
+            toast.error("Erro ao gerar relatório de situação");
+        }
+    };
+
     if (loading || researcher.length === 0) {
         return <ResearcherSkeleton />;
     }
@@ -226,6 +391,7 @@ export function ResearcherPage() {
                                 pesquisadoresSelecionados={pesquisadoresSelecionados}
                                 setPesquisadoresSelecionados={setPesquisadoresSelecionados}
                                 handleDownloadJson={handleDownloadJson}
+                                handleDownloadSituationReport={handleDownloadSituationReport}
                                 urlGeral={urlGeral}
                                 searchType={typeSearch || 'name'}
                                 terms={terms}
@@ -294,7 +460,7 @@ export function ResearcherPage() {
 function ResearcherActions({
     researcher, isOpenSheet, setIsOpenSheet, yearString, onFilterUpdate,
     hasBaremaAvaliacao, pesquisadoresSelecionados, setPesquisadoresSelecionados,
-    handleDownloadJson, urlGeral, searchType, terms
+    handleDownloadJson, handleDownloadSituationReport, urlGeral, searchType, terms
 }: any) {
     const currentUrl = window.location.origin;
     const props = researcher[0];
@@ -385,6 +551,10 @@ function ResearcherActions({
 
                         <DropdownMenuItem className="flex items-center gap-3" onClick={handleDownloadJson}>
                             <FileCsv className="h-4 w-4" /> CSV dos artigos
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem className="flex items-center gap-3" onClick={handleDownloadSituationReport}>
+                            <Download className="h-4 w-4" /> Relatório de Situação (PDF)
                         </DropdownMenuItem>
 
                         <Link to={`${urlGeral}dictionary.pdf`} target="_blank">
