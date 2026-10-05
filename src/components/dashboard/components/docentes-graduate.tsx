@@ -509,29 +509,8 @@ export function DocentesGraduate(props: Props) {
   const [tags, setTags] = useState<Tag[]>([]);
   const [tagsSelecionadas, setTagsSelecionadas] = useState<Tag[]>([]);
 
-  useEffect(() => {
-    if (dataEntrada !== null) {
-      if (!configDataSelecionada && configDoPrograma) {
-        setConfigDataSelecionada(configDoPrograma);
-      } else if (configDataSelecionada) {
-        gerarDatas();
-      }
-    }
-  }, [dataEntrada, configDataSelecionada, configDoPrograma])
-
-  useEffect(() => {
-    buscarDatas();
-  }, [])
-
-  function buscarDatas() {
-    const datas = getConfiguracoes();
-
-    datas.then((response) => {
-      setConfigDatas(response)
-    })
-  }
-
   // Encontra a configuração correspondente ao programa atual
+  // Declarado antes dos useEffects que o referenciam para evitar erro TS2448
   const configDoPrograma = useMemo(() => {
     if (!configDatas || configDatas.length === 0 || !programa) return null;
 
@@ -567,6 +546,28 @@ export function DocentesGraduate(props: Props) {
 
     return fallbackTipo || configDatas[0];
   }, [configDatas, programa]);
+
+  useEffect(() => {
+    if (dataEntrada !== null) {
+      if (!configDataSelecionada && configDoPrograma) {
+        setConfigDataSelecionada(configDoPrograma);
+      } else if (configDataSelecionada) {
+        gerarDatas();
+      }
+    }
+  }, [dataEntrada, configDataSelecionada, configDoPrograma])
+
+  useEffect(() => {
+    buscarDatas();
+  }, [])
+
+  function buscarDatas() {
+    const datas = getConfiguracoes();
+
+    datas.then((response) => {
+      setConfigDatas(response)
+    })
+  }
 
   // A etapa de projeto é determinada pela configuração de datas do programa.
   // Se duration_project_months === 0, não existe etapa de projeto (como em Mestrado GETEC e Mestrado MCTI).
