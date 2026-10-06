@@ -400,10 +400,23 @@ export function ResearcherModal() {
         </tr>`
       ).join('');
 
+      const LABEL_TIPOS: Record<string, string> = {
+        ARTICLE: "Artigos",
+        BOOK: "Livros",
+        BOOK_CHAPTER: "Capítulos",
+        SOFTWARE: "Softwares",
+        PATENT: "Patentes",
+        BRAND: "Marcas",
+      };
+
+      if (articles.length > 0 && !summaryByType['ARTICLE']) {
+        summaryByType['ARTICLE'] = articles.length;
+      }
+
       const summaryHtml = Object.entries(summaryByType).map(([tipo, total]) => `
-        <div style="display:inline-block;margin:4px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 16px;text-align:center;">
-          <div style="font-size:20px;font-weight:700;color:#1e3a8a;">${total}</div>
-          <div style="font-size:11px;color:#6b7280;">${tipo}</div>
+        <div style="display:inline-block;margin:4px 6px;background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;padding:8px 16px;text-align:center;min-width:105px;vertical-align:top;">
+          <div style="font-size:22px;font-weight:800;color:#1e3a8a;line-height:1.2;">${total}</div>
+          <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.4px;margin-top:2px;">${LABEL_TIPOS[tipo] || tipo}</div>
         </div>`
       ).join('');
 
