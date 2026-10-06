@@ -509,10 +509,11 @@ export function ResearcherModal() {
       </div>`;
 
       const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
+      container.style.position = 'fixed';
       container.style.top = '0';
+      container.style.left = '0';
       container.style.width = '794px'; // Largura padrão A4 a 96 DPI
+      container.style.zIndex = '-9999';
       container.style.background = '#ffffff';
       container.innerHTML = html;
       document.body.appendChild(container);
