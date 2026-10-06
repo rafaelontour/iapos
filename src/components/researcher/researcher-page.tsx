@@ -350,20 +350,14 @@ export function ResearcherPage() {
             </div>`;
 
             const container = document.createElement('div');
-            container.style.position = 'fixed';
-            container.style.top = '0';
-            container.style.left = '0';
-            container.style.width = '794px';
-            container.style.zIndex = '-9999';
-            container.style.background = '#ffffff';
             container.innerHTML = html;
             document.body.appendChild(container);
 
             await html2pdf().set({
-                margin: [10, 10, 10, 10],
+                margin: [6, 8, 6, 8],
                 filename: `Relatorio_Situacao_${researcher.name?.replace(/\s+/g, '_') ?? 'pesquisador'}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false, width: 794 },
+                html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
             }).from(container).save();
