@@ -251,87 +251,118 @@ export function ResearcherPage() {
             const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
             const html = `
-            <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:800px;margin:0 auto;color:#111827;">
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; width: 100%; color: #111827; line-height: 1.4;">
                 <!-- Header -->
-                <div style="background:#1e3a8a;color:#fff;padding:24px 32px;border-radius:8px 8px 0 0;">
-                    <div style="font-size:11px;letter-spacing:1px;color:#93c5fd;text-transform:uppercase;margin-bottom:4px;">iaPós · SENAI CIMATEC</div>
-                    <h1 style="margin:0 0 4px 0;font-size:20px;font-weight:700;">Relatório de Situação do Pesquisador</h1>
-                    <div style="font-size:13px;color:#bfdbfe;">Emitido em ${now} · Quadriênio ${quadrienal}</div>
+                <div style="background: #1e3a8a; color: #ffffff; padding: 28px 32px; border-radius: 6px 6px 0 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <div style="font-size: 11px; letter-spacing: 1.5px; color: #93c5fd; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">iaPós · SENAI CIMATEC</div>
+                            <h1 style="margin: 0 0 6px 0; font-size: 22px; font-weight: 800; letter-spacing: -0.3px;">Relatório de Situação do Pesquisador</h1>
+                            <div style="font-size: 13px; color: #bfdbfe;">Quadriênio de Avaliação: <strong>${quadrienal}</strong></div>
+                        </div>
+                        <div style="text-align: right; font-size: 11px; color: #bfdbfe;">
+                            Emissão: ${now}
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Dados do pesquisador -->
-                <div style="border:1px solid #e5e7eb;border-top:none;padding:20px 32px;background:#f8fafc;">
-                    <h2 style="margin:0 0 12px 0;font-size:16px;font-weight:700;color:#1f2937;">${researcher.name ?? ''}</h2>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:#4b5563;">
-                        <div><strong>Formação:</strong> ${researcher.graduation ?? '—'}</div>
-                        <div><strong>Instituição:</strong> ${researcher.institution ?? '—'}</div>
-                        <div><strong>Área:</strong> ${researcher.area ?? '—'}</div>
-                        <div><strong>Lattes ID:</strong> ${researcher.lattes_id ?? '—'}</div>
-                        ${researcher.h_index ? `<div><strong>H-Index:</strong> ${researcher.h_index}</div>` : ''}
-                        ${researcher.orcid ? `<div><strong>ORCID:</strong> ${researcher.orcid}</div>` : ''}
-                    </div>
-                    ${gpList ? `<div style="margin-top:12px;font-size:13px;color:#4b5563;"><strong>Programas de Pós-Graduação:</strong><br>${gpList}</div>` : ''}
+                <div style="border: 1px solid #e5e7eb; border-top: none; padding: 22px 32px; background: #f8fafc;">
+                    <h2 style="margin: 0 0 14px 0; font-size: 18px; font-weight: 700; color: #1e3a8a;">${researcher.name ?? ''}</h2>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; color: #374151;">
+                        <tbody>
+                            <tr>
+                                <td style="padding: 4px 0; width: 50%;"><strong>Formação:</strong> ${researcher.graduation ?? '—'}</td>
+                                <td style="padding: 4px 0; width: 50%;"><strong>Instituição:</strong> ${researcher.institution ?? '—'}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 0;"><strong>Área:</strong> ${researcher.area ?? '—'}</td>
+                                <td style="padding: 4px 0;"><strong>Lattes ID:</strong> ${researcher.lattes_id ?? '—'}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 0;">${researcher.h_index ? `<strong>H-Index:</strong> ${researcher.h_index}` : ''}</td>
+                                <td style="padding: 4px 0;">${researcher.orcid ? `<strong>ORCID:</strong> ${researcher.orcid}` : ''}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    ${gpList ? `<div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #475569;"><strong>Programas de Pós-Graduação:</strong><div style="margin-top: 4px;">${gpList}</div></div>` : ''}
                 </div>
 
                 <!-- Produção na Quadrienal -->
-                <div style="padding:20px 32px;border:1px solid #e5e7eb;border-top:none;">
-                    <h3 style="margin:0 0 12px 0;font-size:14px;font-weight:700;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">
-                        Produção no Quadriênio ${quadrienal}
-                    </h3>
-                    <div style="margin-bottom:16px;">${summaryHtml || '<span style="color:#9ca3af;font-size:13px;">Nenhuma produção registrada neste quadriênio.</span>'}</div>
+                <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; background: #ffffff;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
+                        <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Produção Bibliográfica no Quadriênio ${quadrienal}
+                        </h3>
+                        <span style="font-size: 11px; color: #6b7280; font-weight: 600;">Referência CAPES</span>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        ${summaryHtml || '<div style="color: #6b7280; font-size: 12.5px; padding: 8px 0;">Nenhuma produção registrada para o quadriênio avaliativo de referência.</div>'}
+                    </div>
 
                     ${articles.length > 0 ? `
-                    <div style="margin-top:16px;">
-                        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">Artigos em Periódicos (${articles.length})</div>
-                        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                    <div style="margin-top: 14px;">
+                        <div style="font-size: 12.5px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">Artigos em Periódicos (${articles.length})</div>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
                             <thead>
-                                <tr style="background:#f3f4f6;">
-                                    <th style="padding:8px 12px;text-align:left;color:#6b7280;font-weight:600;">Título</th>
-                                    <th style="padding:8px 12px;text-align:left;color:#6b7280;font-weight:600;">Periódico</th>
-                                    <th style="padding:8px 12px;text-align:center;color:#6b7280;font-weight:600;">Qualis</th>
-                                    <th style="padding:8px 12px;text-align:center;color:#6b7280;font-weight:600;">Ano</th>
+                                <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+                                    <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700;">Título</th>
+                                    <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700; width: 32%;">Periódico</th>
+                                    <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 10%;">Qualis</th>
+                                    <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 8%;">Ano</th>
                                 </tr>
                             </thead>
                             <tbody>${articleRows}</tbody>
                         </table>
-                        ${articles.length > 30 ? `<div style="font-size:11px;color:#9ca3af;margin-top:8px;">* Exibindo os 30 primeiros artigos de ${articles.length} no quadriênio.</div>` : ''}
+                        ${articles.length > 30 ? `<div style="font-size: 10.5px; color: #94a3b8; margin-top: 6px;">* Exibindo os 30 artigos mais recentes de ${articles.length} registrados no quadriênio.</div>` : ''}
                     </div>` : ''}
                 </div>
 
                 <!-- Orientações Ativas -->
-                <div style="padding:20px 32px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;">
-                    <h3 style="margin:0 0 12px 0;font-size:14px;font-weight:700;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">
-                        Orientações Ativas — Apenas Itens em Andamento
-                    </h3>
+                <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 6px 6px; background: #ffffff;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
+                        <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Orientações Ativas (Itens em Andamento)
+                        </h3>
+                        <span style="font-size: 11px; color: #16a34a; font-weight: 700; background: #dcfce7; padding: 2px 8px; border-radius: 10px;">${guidances.length} ativa${guidances.length !== 1 ? 's' : ''}</span>
+                    </div>
+
                     ${guidances.length > 0 ? `
-                    <table style="width:100%;border-collapse:collapse;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
                         <thead>
-                            <tr style="background:#f3f4f6;">
-                                <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">Orientando</th>
-                                <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">Título</th>
-                                <th style="padding:8px 12px;text-align:center;font-size:12px;color:#6b7280;font-weight:600;">Ano</th>
-                                <th style="padding:8px 12px;text-align:center;font-size:12px;color:#6b7280;font-weight:600;">Status</th>
+                            <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+                                <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700; width: 30%;">Orientando</th>
+                                <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700;">Título</th>
+                                <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 10%;">Ano Início</th>
+                                <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 14%;">Status</th>
                             </tr>
                         </thead>
                         <tbody>${guidanceRows}</tbody>
                     </table>` : `
-                    <div style="color:#9ca3af;font-size:13px;">Nenhuma orientação ativa encontrada.</div>`}
+                    <div style="color: #6b7280; font-size: 12.5px; padding: 8px 0;">Nenhuma orientação com status ativo/em andamento no momento.</div>`}
                 </div>
 
-                <div style="margin-top:12px;font-size:11px;color:#9ca3af;text-align:center;">
-                    Documento gerado automaticamente pela plataforma iaPós · ${now}
+                <!-- Rodapé -->
+                <div style="margin-top: 14px; font-size: 10.5px; color: #94a3b8; text-align: center; padding-bottom: 10px;">
+                    Documento gerado eletronicamente pela plataforma analítica iaPós · SENAI CIMATEC · ${now}
                 </div>
             </div>`;
 
             const container = document.createElement('div');
+            container.style.position = 'absolute';
+            container.style.left = '-9999px';
+            container.style.top = '0';
+            container.style.width = '794px';
+            container.style.background = '#ffffff';
             container.innerHTML = html;
             document.body.appendChild(container);
 
             await html2pdf().set({
-                margin: [8, 10, 8, 10],
+                margin: [10, 10, 10, 10],
                 filename: `Relatorio_Situacao_${researcher.name?.replace(/\s+/g, '_') ?? 'pesquisador'}.pdf`,
-                image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { scale: 2, useCORS: true },
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false, width: 794 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
             }).from(container).save();
