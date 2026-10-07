@@ -195,6 +195,8 @@ export function ResearcherPage() {
             const guidances: any[] = data.active_guidances ?? [];
             const articles: any[] = data.quadrienal_articles ?? [];
             const summary: any[] = data.quadrienal_summary ?? [];
+            const indProd: number = data.ind_prod ?? 0;
+            const extraProductions: Record<string, any[]> = data.quadrienal_productions ?? {};
 
             // Agrupa produções por tipo para o resumo
             const summaryByType: Record<string, number> = {};
@@ -296,6 +298,14 @@ export function ResearcherPage() {
                                 <td style="padding: 4px 0;">${researcher.h_index ? `<strong>H-Index:</strong> ${researcher.h_index}` : ''}</td>
                                 <td style="padding: 4px 0;">${researcher.orcid ? `<strong>ORCID:</strong> ${researcher.orcid}` : ''}</td>
                             </tr>
+                            ${indProd > 0 ? `
+                            <tr>
+                                <td colspan="2" style="padding: 6px 0 0 0;">
+                                    <span style="display:inline-block;background:#1e3a8a;color:#fff;padding:3px 14px;border-radius:20px;font-size:12.5px;font-weight:700;">
+                                        IndProd ${quadrienal}: ${indProd.toFixed(2)}
+                                    </span>
+                                </td>
+                            </tr>` : ''}
                         </tbody>
                     </table>
                     ${gpList ? `<div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #475569;"><strong>Programas de Pós-Graduação:</strong><div style="margin-top: 4px;">${gpList}</div></div>` : ''}
@@ -330,6 +340,28 @@ export function ResearcherPage() {
                         </table>
                         ${articles.length > 30 ? `<div style="font-size: 10.5px; color: #94a3b8; margin-top: 6px;">* Exibindo os 30 artigos mais recentes de ${articles.length} registrados no quadriênio.</div>` : ''}
                     </div>` : ''}
+
+                    ${Object.entries(extraProductions).map(([tipo, itens]) => {
+                        const labelTipo = LABEL_TIPOS[tipo] || tipo;
+                        const rows = (itens as any[]).map(p => `
+                            <tr style="border-bottom:1px solid #e5e7eb;">
+                                <td style="padding:6px 12px;font-size:12px;">${p.title ?? '—'}</td>
+                                <td style="padding:6px 12px;font-size:12px;text-align:center;width:8%;">${p.year ?? '—'}</td>
+                            </tr>`).join('');
+                        return `
+                        <div style="margin-top: 14px;">
+                            <div style="font-size: 12.5px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">${labelTipo} (${(itens as any[]).length})</div>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
+                                <thead>
+                                    <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+                                        <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700;">Título</th>
+                                        <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 8%;">Ano</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rows}</tbody>
+                            </table>
+                        </div>`;
+                    }).join('')}
                 </div>
 
                 <!-- Orientações Ativas -->
