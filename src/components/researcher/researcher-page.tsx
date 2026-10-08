@@ -191,7 +191,11 @@ export function ResearcherPage() {
             const data = await resp.json();
 
             const quadrienal: string = data.quadrienal ?? '';
-            const researcher = data.researcher ?? {};
+            const researcher = {
+                ...(data.researcher ?? {}),
+                // Fallback: usa area do props (endpoint de listagem) quando o endpoint do relatório não retornar
+                area: data.researcher?.area || props.area || '—',
+            };
             const guidances: any[] = data.active_guidances ?? [];
             const articles: any[] = data.quadrienal_articles ?? [];
             const summary: any[] = data.quadrienal_summary ?? [];

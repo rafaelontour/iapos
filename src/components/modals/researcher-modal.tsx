@@ -352,7 +352,11 @@ export function ResearcherModal() {
       const data = await resp.json();
 
       const quadrienal: string = data.quadrienal ?? '';
-      const resData = data.researcher ?? {};
+      const resData = {
+        ...(data.researcher ?? {}),
+        // Fallback: usa area do objeto primary (endpoint de listagem) quando o endpoint do relatório não retornar
+        area: data.researcher?.area || primary.area || '—',
+      };
       const guidances: any[] = data.active_guidances ?? [];
       const articles: any[] = data.quadrienal_articles ?? [];
       const summary: any[] = data.quadrienal_summary ?? [];
