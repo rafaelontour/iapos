@@ -354,16 +354,24 @@ export function ResearcherModal() {
       const quadrienal: string = data.quadrienal ?? '';
       const resData = {
         ...(data.researcher ?? {}),
-        // Fallback: usa area do objeto primary (endpoint de listagem) quando o endpoint do relatório não retornar
         area: data.researcher?.area || primary.area || '—',
       };
       const guidances: any[] = data.active_guidances ?? [];
-      const articles: any[] = data.quadrienal_articles ?? [];
-      const summary: any[] = data.quadrienal_summary ?? [];
-      const indProd: number = data.ind_prod ?? 0;                         // média anual 2021-2024
-      const indProdCurrent: number = data.ind_prod_current ?? 0;          // média anual 2025-2028
-      const indProdCurrentYears: number = data.ind_prod_current_years ?? 0;
-      const extraProductions: Record<string, any[]> = data.quadrienal_productions ?? {};
+
+      // Período Atual (2025-2028) — em andamento
+      const currentPeriod = data.current_period ?? {};
+      const currentArticles: any[] = currentPeriod.articles ?? [];
+      const currentSummaryRaw: any[] = currentPeriod.summary ?? [];
+      const currentExtraProds: Record<string, any[]> = currentPeriod.productions ?? {};
+      const currentIndProd: number = currentPeriod.ind_prod ?? data.ind_prod_current ?? 0;
+      const currentYearsAvailable: number = currentPeriod.years_available ?? data.ind_prod_current_years ?? 0;
+
+      // Período Anterior (2021-2024) — referência CAPES
+      const previousPeriod = data.previous_period ?? {};
+      const prevArticles: any[] = previousPeriod.articles ?? data.quadrienal_articles ?? [];
+      const prevSummaryRaw: any[] = previousPeriod.summary ?? data.quadrienal_summary ?? [];
+      const prevExtraProds: Record<string, any[]> = previousPeriod.productions ?? data.quadrienal_productions ?? {};
+      const prevIndProd: number = previousPeriod.ind_prod ?? data.ind_prod ?? 0;
 
       // Busca foto do pesquisador em Base64 para embutir de forma segura no PDF (sem problemas de CORS)
       let photoBase64 = '';
@@ -396,29 +404,102 @@ export function ResearcherModal() {
         console.log("Foto do pesquisador indisponível:", err);
       }
 
-      // Consolida o resumo por tipo (somando todas as ocorrências de cada tipo ao longo dos anos)
-      const summaryByType: Record<string, number> = {};
-      
-      // Processa o summary retornado pelo backend
-      if (summary && summary.length > 0) {
-        summary.forEach((s: any) => {
-          if (s.type && s.total) {
-            summaryByType[s.type] = (summaryByType[s.type] || 0) + Number(s.total);
+      const LABEL_TIPOS: Record<string, string> = {
+        ARTICLE: "Artigos",
+        BOOK: "Livros",
+        BOOK_CHAPTER: "Capítulos",
+        WORK_IN_EVENT: "Trabalhos em Eventos",
+        TEXT_IN_NEWSPAPER_MAGAZINE: "Textos em Revista",
+        SOFTWARE: "Softwares",
+        PATENT: "Patentes",
+        BRAND: "Marcas",
+      };
+
+      const buildSummaryCards = (summaryRaw: any[], articles: any[], extraProds: Record<string, any[]>) => {
+        const summaryByType: Record<string, number> = {};
+        if (summaryRaw && summaryRaw.length > 0) {
+          summaryRaw.forEach((s: any) => {
+            if (s.type && s.total) {
+              summaryByType[s.type] = (summaryByType[s.type] || 0) + Number(s.total);
+            }
+          });
+        }
+        if (articles.length > 0 && !summaryByType['ARTICLE']) {
+          summaryByType['ARTICLE'] = articles.length;
+        }
+        Object.entries(extraProds).forEach(([tipo, itens]) => {
+          if (!summaryByType[tipo]) {
+            summaryByType[tipo] = (itens as any[]).length;
           }
         });
-      }
-      
-      // Fallback: se não houver summary mas houver artigos, conta os artigos
-      if (Object.keys(summaryByType).length === 0 && articles.length > 0) {
-        summaryByType['ARTICLE'] = articles.length;
-      }
-      
-      // Adiciona contagem de outras produções do quadrienal_productions ao summary
-      Object.entries(extraProductions).forEach(([tipo, itens]) => {
-        if (!summaryByType[tipo]) {
-          summaryByType[tipo] = (itens as any[]).length;
-        }
-      });
+
+        const entries = Object.entries(summaryByType);
+        if (entries.length === 0) return '';
+        return `
+          <table style="border-collapse: separate; border-spacing: 8px 0; margin: 4px 0 10px -8px;">
+            <tr>
+              ${entries.map(([tipo, total]) => `
+              <td style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 6px; padding: 9px 16px; text-align: center; vertical-align: middle;">
+                <span style="display: block; font-size: 20px; font-weight: 800; color: #1e3a8a; line-height: 1;">${total}</span>
+                <span style="display: block; font-size: 10.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; white-space: nowrap;">${LABEL_TIPOS[tipo] || tipo}</span>
+              </td>`).join('')}
+            </tr>
+          </table>`;
+      };
+
+      const renderArticleTable = (articlesList: any[], maxRows = 25) => {
+        if (!articlesList || articlesList.length === 0) return '';
+        const rows = articlesList.slice(0, maxRows).map(a => `
+          <tr style="border-bottom:1px solid #e5e7eb;">
+            <td style="padding:6px 12px;font-size:12px;">${a.title ?? '—'}</td>
+            <td style="padding:6px 12px;font-size:12px;color:#6b7280;white-space:nowrap;">${a.journal ?? '—'}</td>
+            <td style="padding:6px 12px;font-size:12px;text-align:center;font-weight:700;color:#1e3a8a;">${a.qualis ?? 'SQ'}</td>
+            <td style="padding:6px 12px;font-size:12px;text-align:center;">${a.year ?? '—'}</td>
+          </tr>`).join('');
+        return `
+          <div style="margin-top: 14px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">Artigos em Periódicos (${articlesList.length})</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
+              <thead>
+                <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+                  <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700;">Título</th>
+                  <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700; width: 32%;">Periódico</th>
+                  <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 10%;">Qualis</th>
+                  <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 8%;">Ano</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+            ${articlesList.length > maxRows ? `<div style="font-size: 10.5px; color: #94a3b8; margin-top: 6px;">* Exibindo os ${maxRows} artigos mais recentes de ${articlesList.length} registrados.</div>` : ''}
+          </div>`;
+      };
+
+      const renderExtraProductions = (extraProds: Record<string, any[]>) => {
+        return Object.entries(extraProds).map(([tipo, itens]) => {
+          const labelTipo = LABEL_TIPOS[tipo] || tipo;
+          const rows = (itens as any[]).map(p => `
+            <tr style="border-bottom:1px solid #e5e7eb;">
+              <td style="padding:6px 12px;font-size:12px;">${p.title ?? '—'}</td>
+              <td style="padding:6px 12px;font-size:12px;text-align:center;width:8%;">${p.year ?? '—'}</td>
+            </tr>`).join('');
+          return `
+          <div style="margin-top: 14px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">${labelTipo} (${(itens as any[]).length})</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
+              <thead>
+                <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+                  <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700;">Título</th>
+                  <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 8%;">Ano</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+        }).join('');
+      };
+
+      const currentCardsHtml = buildSummaryCards(currentSummaryRaw, currentArticles, currentExtraProds);
+      const prevCardsHtml = buildSummaryCards(prevSummaryRaw, prevArticles, prevExtraProds);
 
       const guidancesByType: Record<string, any[]> = {};
       guidances.forEach((g: any) => {
@@ -449,53 +530,19 @@ export function ResearcherModal() {
         </tr>`).join('')}`
       ).join('');
 
-      const articleRows = articles.slice(0, 30).map(a => `
-        <tr style="border-bottom:1px solid #e5e7eb;">
-          <td style="padding:6px 12px;font-size:12px;">${a.title ?? '—'}</td>
-          <td style="padding:6px 12px;font-size:12px;color:#6b7280;white-space:nowrap;">${a.journal ?? '—'}</td>
-          <td style="padding:6px 12px;font-size:12px;text-align:center;font-weight:700;color:#1e3a8a;">${a.qualis ?? 'SQ'}</td>
-          <td style="padding:6px 12px;font-size:12px;text-align:center;">${a.year ?? '—'}</td>
-        </tr>`
-      ).join('');
-
-      const LABEL_TIPOS: Record<string, string> = {
-        ARTICLE: "Artigos",
-        BOOK: "Livros",
-        BOOK_CHAPTER: "Capítulos",
-        WORK_IN_EVENT: "Trabalhos em Eventos",
-        TEXT_IN_NEWSPAPER_MAGAZINE: "Textos em Revista",
-        SOFTWARE: "Softwares",
-        PATENT: "Patentes",
-        BRAND: "Marcas",
-      };
-
-      if (articles.length > 0 && !summaryByType['ARTICLE']) {
-        summaryByType['ARTICLE'] = articles.length;
-      }
-
-      const summaryEntries = Object.entries(summaryByType);
-      const summaryHtml = summaryEntries.length > 0 ? `
-        <table style="border-collapse: separate; border-spacing: 8px 0; margin: 4px 0 10px -8px;">
-          <tr>
-            ${summaryEntries.map(([tipo, total]) => `
-            <td style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 6px; padding: 10px 18px; text-align: center; vertical-align: middle;">
-              <span style="display: block; font-size: 22px; font-weight: 800; color: #1e3a8a; line-height: 1;">${total}</span>
-              <span style="display: block; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; white-space: nowrap;">${LABEL_TIPOS[tipo] || tipo}</span>
-            </td>`).join('')}
-          </tr>
-        </table>` : '';
-
       const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
       const html = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; width: 100%; color: #111827; line-height: 1.4;">
-        <!-- Header -->
-        <div style="background: #1e3a8a; color: #ffffff; padding: 28px 32px; border-radius: 6px 6px 0 0;">
+        <!-- Header Principal -->
+        <div style="background: #1e3a8a; color: #ffffff; padding: 26px 32px; border-radius: 6px 6px 0 0;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
               <div style="font-size: 11px; letter-spacing: 1.5px; color: #93c5fd; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">iaPós · SENAI CIMATEC</div>
               <h1 style="margin: 0 0 6px 0; font-size: 22px; font-weight: 800; letter-spacing: -0.3px;">Relatório de Situação do Pesquisador</h1>
-              <div style="font-size: 13px; color: #bfdbfe;">Quadriênio de Avaliação: <strong>${quadrienal}</strong></div>
+              <div style="font-size: 12.5px; color: #bfdbfe;">
+                Quadriênio Atual: <strong>2025–2028 (Em Andamento)</strong> &nbsp;·&nbsp; Referência Histórica: <strong>2021–2024</strong>
+              </div>
             </div>
             <div style="text-align: right; font-size: 11px; color: #bfdbfe;">
               Emissão: ${now}
@@ -531,17 +578,17 @@ export function ResearcherModal() {
                       </td>
                       <td style="padding: 4px 0;">${resData.orcid ? `<strong>ORCID:</strong> ${resData.orcid}` : ''}</td>
                     </tr>
-                    ${(indProdCurrent > 0 || indProd > 0) ? `
+                    ${(currentIndProd > 0 || prevIndProd > 0) ? `
                     <tr>
                       <td colspan="2" style="padding: 8px 0 0 0;">
-                        ${indProdCurrent > 0 ? `
+                        ${currentIndProd > 0 ? `
                         <span style="display:inline-block;background:#1e3a8a;color:#ffffff;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:800;margin-right:8px;">
-                          IndProd 2025-2028: ${(Number(indProdCurrent) || 0).toFixed(2)}
-                          ${indProdCurrentYears > 0 ? `<span style="font-size:10px;font-weight:400;opacity:0.85;"> (${indProdCurrentYears} ano${indProdCurrentYears > 1 ? 's' : ''})</span>` : ''}
+                          IndProd 2025-2028: ${(Number(currentIndProd) || 0).toFixed(2)}
+                          ${currentYearsAvailable > 0 ? `<span style="font-size:10px;font-weight:400;opacity:0.85;"> (${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})</span>` : ''}
                         </span>` : ''}
-                        ${indProd > 0 ? `
+                        ${prevIndProd > 0 ? `
                         <span style="display:inline-block;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:700;">
-                          IndProd Médio ${quadrienal}: ${(Number(indProd) || 0).toFixed(2)}
+                          IndProd Médio 2021-2024: ${(Number(prevIndProd) || 0).toFixed(2)}
                         </span>` : ''}
                       </td>
                     </tr>` : ''}
@@ -553,61 +600,27 @@ export function ResearcherModal() {
           ${gpList ? `<div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #475569;"><strong>Programas de Pós-Graduação:</strong><div style="margin-top: 4px;">${gpList}</div></div>` : ''}
         </div>
 
-        <!-- Produção na Quadrienal -->
+        <!-- SEÇÃO 1: Produção no Quadriênio Atual (2025-2028) -->
         <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; background: #ffffff;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
             <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
-              Produção Bibliográfica no Quadriênio ${quadrienal}
+              Produção no Quadriênio Atual (2025–2028)
             </h3>
-            <span style="font-size: 11px; color: #6b7280; font-weight: 600;">Referência CAPES</span>
+            <span style="font-size: 11px; color: #1e3a8a; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; padding: 2px 8px; border-radius: 10px;">
+              Em Andamento ${currentYearsAvailable > 0 ? `(${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})` : ''}
+            </span>
           </div>
 
-          <div style="margin-bottom: 16px;">
-            ${summaryHtml || '<div style="color: #6b7280; font-size: 12.5px; padding: 8px 0;">Nenhuma produção registrada para o quadriênio avaliativo de referência.</div>'}
+          <div style="margin-bottom: 14px;">
+            ${currentCardsHtml || '<div style="color: #6b7280; font-size: 12px; padding: 6px 0;">Nenhuma produção bibliográfica registrada até o momento no Lattes para o quadriênio 2025–2028.</div>'}
           </div>
 
-          ${articles.length > 0 ? `
-          <div style="margin-top: 14px;">
-            <div style="font-size: 12.5px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">Artigos em Periódicos (${articles.length})</div>
-            <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
-              <thead>
-                <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
-                  <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700;">Título</th>
-                  <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700; width: 32%;">Periódico</th>
-                  <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 10%;">Qualis</th>
-                  <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 8%;">Ano</th>
-                </tr>
-              </thead>
-              <tbody>${articleRows}</tbody>
-            </table>
-            ${articles.length > 30 ? `<div style="font-size: 10.5px; color: #94a3b8; margin-top: 6px;">* Exibindo os 30 artigos mais recentes de ${articles.length} registrados no quadriênio.</div>` : ''}
-          </div>` : ''}
-
-          ${Object.entries(extraProductions).map(([tipo, itens]) => {
-            const labelTipo = LABEL_TIPOS[tipo] || tipo;
-            const rows = (itens as any[]).map(p => `
-              <tr style="border-bottom:1px solid #e5e7eb;">
-                <td style="padding:6px 12px;font-size:12px;">${p.title ?? '—'}</td>
-                <td style="padding:6px 12px;font-size:12px;text-align:center;width:8%;">${p.year ?? '—'}</td>
-              </tr>`).join('');
-            return `
-            <div style="margin-top: 14px;">
-              <div style="font-size: 12.5px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">${labelTipo} (${(itens as any[]).length})</div>
-              <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
-                <thead>
-                  <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
-                    <th style="padding: 7px 10px; text-align: left; color: #475569; font-weight: 700;">Título</th>
-                    <th style="padding: 7px 10px; text-align: center; color: #475569; font-weight: 700; width: 8%;">Ano</th>
-                  </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-              </table>
-            </div>`;
-          }).join('')}
+          ${renderArticleTable(currentArticles, 20)}
+          ${renderExtraProductions(currentExtraProds)}
         </div>
 
-        <!-- Orientações Ativas -->
-        <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 6px 6px; background: #ffffff;">
+        <!-- SEÇÃO 2: Orientações Ativas -->
+        <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; background: #ffffff;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
             <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
               Orientações Ativas (Itens em Andamento)
@@ -627,7 +640,24 @@ export function ResearcherModal() {
             </thead>
             <tbody>${guidanceRows}</tbody>
           </table>` : `
-          <div style="color: #6b7280; font-size: 12.5px; padding: 8px 0;">Nenhuma orientação com status ativo/em andamento no momento.</div>`}
+          <div style="color: #6b7280; font-size: 12px; padding: 6px 0;">Nenhuma orientação com status ativo/em andamento no momento.</div>`}
+        </div>
+
+        <!-- SEÇÃO 3: Histórico Consolidado — Quadriênio Anterior (2021-2024) -->
+        <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 6px 6px; background: #ffffff;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
+            <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
+              Histórico Consolidado — Quadriênio 2021–2024
+            </h3>
+            <span style="font-size: 11px; color: #475569; font-weight: 700; background: #f1f5f9; padding: 2px 8px; border-radius: 10px;">Referência CAPES</span>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            ${prevCardsHtml || '<div style="color: #6b7280; font-size: 12px; padding: 6px 0;">Nenhuma produção registrada para o quadriênio 2021-2024.</div>'}
+          </div>
+
+          ${renderArticleTable(prevArticles, 30)}
+          ${renderExtraProductions(prevExtraProds)}
         </div>
 
         <!-- Rodapé -->
