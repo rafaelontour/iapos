@@ -365,6 +365,37 @@ export function ResearcherModal() {
       const indProdCurrentYears: number = data.ind_prod_current_years ?? 0;
       const extraProductions: Record<string, any[]> = data.quadrienal_productions ?? {};
 
+      // Busca foto do pesquisador em Base64 para embutir de forma segura no PDF (sem problemas de CORS)
+      let photoBase64 = '';
+      try {
+        const photoCandidates = [
+          primary?.id ? `${urlGeral}ResearcherData/Image?researcher_id=${primary.id}` : '',
+          primary?.name ? `${urlGeral}ResearcherData/Image?name=${encodeURIComponent(primary.name)}` : '',
+        ].filter(Boolean);
+
+        for (const photoUrl of photoCandidates) {
+          try {
+            const imgResp = await fetch(photoUrl);
+            if (imgResp.ok) {
+              const blob = await imgResp.blob();
+              if (blob && blob.size > 200 && blob.type.startsWith('image/')) {
+                photoBase64 = await new Promise<string>((resolve) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => resolve((reader.result as string) || '');
+                  reader.onerror = () => resolve('');
+                  reader.readAsDataURL(blob);
+                });
+                if (photoBase64) break;
+              }
+            }
+          } catch {
+            // segue para o próximo candidato se falhar
+          }
+        }
+      } catch (err) {
+        console.log("Foto do pesquisador indisponível:", err);
+      }
+
       // Consolida o resumo por tipo (somando todas as ocorrências de cada tipo ao longo dos anos)
       const summaryByType: Record<string, number> = {};
       
@@ -474,40 +505,50 @@ export function ResearcherModal() {
 
         <!-- Dados do pesquisador -->
         <div style="border: 1px solid #e5e7eb; border-top: none; padding: 22px 32px; background: #f8fafc;">
-          <h2 style="margin: 0 0 14px 0; font-size: 18px; font-weight: 700; color: #1e3a8a;">${resData.name ?? ''}</h2>
-          <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; color: #374151;">
-            <tbody>
-              <tr>
-                <td style="padding: 4px 0; width: 50%;"><strong>Formação:</strong> ${resData.graduation ?? '—'}</td>
-                <td style="padding: 4px 0; width: 50%;"><strong>Instituição:</strong> ${resData.institution ?? '—'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 4px 0;"><strong>Área:</strong> ${resData.area ?? '—'}</td>
-                <td style="padding: 4px 0;"><strong>Lattes ID:</strong> ${resData.lattes_id ?? '—'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 4px 0;">
-                  ${resData.h_index ? `<strong>H-Index (OpenAlex):</strong> ${resData.h_index}` : ''}
-                  ${resData.i10_index ? ` &nbsp;·&nbsp; <strong>i10:</strong> ${resData.i10_index}` : ''}
-                  ${resData.cited_by_count ? ` &nbsp;·&nbsp; <strong>Citações:</strong> ${resData.cited_by_count}` : ''}
-                </td>
-                <td style="padding: 4px 0;">${resData.orcid ? `<strong>ORCID:</strong> ${resData.orcid}` : ''}</td>
-              </tr>
-              ${(indProdCurrent > 0 || indProd > 0) ? `
-              <tr>
-                <td colspan="2" style="padding: 8px 0 0 0;">
-                  ${indProdCurrent > 0 ? `
-                  <span style="display:inline-block;background:#1e3a8a;color:#ffffff;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:800;margin-right:8px;">
-                    IndProd 2025-2028: ${(Number(indProdCurrent) || 0).toFixed(2)}
-                    ${indProdCurrentYears > 0 ? `<span style="font-size:10px;font-weight:400;opacity:0.85;"> (${indProdCurrentYears} ano${indProdCurrentYears > 1 ? 's' : ''})</span>` : ''}
-                  </span>` : ''}
-                  ${indProd > 0 ? `
-                  <span style="display:inline-block;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:700;">
-                    IndProd Médio ${quadrienal}: ${(Number(indProd) || 0).toFixed(2)}
-                  </span>` : ''}
-                </td>
-              </tr>` : ''}
-            </tbody>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              ${photoBase64 ? `
+              <td style="width: 90px; vertical-align: top; padding-right: 20px;">
+                <img src="${photoBase64}" alt="${resData.name ?? 'Foto'}" style="width: 82px; height: 102px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: block;" />
+              </td>` : ''}
+              <td style="vertical-align: top;">
+                <h2 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #1e3a8a;">${resData.name ?? ''}</h2>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; color: #374151;">
+                  <tbody>
+                    <tr>
+                      <td style="padding: 4px 0; width: 50%;"><strong>Formação:</strong> ${resData.graduation ?? '—'}</td>
+                      <td style="padding: 4px 0; width: 50%;"><strong>Instituição:</strong> ${resData.institution ?? '—'}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 4px 0;"><strong>Área:</strong> ${resData.area ?? '—'}</td>
+                      <td style="padding: 4px 0;"><strong>Lattes ID:</strong> ${resData.lattes_id ?? '—'}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 4px 0;">
+                        ${resData.h_index ? `<strong>H-Index (OpenAlex):</strong> ${resData.h_index}` : ''}
+                        ${resData.i10_index ? ` &nbsp;·&nbsp; <strong>i10:</strong> ${resData.i10_index}` : ''}
+                        ${resData.cited_by_count ? ` &nbsp;·&nbsp; <strong>Citações:</strong> ${resData.cited_by_count}` : ''}
+                      </td>
+                      <td style="padding: 4px 0;">${resData.orcid ? `<strong>ORCID:</strong> ${resData.orcid}` : ''}</td>
+                    </tr>
+                    ${(indProdCurrent > 0 || indProd > 0) ? `
+                    <tr>
+                      <td colspan="2" style="padding: 8px 0 0 0;">
+                        ${indProdCurrent > 0 ? `
+                        <span style="display:inline-block;background:#1e3a8a;color:#ffffff;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:800;margin-right:8px;">
+                          IndProd 2025-2028: ${(Number(indProdCurrent) || 0).toFixed(2)}
+                          ${indProdCurrentYears > 0 ? `<span style="font-size:10px;font-weight:400;opacity:0.85;"> (${indProdCurrentYears} ano${indProdCurrentYears > 1 ? 's' : ''})</span>` : ''}
+                        </span>` : ''}
+                        ${indProd > 0 ? `
+                        <span style="display:inline-block;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:700;">
+                          IndProd Médio ${quadrienal}: ${(Number(indProd) || 0).toFixed(2)}
+                        </span>` : ''}
+                      </td>
+                    </tr>` : ''}
+                  </tbody>
+                </table>
+              </td>
+            </tr>
           </table>
           ${gpList ? `<div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #475569;"><strong>Programas de Pós-Graduação:</strong><div style="margin-top: 4px;">${gpList}</div></div>` : ''}
         </div>
