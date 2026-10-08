@@ -199,7 +199,9 @@ export function ResearcherPage() {
             const guidances: any[] = data.active_guidances ?? [];
             const articles: any[] = data.quadrienal_articles ?? [];
             const summary: any[] = data.quadrienal_summary ?? [];
-            const indProd: number = data.ind_prod ?? 0;
+            const indProd: number = data.ind_prod ?? 0;           // média anual do quadriênio 2021-2024
+            const indProdCurrent: number = data.ind_prod_current ?? 0;  // média anual do quadriênio atual 2025-2028
+            const indProdCurrentYears: number = data.ind_prod_current_years ?? 0;
             const extraProductions: Record<string, any[]> = data.quadrienal_productions ?? {};
 
             // Consolida o resumo por tipo (somando todas as ocorrências de cada tipo ao longo dos anos)
@@ -331,15 +333,18 @@ export function ResearcherPage() {
                                 </td>
                                 <td style="padding: 4px 0;">${researcher.orcid ? `<strong>ORCID:</strong> ${researcher.orcid}` : ''}</td>
                             </tr>
-                            ${indProd > 0 ? `
+                            ${(indProdCurrent > 0 || indProd > 0) ? `
                             <tr>
                                 <td colspan="2" style="padding: 8px 0 0 0;">
-                                    <span style="display:inline-block;background:#1e3a8a;color:#ffffff;padding:4px 14px;border-radius:16px;font-size:12px;font-weight:700;">
-                                        IndProd Quadriênio (${quadrienal}): ${(Number(indProd) || 0).toFixed(2)}
-                                    </span>
-                                    <span style="display:inline-block;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:4px 14px;border-radius:16px;font-size:12px;font-weight:700;margin-left:8px;">
-                                        Média Anual IndProd: ${((Number(indProd) || 0) / 4).toFixed(2)}
-                                    </span>
+                                    ${indProdCurrent > 0 ? `
+                                    <span style="display:inline-block;background:#1e3a8a;color:#ffffff;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:800;margin-right:8px;">
+                                        IndProd 2025-2028: ${(Number(indProdCurrent) || 0).toFixed(2)}
+                                        ${indProdCurrentYears > 0 ? `<span style="font-size:10px;font-weight:400;opacity:0.85;"> (${indProdCurrentYears} ano${indProdCurrentYears > 1 ? 's' : ''})</span>` : ''}
+                                    </span>` : ''}
+                                    ${indProd > 0 ? `
+                                    <span style="display:inline-block;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:700;">
+                                        IndProd Médio ${quadrienal}: ${(Number(indProd) || 0).toFixed(2)}
+                                    </span>` : ''}
                                 </td>
                             </tr>` : ''}
                         </tbody>
