@@ -359,9 +359,28 @@ export function ResearcherModal() {
       const indProd: number = data.ind_prod ?? 0;
       const extraProductions: Record<string, any[]> = data.quadrienal_productions ?? {};
 
+      // Consolida o resumo por tipo (somando todas as ocorrências de cada tipo ao longo dos anos)
       const summaryByType: Record<string, number> = {};
-      summary.forEach((s: any) => {
-        summaryByType[s.type] = (summaryByType[s.type] || 0) + Number(s.total);
+      
+      // Processa o summary retornado pelo backend
+      if (summary && summary.length > 0) {
+        summary.forEach((s: any) => {
+          if (s.type && s.total) {
+            summaryByType[s.type] = (summaryByType[s.type] || 0) + Number(s.total);
+          }
+        });
+      }
+      
+      // Fallback: se não houver summary mas houver artigos, conta os artigos
+      if (Object.keys(summaryByType).length === 0 && articles.length > 0) {
+        summaryByType['ARTICLE'] = articles.length;
+      }
+      
+      // Adiciona contagem de outras produções do quadrienal_productions ao summary
+      Object.entries(extraProductions).forEach(([tipo, itens]) => {
+        if (!summaryByType[tipo]) {
+          summaryByType[tipo] = (itens as any[]).length;
+        }
       });
 
       const guidancesByType: Record<string, any[]> = {};
