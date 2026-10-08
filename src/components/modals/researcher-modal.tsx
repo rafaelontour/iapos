@@ -425,6 +425,8 @@ export function ResearcherModal() {
         ARTICLE: "Artigos",
         BOOK: "Livros",
         BOOK_CHAPTER: "Capítulos",
+        WORK_IN_EVENT: "Trabalhos em Eventos",
+        TEXT_IN_NEWSPAPER_MAGAZINE: "Textos em Revista",
         SOFTWARE: "Softwares",
         PATENT: "Patentes",
         BRAND: "Marcas",
@@ -434,12 +436,17 @@ export function ResearcherModal() {
         summaryByType['ARTICLE'] = articles.length;
       }
 
-      const summaryHtml = Object.entries(summaryByType).map(([tipo, total]) => `
-        <div style="display:inline-block;margin:4px 6px;background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;padding:8px 16px;text-align:center;min-width:105px;vertical-align:top;">
-          <div style="font-size:22px;font-weight:800;color:#1e3a8a;line-height:1.2;">${total}</div>
-          <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.4px;margin-top:2px;">${LABEL_TIPOS[tipo] || tipo}</div>
-        </div>`
-      ).join('');
+      const summaryEntries = Object.entries(summaryByType);
+      const summaryHtml = summaryEntries.length > 0 ? `
+        <table style="border-collapse: separate; border-spacing: 8px 0; margin: 4px 0 10px -8px;">
+          <tr>
+            ${summaryEntries.map(([tipo, total]) => `
+            <td style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 6px; padding: 10px 18px; text-align: center; vertical-align: middle;">
+              <span style="display: block; font-size: 22px; font-weight: 800; color: #1e3a8a; line-height: 1;">${total}</span>
+              <span style="display: block; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; white-space: nowrap;">${LABEL_TIPOS[tipo] || tipo}</span>
+            </td>`).join('')}
+          </tr>
+        </table>` : '';
 
       const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
@@ -473,14 +480,21 @@ export function ResearcherModal() {
                 <td style="padding: 4px 0;"><strong>Lattes ID:</strong> ${resData.lattes_id ?? '—'}</td>
               </tr>
               <tr>
-                <td style="padding: 4px 0;">${resData.h_index ? `<strong>H-Index:</strong> ${resData.h_index}` : ''}</td>
+                <td style="padding: 4px 0;">
+                  ${resData.h_index ? `<strong>H-Index (OpenAlex):</strong> ${resData.h_index}` : ''}
+                  ${resData.i10_index ? ` &nbsp;·&nbsp; <strong>i10:</strong> ${resData.i10_index}` : ''}
+                  ${resData.cited_by_count ? ` &nbsp;·&nbsp; <strong>Citações:</strong> ${resData.cited_by_count}` : ''}
+                </td>
                 <td style="padding: 4px 0;">${resData.orcid ? `<strong>ORCID:</strong> ${resData.orcid}` : ''}</td>
               </tr>
               ${indProd > 0 ? `
               <tr>
-                <td colspan="2" style="padding: 6px 0 0 0;">
-                  <span style="display:inline-block;background:#1e3a8a;color:#fff;padding:3px 14px;border-radius:20px;font-size:12.5px;font-weight:700;">
-                    IndProd ${quadrienal}: ${indProd.toFixed(2)}
+                <td colspan="2" style="padding: 8px 0 0 0;">
+                  <span style="display:inline-block;background:#1e3a8a;color:#ffffff;padding:4px 14px;border-radius:16px;font-size:12px;font-weight:700;">
+                    IndProd Quadriênio (${quadrienal}): ${(Number(indProd) || 0).toFixed(2)}
+                  </span>
+                  <span style="display:inline-block;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:4px 14px;border-radius:16px;font-size:12px;font-weight:700;margin-left:8px;">
+                    Média Anual IndProd: ${((Number(indProd) || 0) / 4).toFixed(2)}
                   </span>
                 </td>
               </tr>` : ''}
