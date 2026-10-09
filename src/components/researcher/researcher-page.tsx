@@ -195,6 +195,27 @@ export function ResearcherPage() {
                 ...(data.researcher ?? {}),
                 area: data.researcher?.area || primaryResearcher?.area || '—',
             };
+
+            const formatLattesDate = (val: any): string => {
+                if (!val) return '—';
+                const str = String(val).trim();
+                if (!str || str === 'undefined' || str === 'null') return '—';
+                if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return str;
+                if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+                    const [year, month, day] = str.slice(0, 10).split('-');
+                    return `${day}/${month}/${year}`;
+                }
+                try {
+                    const d = new Date(str);
+                    if (!isNaN(d.getTime())) return d.toLocaleDateString('pt-BR');
+                } catch {}
+                return str;
+            };
+
+            const lattesUpdateFormatted = formatLattesDate(
+                researcher.lattes_update || primaryResearcher?.lattes_update || (props as any)?.lattes_update
+            );
+
             const guidances: any[] = data.active_guidances ?? [];
 
             // Período Atual (2025-2028) — em andamento
@@ -384,8 +405,12 @@ export function ResearcherPage() {
                                 Quadriênio Atual: <strong>2025–2028 (Em Andamento)</strong> &nbsp;·&nbsp; Referência Histórica: <strong>2021–2024</strong>
                             </div>
                         </div>
-                        <div style="text-align: right; font-size: 11px; color: #bfdbfe;">
-                            Emissão: ${now}
+                        <div style="text-align: right; font-size: 11px; color: #bfdbfe; line-height: 1.5;">
+                            <div>Emissão: ${now}</div>
+                            ${lattesUpdateFormatted && lattesUpdateFormatted !== '—' ? `
+                            <div style="margin-top: 4px; color: #ffffff; font-weight: 600;">
+                                Atualização Lattes: <strong>${lattesUpdateFormatted}</strong>
+                            </div>` : ''}
                         </div>
                     </div>
                 </div>
@@ -408,7 +433,10 @@ export function ResearcherPage() {
                                         </tr>
                                         <tr>
                                             <td style="padding: 4px 0;"><strong>Área:</strong> ${researcher.area ?? '—'}</td>
-                                            <td style="padding: 4px 0;"><strong>Lattes ID:</strong> ${researcher.lattes_id ?? '—'}</td>
+                                            <td style="padding: 4px 0;">
+                                                <strong>Lattes ID:</strong> ${researcher.lattes_id ?? '—'}
+                                                ${lattesUpdateFormatted && lattesUpdateFormatted !== '—' ? ` &nbsp;·&nbsp; <strong>Atualização do Lattes:</strong> ${lattesUpdateFormatted}` : ''}
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td style="padding: 4px 0;">
