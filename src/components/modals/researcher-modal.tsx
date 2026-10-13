@@ -379,7 +379,7 @@ export function ResearcherModal() {
       };
 
       const lattesUpdateFormatted = formatLattesDate(
-        resData.lattes_update || primary?.lattes_update || (props as any)?.lattes_update
+        resData.lattes_update || primary?.lattes_update
       );
 
       const guidances: any[] = data.active_guidances ?? [];

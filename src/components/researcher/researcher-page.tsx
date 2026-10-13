@@ -213,7 +213,7 @@ export function ResearcherPage() {
             };
 
             const lattesUpdateFormatted = formatLattesDate(
-                researcher.lattes_update || primaryResearcher?.lattes_update || (props as any)?.lattes_update
+                researcher.lattes_update || primaryResearcher?.lattes_update
             );
 
             const guidances: any[] = data.active_guidances ?? [];
