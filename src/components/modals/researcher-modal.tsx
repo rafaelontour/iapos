@@ -625,12 +625,12 @@ export function ResearcherModal() {
                     <tr>
                       <td colspan="2" style="padding: 10px 0 0 0;">
                         ${currentIndProd > 0 ? `
-                        <span style="display:inline-block;vertical-align:middle;background:#1e3a8a;color:#ffffff;line-height:26px;height:26px;padding:0 14px;border-radius:13px;font-size:12px;font-weight:800;margin-right:8px;text-align:center;">
+                        <span style="display:inline-block;vertical-align:middle;background:#1e3a8a;color:#ffffff;padding:3px 14px 7px 14px;border-radius:14px;font-size:12px;font-weight:800;margin-right:8px;text-align:center;line-height:14px;">
                           IndProd 2025-2028: ${(Number(currentIndProd) || 0).toFixed(2)}
                           ${currentYearsAvailable > 0 ? `<span style="font-size:10px;font-weight:400;opacity:0.85;"> (${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})</span>` : ''}
                         </span>` : ''}
                         ${prevIndProd > 0 ? `
-                        <span style="display:inline-block;vertical-align:middle;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;line-height:24px;height:24px;padding:0 14px;border-radius:13px;font-size:12px;font-weight:700;text-align:center;">
+                        <span style="display:inline-block;vertical-align:middle;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:3px 14px 7px 14px;border-radius:14px;font-size:12px;font-weight:700;text-align:center;line-height:14px;">
                           IndProd Médio 2021-2024: ${(Number(prevIndProd) || 0).toFixed(2)}
                         </span>` : ''}
                       </td>
@@ -649,7 +649,7 @@ export function ResearcherModal() {
             <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
               Produção no Quadriênio Atual (2025–2028)
             </h3>
-            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #1e3a8a; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; line-height: 22px; height: 22px; padding: 0 10px; border-radius: 11px; text-align: center;">
+            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #1e3a8a; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; padding: 2px 10px 6px 10px; border-radius: 12px; line-height: 12px; text-align: center;">
               Em Andamento ${currentYearsAvailable > 0 ? `(${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})` : ''}
             </span>
           </div>
@@ -668,7 +668,7 @@ export function ResearcherModal() {
             <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
               Orientações Ativas (Itens em Andamento)
             </h3>
-            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #16a34a; font-weight: 700; background: #dcfce7; border: 1px solid #86efac; line-height: 22px; height: 22px; padding: 0 10px; border-radius: 11px; text-align: center;">${guidances.length} ativa${guidances.length !== 1 ? 's' : ''}</span>
+            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #16a34a; font-weight: 700; background: #dcfce7; border: 1px solid #86efac; padding: 2px 10px 6px 10px; border-radius: 12px; line-height: 12px; text-align: center;">${guidances.length} ativa${guidances.length !== 1 ? 's' : ''}</span>
           </div>
 
           ${guidances.length > 0 ? `
@@ -692,7 +692,7 @@ export function ResearcherModal() {
             <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
               Histórico Consolidado — Quadriênio 2021–2024
             </h3>
-            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #475569; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; line-height: 22px; height: 22px; padding: 0 10px; border-radius: 11px; text-align: center;">Referência CAPES</span>
+            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #475569; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 10px 6px 10px; border-radius: 12px; line-height: 12px; text-align: center;">Referência CAPES</span>
           </div>
 
           <div class="page-break-avoid" style="margin-bottom: 14px;">
