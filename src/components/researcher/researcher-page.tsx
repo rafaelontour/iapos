@@ -399,9 +399,14 @@ export function ResearcherPage() {
             const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
             const html = `
+            <style>
+                .page-break-avoid { page-break-inside: avoid !important; }
+                .page-break-after-avoid { page-break-after: avoid !important; }
+                tr { page-break-inside: avoid !important; }
+            </style>
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; width: 100%; color: #111827; line-height: 1.4;">
                 <!-- Header Principal -->
-                <div style="background: #1e3a8a; color: #ffffff; padding: 26px 32px; border-radius: 6px 6px 0 0;">
+                <div class="page-break-avoid" style="background: #1e3a8a; color: #ffffff; padding: 22px 32px; border-radius: 6px 6px 0 0;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div>
                             <div style="font-size: 11px; letter-spacing: 1.5px; color: #93c5fd; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">iaPós · SENAI CIMATEC</div>
@@ -421,12 +426,12 @@ export function ResearcherPage() {
                 </div>
 
                 <!-- Dados do pesquisador -->
-                <div style="border: 1px solid #e5e7eb; border-top: none; padding: 22px 32px; background: #f8fafc;">
+                <div class="page-break-avoid" style="border: 1px solid #e5e7eb; border-top: none; padding: 20px 32px; background: #f8fafc;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                             ${photoBase64 ? `
                             <td style="width: 90px; vertical-align: top; padding-right: 20px;">
-                                <img src="${photoBase64}" alt="${researcher.name ?? 'Foto'}" style="width: 82px; height: 102px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: block;" />
+                                <div style="width: 82px; height: 102px; border-radius: 6px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background-image: url('${photoBase64}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
                             </td>` : ''}
                             <td style="vertical-align: top;">
                                 <h2 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #1e3a8a;">${researcher.name ?? ''}</h2>
@@ -453,14 +458,14 @@ export function ResearcherPage() {
                                         </tr>
                                         ${(currentIndProd > 0 || prevIndProd > 0) ? `
                                         <tr>
-                                            <td colspan="2" style="padding: 8px 0 0 0;">
+                                            <td colspan="2" style="padding: 10px 0 0 0;">
                                                 ${currentIndProd > 0 ? `
-                                                <span style="display:inline-block;background:#1e3a8a;color:#ffffff;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:800;margin-right:8px;">
+                                                <span style="display:inline-block;vertical-align:middle;background:#1e3a8a;color:#ffffff;line-height:26px;height:26px;padding:0 14px;border-radius:13px;font-size:12px;font-weight:800;margin-right:8px;text-align:center;">
                                                     IndProd 2025-2028: ${(Number(currentIndProd) || 0).toFixed(2)}
                                                     ${currentYearsAvailable > 0 ? `<span style="font-size:10px;font-weight:400;opacity:0.85;"> (${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})</span>` : ''}
                                                 </span>` : ''}
                                                 ${prevIndProd > 0 ? `
-                                                <span style="display:inline-block;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:5px 16px;border-radius:16px;font-size:13px;font-weight:700;">
+                                                <span style="display:inline-block;vertical-align:middle;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;line-height:24px;height:24px;padding:0 14px;border-radius:13px;font-size:12px;font-weight:700;text-align:center;">
                                                     IndProd Médio 2021-2024: ${(Number(prevIndProd) || 0).toFixed(2)}
                                                 </span>` : ''}
                                             </td>
@@ -475,16 +480,16 @@ export function ResearcherPage() {
 
                 <!-- SEÇÃO 1: Produção no Quadriênio Atual (2025-2028) -->
                 <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; background: #ffffff;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
+                    <div class="page-break-avoid page-break-after-avoid" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
                         <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
                             Produção no Quadriênio Atual (2025–2028)
                         </h3>
-                        <span style="font-size: 11px; color: #1e3a8a; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; padding: 2px 8px; border-radius: 10px;">
+                        <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #1e3a8a; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; line-height: 22px; height: 22px; padding: 0 10px; border-radius: 11px; text-align: center;">
                             Em Andamento ${currentYearsAvailable > 0 ? `(${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})` : ''}
                         </span>
                     </div>
 
-                    <div style="margin-bottom: 14px;">
+                    <div class="page-break-avoid" style="margin-bottom: 14px;">
                         ${currentCardsHtml || '<div style="color: #6b7280; font-size: 12px; padding: 6px 0;">Nenhuma produção bibliográfica registrada até o momento no Lattes para o quadriênio 2025–2028.</div>'}
                     </div>
 
@@ -494,11 +499,11 @@ export function ResearcherPage() {
 
                 <!-- SEÇÃO 2: Orientações Ativas -->
                 <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; background: #ffffff;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
+                    <div class="page-break-avoid page-break-after-avoid" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
                         <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
                             Orientações Ativas (Itens em Andamento)
                         </h3>
-                        <span style="font-size: 11px; color: #16a34a; font-weight: 700; background: #dcfce7; padding: 2px 8px; border-radius: 10px;">${guidances.length} ativa${guidances.length !== 1 ? 's' : ''}</span>
+                        <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #16a34a; font-weight: 700; background: #dcfce7; border: 1px solid #86efac; line-height: 22px; height: 22px; padding: 0 10px; border-radius: 11px; text-align: center;">${guidances.length} ativa${guidances.length !== 1 ? 's' : ''}</span>
                     </div>
 
                     ${guidances.length > 0 ? `
@@ -518,14 +523,14 @@ export function ResearcherPage() {
 
                 <!-- SEÇÃO 3: Histórico Consolidado — Quadriênio Anterior (2021-2024) -->
                 <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 6px 6px; background: #ffffff;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
+                    <div class="page-break-avoid page-break-after-avoid" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
                         <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
                             Histórico Consolidado — Quadriênio 2021–2024
                         </h3>
-                        <span style="font-size: 11px; color: #475569; font-weight: 700; background: #f1f5f9; padding: 2px 8px; border-radius: 10px;">Referência CAPES</span>
+                        <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #475569; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; line-height: 22px; height: 22px; padding: 0 10px; border-radius: 11px; text-align: center;">Referência CAPES</span>
                     </div>
 
-                    <div style="margin-bottom: 14px;">
+                    <div class="page-break-avoid" style="margin-bottom: 14px;">
                         ${prevCardsHtml || '<div style="color: #6b7280; font-size: 12px; padding: 6px 0;">Nenhuma produção registrada para o quadriênio 2021-2024.</div>'}
                     </div>
 
@@ -534,7 +539,7 @@ export function ResearcherPage() {
                 </div>
 
                 <!-- Rodapé -->
-                <div style="margin-top: 14px; font-size: 10.5px; color: #94a3b8; text-align: center; padding-bottom: 10px;">
+                <div class="page-break-avoid" style="margin-top: 14px; font-size: 10.5px; color: #94a3b8; text-align: center; padding-bottom: 10px;">
                     Documento gerado eletronicamente pela plataforma analítica iaPós · SENAI CIMATEC · ${now}
                 </div>
             </div>`;
@@ -549,7 +554,7 @@ export function ResearcherPage() {
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+                pagebreak: { mode: ['css', 'legacy'] },
             }).from(container).save();
 
             document.body.removeChild(container);
