@@ -310,12 +310,31 @@ export function InformacoesGeraisResearcher(props: Research) {
                 <Alert className="flex justify-center gap-6 ">
                   <div className="flex flex-col flex-1 justify-center h-full">
                     <div className="text-xs text-gray-500 mb-2 flex items-center gap-2 justify-between">
-                      PROGRAMA DE PÓS-GRADUAÇÃO
+                      <span className="flex items-center gap-1.5 uppercase font-medium">
+                        PROGRAMA DE PÓS-GRADUAÇÃO
+                        {item.type && (
+                          <span className="text-blue-600 dark:text-blue-400 font-bold">
+                            · {item.type}
+                          </span>
+                        )}
+                      </span>
                       <GraduationCap size={14} />
                     </div>
                     <p className="font-medium">{item.name}</p>
-
-
+                    {(item.type || item.modality) && (
+                      <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1.5 flex-wrap">
+                        {item.type && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800">
+                            {item.type}
+                          </span>
+                        )}
+                        {item.modality && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-50 text-gray-600 border border-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:border-neutral-700">
+                            {item.modality}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </Alert>
 

@@ -78,6 +78,11 @@ interface Bolsistas {
 interface GraduatePrograms {
   graduate_program_id: string
   name: string
+  type?: string
+  modality?: string
+  acronym?: string
+  program_type?: string
+  rating?: string
 }
 
 interface Departments {
@@ -530,9 +535,14 @@ export function ResearcherModal() {
       });
 
       const gps: any[] = resData.graduate_programs ?? [];
-      const gpList = gps.map((g: any) =>
-        `${g.acronym ?? g.name} — ${g.modality ?? ''} (${g.type ?? ''})`
-      ).join('<br>');
+      const gpList = gps.map((g: any) => {
+        const progTipo = g.program_type || g.type_program || '';
+        const mod = g.modality || '';
+        const nivel = [progTipo, mod].filter(Boolean).join(' ');
+        const vinculo = g.type ? ` (${g.type})` : '';
+        const detalhe = nivel ? ` — ${nivel}` : '';
+        return `${g.acronym ?? g.name}${detalhe}${vinculo}`;
+      }).join('<br>');
 
       const guidanceRows = Object.entries(guidancesByType).map(([tipo, items]) => `
         <tr style="background:#f0f4ff;">
