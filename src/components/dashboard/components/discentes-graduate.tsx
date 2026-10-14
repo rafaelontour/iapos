@@ -1,6 +1,6 @@
 import { AreaChart, ChevronsUpDown, FileText, Globe, MapPinIcon, Maximize2, PencilLine, Plus, RefreshCcw, SquareArrowOutUpRight, Star, Upload, User, UserIcon, Users } from "lucide-react";
 import { Button } from "../../ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../ui/tooltip";
 import { CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Eye, EyeSlash, MagnifyingGlass, Student, Trash } from "phosphor-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
@@ -126,6 +126,7 @@ function DiscenteItem({
     );
 
     return (
+        <TooltipProvider>
         <Alert>
             {/* 1. MUDANÇA IMPORTANTE: Use o discenteId no value em vez de String(index) */}
             <AccordionItem value={discenteId}>
@@ -226,12 +227,33 @@ function DiscenteItem({
                                     ))}
                                 </ToggleGroup>
                             ) : (
-                                <p className="text-gray-500">Nenhum ano disponível</p>
+                        <p className="text-gray-500">Nenhum ano disponível</p>
                             )}
                         </div>
-                        <Button onClick={() => handleUpdateData(index, props.lattes_id)}>
-                            <RefreshCcw size={16} /> Atualizar dados
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => downloadSituationReport({
+                                            researcherId: discenteId,
+                                            name: props.name,
+                                            lattesId: props.lattes_id,
+                                            urlGeral
+                                        })}
+                                        className="text-eng-blue border-eng-blue hover:text-eng-dark-blue hover:bg-blue-50"
+                                    >
+                                        <FileText size={16} className="mr-1" /> Relatório PDF
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Baixar Relatório de Situação (PDF)</p>
+                                </TooltipContent>
+                            </Tooltip>
+                            <Button onClick={() => handleUpdateData(index, props.lattes_id)}>
+                                <RefreshCcw size={16} /> Atualizar dados
+                            </Button>
+                        </div>
                     </div>
 
                     {loading ? (
@@ -264,6 +286,7 @@ function DiscenteItem({
                 </AccordionContent>
             </AccordionItem>
         </Alert>
+        </TooltipProvider>
     );
 }
 

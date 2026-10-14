@@ -27,7 +27,7 @@ import { getDiscentesPorPrograma } from "../../../service/discentes";
 import { adicionarOrientacao, getDocentesPorPrograma, getOrientacoesPorDocente } from "../../../service/docentes";
 import { Configuracao } from "../dados-pos-graduacao/dados-pos-graduacao";
 import { getConfiguracoes } from "../../../service/configuracaoDataPosGraduacao";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../ui/tooltip";
 import { Tag } from "../dados-pos-graduacao/Tags";
 import { getTagsService } from "../../../service/tags";
 import { LinhaPesquisa, getLinhasPesquisaService } from "../../../service/linhasPesquisa";
@@ -807,6 +807,7 @@ export function DocentesGraduate(props: Props) {
   }
 
   return (
+    <TooltipProvider>
     <div>
       <div>
         <CardContent className="flex flex-col justify-between p-8 pt-0 ">
@@ -1145,11 +1146,33 @@ export function DocentesGraduate(props: Props) {
                           <div className="flex items-center justify-between gap-2">
                             <p className="text-[22px]">Anos de participação</p>
 
-                            <Button
-                              onClick={() => handleSubmitPesquisador(props.graduate_program_id, props.researcher_id)}
-                            >
-                              <RefreshCcw size={16} /> Atualizar dados
-                            </Button>
+                            <div className="flex items-center gap-2">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => downloadSituationReport({
+                                      researcherId: props.researcher_id,
+                                      name: props.name,
+                                      lattesId: props.lattes_id,
+                                      urlGeral
+                                    })}
+                                    className="text-eng-blue border-eng-blue hover:text-eng-dark-blue hover:bg-blue-50"
+                                  >
+                                    <FileText size={16} className="mr-1" /> Relatório PDF
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Baixar Relatório de Situação (PDF)</p>
+                                </TooltipContent>
+                              </Tooltip>
+
+                              <Button
+                                onClick={() => handleSubmitPesquisador(props.graduate_program_id, props.researcher_id)}
+                              >
+                                <RefreshCcw size={16} /> Atualizar dados
+                              </Button>
+                            </div>
                           </div>
 
                           <div className="flex items-center gap-2 w-fit -mt-1 rounded-md border border-gray-300 overflow-hidden">
@@ -1744,5 +1767,6 @@ export function DocentesGraduate(props: Props) {
 
       </div >
     </div >
+    </TooltipProvider>
   )
 }
