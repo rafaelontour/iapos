@@ -9,6 +9,7 @@ export interface SituationReportParams {
   urlGeral: string;
   fallbackArea?: string;
   fallbackLattesUpdate?: string;
+  graduateProgramId?: string;
 }
 
 export async function downloadSituationReport({
@@ -18,6 +19,7 @@ export async function downloadSituationReport({
   urlGeral,
   fallbackArea,
   fallbackLattesUpdate,
+  graduateProgramId,
 }: SituationReportParams): Promise<void> {
   const toastId = toast.loading("Gerando relatório de situação...");
 
@@ -45,7 +47,10 @@ export async function downloadSituationReport({
       return;
     }
 
-    const url = `${urlGeral}researcher/situation-report?researcher_id=${resolvedId}`;
+    let url = `${urlGeral}researcher/situation-report?researcher_id=${resolvedId}`;
+    if (graduateProgramId) {
+      url += `&graduate_program_id=${encodeURIComponent(graduateProgramId)}`;
+    }
     const resp = await fetch(url);
     if (!resp.ok) {
       throw new Error("Erro ao buscar dados do relatório");
@@ -247,6 +252,89 @@ export async function downloadSituationReport({
       return `${g.acronym ?? g.name}${detalhe}${vinculo}`;
     }).join('<br>');
 
+    const renderComparisonBarSvg = (
+      minVal: number,
+      maxVal: number,
+      currentVal: number,
+      programLabel: string
+    ) => {
+      if (maxVal <= 0 && currentVal <= 0) return '';
+
+      const effectiveMin = Math.min(minVal, currentVal);
+      const effectiveMax = Math.max(maxVal, currentVal);
+      const range = effectiveMax - effectiveMin;
+      const pct = range > 0 ? (currentVal - effectiveMin) / range : 0.5;
+      const clampedPct = Math.max(0, Math.min(1, pct));
+
+      const svgWidth = 460;
+      const svgHeight = 74;
+      const xStart = 50;
+      const xEnd = svgWidth - 50;
+      const usableWidth = xEnd - xStart;
+      const xCur = xStart + clampedPct * usableWidth;
+
+      const txtMin = effectiveMin.toFixed(2);
+      const txtMax = effectiveMax.toFixed(2);
+      const txtCur = currentVal.toFixed(2);
+
+      const balloonWidth = 54;
+      const balloonHeight = 20;
+      const balloonX = Math.max(6, Math.min(xCur - balloonWidth / 2, svgWidth - balloonWidth - 6));
+
+      return `
+        <div class="page-break-avoid" style="margin-top: 14px; padding: 12px 16px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div style="font-size: 11px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
+              Comparativo de Alcance do IndProd no Programa${programLabel ? ` (${programLabel})` : ''}
+            </div>
+            <div style="font-size: 10.5px; color: #64748b; font-style: italic;">
+              Quadriênio 2025–2028
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; padding-top: 4px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgWidth} ${svgHeight}" width="100%" height="${svgHeight}px" style="max-width: 500px; display: block;">
+              <!-- Linha de Fundo Cinza -->
+              <line x1="${xStart}" y1="42" x2="${xEnd}" y2="42" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+              
+              <!-- Linha Ativa até o Pesquisador -->
+              <line x1="${xStart}" y1="42" x2="${xCur}" y2="42" stroke="#1e3a8a" stroke-width="5" stroke-linecap="round"/>
+              
+              <!-- Ponto Menor -->
+              <circle cx="${xStart}" cy="42" r="6" fill="#64748b" />
+              <text x="${xStart}" y="59" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b" font-weight="600">Menor</text>
+              <text x="${xStart}" y="71" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155" font-weight="700">${txtMin}</text>
+
+              <!-- Ponto Maior -->
+              <circle cx="${xEnd}" cy="42" r="6" fill="#64748b" />
+              <text x="${xEnd}" y="59" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b" font-weight="600">Maior</text>
+              <text x="${xEnd}" y="71" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155" font-weight="700">${txtMax}</text>
+
+              <!-- Marcador Vertical do Pesquisador -->
+              <line x1="${xCur}" y1="30" x2="${xCur}" y2="54" stroke="#1e3a8a" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="${xCur}" cy="42" r="5" fill="#1e3a8a"/>
+              
+              <!-- Balão com a pontuação do Pesquisador -->
+              <rect x="${balloonX}" y="8" width="${balloonWidth}" height="${balloonHeight}" rx="4" fill="#1e3a8a"/>
+              <text x="${balloonX + balloonWidth / 2}" y="22" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#ffffff" font-weight="800">${txtCur}</text>
+            </svg>
+          </div>
+        </div>
+      `;
+    };
+
+    const progComp = data.program_comparison;
+    let comparisonBarHtml = '';
+    if (progComp && progComp.current && (progComp.current.max_ind_prod > 0 || currentIndProd > 0)) {
+      const compCurr = progComp.current;
+      const progLabel = progComp.acronym || progComp.program_name || '';
+      comparisonBarHtml = renderComparisonBarSvg(
+        Number(compCurr.min_ind_prod) || 0,
+        Number(compCurr.max_ind_prod) || 0,
+        Number(currentIndProd) || 0,
+        progLabel
+      );
+    }
+
     const guidanceRows = Object.entries(guidancesByType).map(([tipo, items]) => `
       <tr style="background:#f0f4ff;">
         <td colspan="4" style="padding:8px 12px;font-weight:700;font-size:13px;color:#1e3a8a;">
@@ -336,6 +424,7 @@ export async function downloadSituationReport({
           </tr>
         </table>
         ${gpList ? `<div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #475569;"><strong>Programas de Pós-Graduação:</strong><div style="margin-top: 4px;">${gpList}</div></div>` : ''}
+        ${comparisonBarHtml}
       </div>
 
       <!-- SEÇÃO 1: Produção no Quadriênio Atual (2025-2028) -->

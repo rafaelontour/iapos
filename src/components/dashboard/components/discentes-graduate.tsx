@@ -158,7 +158,8 @@ function DiscenteItem({
                                     researcherId: discenteId,
                                     name: props.name,
                                     lattesId: props.lattes_id,
-                                    urlGeral
+                                    urlGeral,
+                                    graduateProgramId: props.graduate_program_id,
                                   })}
                                   variant={'ghost'}
                                   className="h-10 w-10 text-eng-blue hover:text-eng-dark-blue hover:bg-blue-50"
@@ -239,7 +240,8 @@ function DiscenteItem({
                                             researcherId: discenteId,
                                             name: props.name,
                                             lattesId: props.lattes_id,
-                                            urlGeral
+                                            urlGeral,
+                                            graduateProgramId: props.graduate_program_id,
                                         })}
                                         className="text-eng-blue border-eng-blue hover:text-eng-dark-blue hover:bg-blue-50"
                                     >

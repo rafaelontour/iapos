@@ -357,6 +357,7 @@ export function ResearcherModal() {
       urlGeral,
       fallbackArea: primary.area,
       fallbackLattesUpdate: primary.lattes_update ? String(primary.lattes_update) : undefined,
+      graduateProgramId: primary.graduate_programs?.[0]?.graduate_program_id,
     });
   };
 

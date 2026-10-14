@@ -183,7 +183,7 @@ export function ResearcherPage() {
     };
 
     const handleDownloadSituationReport = async () => {
-        if (!primaryResearcher?.id) return;
+        const progId = primaryResearcher.graduate_programs?.[0]?.graduate_program_id || researcher[0]?.graduate_programs?.[0]?.graduate_program_id;
         await downloadSituationReport({
             researcherId: primaryResearcher.id,
             name: primaryResearcher.name || researcher[0]?.name,
@@ -191,6 +191,7 @@ export function ResearcherPage() {
             urlGeral,
             fallbackArea: primaryResearcher.area || researcher[0]?.area,
             fallbackLattesUpdate: primaryResearcher.lattes_update ? String(primaryResearcher.lattes_update) : undefined,
+            graduateProgramId: progId,
         });
     };
 
