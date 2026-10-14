@@ -1,4 +1,4 @@
-import { AreaChart, ChevronsUpDown, Globe, MapPinIcon, PencilLine, Plus, RefreshCcw, SquareArrowOutUpRight, Star, Upload, User, UserIcon, Users } from "lucide-react";
+import { AreaChart, ChevronsUpDown, FileText, Globe, MapPinIcon, Maximize2, PencilLine, Plus, RefreshCcw, SquareArrowOutUpRight, Star, Upload, User, UserIcon, Users } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import { CardContent, CardHeader, CardTitle } from "../../ui/card";
@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../context/context";
 import { useModal } from "../../hooks/use-modal-store";
+import { downloadSituationReport } from "../../../lib/generate-situation-report";
 import { DataTableModal } from "../../componentsModal/data-table";
 import { columns } from "../../componentsModal/columns-researchers-program";
 import { Alert } from "../../ui/alert";
@@ -148,6 +149,43 @@ function DiscenteItem({
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="items-center gap-3 hidden group-hover:flex transition-all">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  size={'icon'}
+                                  onClick={() => downloadSituationReport({
+                                    researcherId: discenteId,
+                                    name: props.name,
+                                    lattesId: props.lattes_id,
+                                    urlGeral
+                                  })}
+                                  variant={'ghost'}
+                                  className="h-10 w-10 text-eng-blue hover:text-eng-dark-blue hover:bg-blue-50"
+                                >
+                                  <FileText size={16} />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Relatório de Situação (PDF)</p>
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                    size={'icon'} 
+                                    onClick={() => onOpen('researcher-modal', { name: props.name })} 
+                                    variant={'ghost'} 
+                                    className="h-10 w-10"
+                                >
+                                    <Maximize2 size={16} />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Ver detalhes do discente</p>
+                              </TooltipContent>
+                            </Tooltip>
+
                             <Button 
                                 size={'icon'} 
                                 onClick={() => onOpen('confirm-delete-student-graduate-program', { lattes_id: props.lattes_id, graduate_program_id: props.graduate_program_id, nome: props.name })} 

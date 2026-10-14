@@ -1,4 +1,4 @@
-import { AlertCircle, ChevronsUpDown, Info, Maximize2, Plus, RefreshCcw, User, UserIcon, X } from "lucide-react";
+import { AlertCircle, ChevronsUpDown, FileText, Info, Maximize2, Plus, RefreshCcw, User, UserIcon, X } from "lucide-react";
 import { Button } from "../../ui/button";
 
 import { CardContent, CardHeader, CardTitle } from "../../ui/card";
@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../../../context/context";
 import { useModal } from "../../hooks/use-modal-store";
+import { downloadSituationReport } from "../../../lib/generate-situation-report";
 
 import { Alert } from "../../ui/alert";
 
@@ -1077,9 +1078,37 @@ export function DocentesGraduate(props: Props) {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className=" items-center gap-3 hidden group-hover:flex transition-all">
-                        <Button size={'icon'} onClick={() => onOpen('researcher-modal', { name: props.name })} variant={'ghost'} className="h-10 w-10 ">
-                          <Maximize2 size={16} />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size={'icon'}
+                              onClick={() => downloadSituationReport({
+                                researcherId: props.researcher_id,
+                                name: props.name,
+                                lattesId: props.lattes_id,
+                                urlGeral
+                              })}
+                              variant={'ghost'}
+                              className="h-10 w-10 text-eng-blue hover:text-eng-dark-blue hover:bg-blue-50"
+                            >
+                              <FileText size={16} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Relatório de Situação (PDF)</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button size={'icon'} onClick={() => onOpen('researcher-modal', { name: props.name })} variant={'ghost'} className="h-10 w-10 ">
+                              <Maximize2 size={16} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ver detalhes do docente</p>
+                          </TooltipContent>
+                        </Tooltip>
 
                         <Button
                           size={'icon'}
