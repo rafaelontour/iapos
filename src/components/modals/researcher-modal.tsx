@@ -465,9 +465,9 @@ export function ResearcherModal() {
           <table style="border-collapse: separate; border-spacing: 8px 0; margin: 4px 0 10px -8px;">
             <tr>
               ${entries.map(([tipo, total]) => `
-              <td style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 6px; padding: 9px 16px; text-align: center; vertical-align: middle;">
-                <span style="display: block; font-size: 20px; font-weight: 800; color: #1e3a8a; line-height: 1;">${total}</span>
-                <span style="display: block; font-size: 10.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; white-space: nowrap;">${LABEL_TIPOS[tipo] || tipo}</span>
+              <td style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 6px; padding: 8px 16px; text-align: center; vertical-align: middle;">
+                <div style="font-size: 20px; font-weight: 800; color: #1e3a8a; line-height: 1;">${total}</div>
+                <div style="font-size: 10.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; line-height: 1.2; white-space: nowrap;">${LABEL_TIPOS[tipo] || tipo}</div>
               </td>`).join('')}
             </tr>
           </table>`;
@@ -556,7 +556,13 @@ export function ResearcherModal() {
           <td style="padding:6px 12px;font-size:12px;color:#6b7280;">${g.title ?? '—'}</td>
           <td style="padding:6px 12px;font-size:12px;text-align:center;">${g.year ?? '—'}</td>
           <td style="padding:6px 12px;font-size:12px;text-align:center;">
-            <span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;">Em Andamento</span>
+            <table style="margin: 0 auto; border-collapse: separate; border-spacing: 0;">
+              <tr>
+                <td style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;text-align:center;vertical-align:middle;line-height:1;white-space:nowrap;">
+                  Em Andamento
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>`).join('')}`
       ).join('');
@@ -624,15 +630,18 @@ export function ResearcherModal() {
                     ${(currentIndProd > 0 || prevIndProd > 0) ? `
                     <tr>
                       <td colspan="2" style="padding: 10px 0 0 0;">
-                        ${currentIndProd > 0 ? `
-                        <span style="display:inline-block;vertical-align:middle;background:#1e3a8a;color:#ffffff;padding:3px 14px 7px 14px;border-radius:14px;font-size:12px;font-weight:800;margin-right:8px;text-align:center;line-height:14px;">
-                          IndProd 2025-2028: ${(Number(currentIndProd) || 0).toFixed(2)}
-                          ${currentYearsAvailable > 0 ? `<span style="font-size:10px;font-weight:400;opacity:0.85;"> (${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})</span>` : ''}
-                        </span>` : ''}
-                        ${prevIndProd > 0 ? `
-                        <span style="display:inline-block;vertical-align:middle;background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd;padding:3px 14px 7px 14px;border-radius:14px;font-size:12px;font-weight:700;text-align:center;line-height:14px;">
-                          IndProd Médio 2021-2024: ${(Number(prevIndProd) || 0).toFixed(2)}
-                        </span>` : ''}
+                        <table style="border-collapse: separate; border-spacing: 8px 0; margin-left: -8px;">
+                          <tr>
+                            ${currentIndProd > 0 ? `
+                            <td style="background: #1e3a8a; color: #ffffff; padding: 5px 14px; border-radius: 14px; font-size: 12px; font-weight: 800; text-align: center; vertical-align: middle; white-space: nowrap; line-height: 1;">
+                              IndProd 2025-2028: ${(Number(currentIndProd) || 0).toFixed(2)}${currentYearsAvailable > 0 ? ` <span style="font-size:10px;font-weight:400;opacity:0.85;">(${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})</span>` : ''}
+                            </td>` : ''}
+                            ${prevIndProd > 0 ? `
+                            <td style="background: #eff6ff; color: #1e3a8a; border: 1px solid #93c5fd; padding: 4px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; text-align: center; vertical-align: middle; white-space: nowrap; line-height: 1;">
+                              IndProd Médio 2021-2024: ${(Number(prevIndProd) || 0).toFixed(2)}
+                            </td>` : ''}
+                          </tr>
+                        </table>
                       </td>
                     </tr>` : ''}
                   </tbody>
@@ -645,14 +654,24 @@ export function ResearcherModal() {
 
         <!-- SEÇÃO 1: Produção no Quadriênio Atual (2025-2028) -->
         <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; background: #ffffff;">
-          <div class="page-break-avoid page-break-after-avoid" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
-            <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
-              Produção no Quadriênio Atual (2025–2028)
-            </h3>
-            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #1e3a8a; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; padding: 2px 10px 6px 10px; border-radius: 12px; line-height: 12px; text-align: center;">
-              Em Andamento ${currentYearsAvailable > 0 ? `(${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})` : ''}
-            </span>
-          </div>
+          <table class="page-break-avoid page-break-after-avoid" style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #1e3a8a; margin-bottom: 12px;">
+            <tr>
+              <td style="padding-bottom: 6px; text-align: left; vertical-align: middle;">
+                <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Produção no Quadriênio Atual (2025–2028)
+                </h3>
+              </td>
+              <td style="padding-bottom: 6px; text-align: right; vertical-align: middle; width: 1%; white-space: nowrap;">
+                <table style="margin-left: auto; border-collapse: separate; border-spacing: 0;">
+                  <tr>
+                    <td style="font-size: 10.5px; color: #1e3a8a; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; padding: 4px 10px; border-radius: 12px; text-align: center; vertical-align: middle; white-space: nowrap; line-height: 1;">
+                      Em Andamento ${currentYearsAvailable > 0 ? `(${currentYearsAvailable} ano${currentYearsAvailable > 1 ? 's' : ''})` : ''}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
 
           <div class="page-break-avoid" style="margin-bottom: 14px;">
             ${currentCardsHtml || '<div style="color: #6b7280; font-size: 12px; padding: 6px 0;">Nenhuma produção bibliográfica registrada até o momento no Lattes para o quadriênio 2025–2028.</div>'}
@@ -664,12 +683,24 @@ export function ResearcherModal() {
 
         <!-- SEÇÃO 2: Orientações Ativas -->
         <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; background: #ffffff;">
-          <div class="page-break-avoid page-break-after-avoid" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
-            <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
-              Orientações Ativas (Itens em Andamento)
-            </h3>
-            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #16a34a; font-weight: 700; background: #dcfce7; border: 1px solid #86efac; padding: 2px 10px 6px 10px; border-radius: 12px; line-height: 12px; text-align: center;">${guidances.length} ativa${guidances.length !== 1 ? 's' : ''}</span>
-          </div>
+          <table class="page-break-avoid page-break-after-avoid" style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #1e3a8a; margin-bottom: 12px;">
+            <tr>
+              <td style="padding-bottom: 6px; text-align: left; vertical-align: middle;">
+                <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Orientações Ativas (Itens em Andamento)
+                </h3>
+              </td>
+              <td style="padding-bottom: 6px; text-align: right; vertical-align: middle; width: 1%; white-space: nowrap;">
+                <table style="margin-left: auto; border-collapse: separate; border-spacing: 0;">
+                  <tr>
+                    <td style="font-size: 10.5px; color: #16a34a; font-weight: 700; background: #dcfce7; border: 1px solid #86efac; padding: 4px 10px; border-radius: 12px; text-align: center; vertical-align: middle; white-space: nowrap; line-height: 1;">
+                      ${guidances.length} ativa${guidances.length !== 1 ? 's' : ''}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
 
           ${guidances.length > 0 ? `
           <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
@@ -688,12 +719,24 @@ export function ResearcherModal() {
 
         <!-- SEÇÃO 3: Histórico Consolidado — Quadriênio Anterior (2021-2024) -->
         <div style="padding: 22px 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 6px 6px; background: #ffffff;">
-          <div class="page-break-avoid page-break-after-avoid" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px;">
-            <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
-              Histórico Consolidado — Quadriênio 2021–2024
-            </h3>
-            <span style="display: inline-block; vertical-align: middle; font-size: 10.5px; color: #475569; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 10px 6px 10px; border-radius: 12px; line-height: 12px; text-align: center;">Referência CAPES</span>
-          </div>
+          <table class="page-break-avoid page-break-after-avoid" style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #1e3a8a; margin-bottom: 12px;">
+            <tr>
+              <td style="padding-bottom: 6px; text-align: left; vertical-align: middle;">
+                <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Histórico Consolidado — Quadriênio 2021–2024
+                </h3>
+              </td>
+              <td style="padding-bottom: 6px; text-align: right; vertical-align: middle; width: 1%; white-space: nowrap;">
+                <table style="margin-left: auto; border-collapse: separate; border-spacing: 0;">
+                  <tr>
+                    <td style="font-size: 10.5px; color: #475569; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 12px; text-align: center; vertical-align: middle; white-space: nowrap; line-height: 1;">
+                      Referência CAPES
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
 
           <div class="page-break-avoid" style="margin-bottom: 14px;">
             ${prevCardsHtml || '<div style="color: #6b7280; font-size: 12px; padding: 6px 0;">Nenhuma produção registrada para o quadriênio 2021-2024.</div>'}
