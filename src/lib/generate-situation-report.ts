@@ -322,17 +322,25 @@ export async function downloadSituationReport({
       `;
     };
 
-    const progComp = data.program_comparison;
+    // Suporta lista de programas (program_comparisons) ou objeto único legado (program_comparison)
+    const progCompList: any[] = data.program_comparisons?.length
+      ? data.program_comparisons
+      : data.program_comparison
+        ? [data.program_comparison]
+        : [];
+
     let comparisonBarHtml = '';
-    if (progComp && progComp.current && (progComp.current.max_ind_prod > 0 || currentIndProd > 0)) {
-      const compCurr = progComp.current;
-      const progLabel = progComp.acronym || progComp.program_name || '';
-      comparisonBarHtml = renderComparisonBarSvg(
-        Number(compCurr.min_ind_prod) || 0,
-        Number(compCurr.max_ind_prod) || 0,
-        Number(currentIndProd) || 0,
-        progLabel
-      );
+    for (const progComp of progCompList) {
+      if (progComp && progComp.current && (progComp.current.max_ind_prod > 0 || currentIndProd > 0)) {
+        const compCurr = progComp.current;
+        const progLabel = progComp.acronym || progComp.program_name || '';
+        comparisonBarHtml += renderComparisonBarSvg(
+          Number(compCurr.min_ind_prod) || 0,
+          Number(compCurr.max_ind_prod) || 0,
+          Number(currentIndProd) || 0,
+          progLabel
+        );
+      }
     }
 
     const guidanceRows = Object.entries(guidancesByType).map(([tipo, items]) => `
