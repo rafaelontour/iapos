@@ -329,11 +329,16 @@ export async function downloadSituationReport({
         ? [data.program_comparison]
         : [];
 
+    // Deduplica por sigla do programa para não duplicar Mestrado e Doutorado (ex: GETEC e MCTI)
+    const seenProgLabels = new Set<string>();
     let comparisonBarHtml = '';
     for (const progComp of progCompList) {
       if (progComp && progComp.current && (progComp.current.max_ind_prod > 0 || currentIndProd > 0)) {
         const compCurr = progComp.current;
-        const progLabel = progComp.acronym || progComp.program_name || '';
+        const progLabel = (progComp.acronym || progComp.program_name || '').trim();
+        if (progLabel && seenProgLabels.has(progLabel)) continue;
+        if (progLabel) seenProgLabels.add(progLabel);
+
         comparisonBarHtml += renderComparisonBarSvg(
           Number(compCurr.min_ind_prod) || 0,
           Number(compCurr.max_ind_prod) || 0,
